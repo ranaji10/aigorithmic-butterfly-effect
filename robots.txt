@@ -1,0 +1,5 @@
+# Everyone is welcome here, including AI crawlers and agents. See /llms.txt.
+User-agent: *
+Allow: /
+
+Sitemap: https://ranaji10.github.io/aigorithmic-butterfly-effect/sitemap.xml

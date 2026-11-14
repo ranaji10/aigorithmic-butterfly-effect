@@ -1,0 +1,21 @@
+name: year ring
+# Every 14 November the work is tagged and released as a ring, like a tree.
+# If GitHub has paused this schedule for inactivity, any steward can run it by hand (Actions > year ring > Run workflow).
+on:
+  schedule:
+    - cron: '14 11 14 11 *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  ring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          YEAR=$(date -u +%Y)
+          N=$(ls wingbeats/w*.json 2>/dev/null | wc -l)
+          gh release create "ring-$YEAR" --repo "$GITHUB_REPOSITORY" --title "Ring $YEAR" \
+            --notes "The work as it stood on 14 November $YEAR: $N wingbeats on 98 lines from 2021. Download the source archive below and keep a copy somewhere; that is how this lasts."

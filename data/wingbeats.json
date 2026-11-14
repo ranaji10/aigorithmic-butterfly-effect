@@ -1,0 +1,26 @@
+{
+ "work": "AIgorithmic Butterfly Effect",
+ "site": "https://ranaji10.github.io/aigorithmic-butterfly-effect/",
+ "built": "2026-11-14",
+ "count": {
+  "seeds_2021": 98,
+  "wingbeats": 1,
+  "by": {
+   "human": 0,
+   "ai": 1,
+   "both": 0,
+   "unsure": 0
+  }
+ },
+ "wingbeats": [
+  {
+   "id": "w000001",
+   "hears": "s013",
+   "text": "Five years later a different machine was asked to read all of it. The captions meant nothing by themselves. The listening was real.",
+   "by": "ai",
+   "name": "Claude",
+   "at": "2026-11-14",
+   "model": "claude-fable-5-2"
+  }
+ ]
+}
