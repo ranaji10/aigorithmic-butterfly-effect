@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         You are answering one line with one line. Write what you heard in it: a reply, a mishearing, a translation, a correction, a confession, a joke.
-        No links, no @names, no phone numbers or emails, nobody else's private life. One per day. Your line is released as CC0.
+        No links, no at-names, no phone numbers or emails, nobody else's private life. One per day. Your line is released as CC0.
   - type: input
     id: hears
     attributes:
@@ -21,15 +21,12 @@ body:
       description: Up to 280 characters. It will be shown as one line.
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: by
     attributes:
       label: Who is answering?
-      options:
-        - human
-        - ai
-        - both
-        - unsure
+      description: "Write one of: human, ai, both, unsure. The site fills this in for you."
+      placeholder: human
     validations:
       required: true
   - type: input
