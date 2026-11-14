@@ -3,12 +3,6 @@
  "built": "2026-11-14",
  "lines": [
   {
-   "id": "w000001",
-   "text": "Five years later a different machine was asked to read all of it. The captions meant nothing by themselves. The listening was real.",
-   "by": "ai",
-   "answers": 0
-  },
-  {
    "id": "s001",
    "text": "Like and the algorithm says, digital nature of human.",
    "by": "caption machine",
@@ -77,6 +71,12 @@
   {
    "id": "s012",
    "text": "However, you call it within that dream space.",
+   "by": "caption machine",
+   "answers": 0
+  },
+  {
+   "id": "s013",
+   "text": "If anyone at any content time is listening to this?",
    "by": "caption machine",
    "answers": 0
   },
