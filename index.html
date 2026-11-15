@@ -77,7 +77,7 @@ body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:cro
 .cb.main{background:var(--wall);color:#151204;width:46px;height:46px}.cb.main:hover{background:#f3d869;border-color:transparent}
 .cb.txt{width:auto;padding:0 12px;gap:7px;display:inline-flex;align-items:center;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .cb[disabled]{opacity:.35;cursor:default}
-#scrubw{flex:1 1 160px;display:flex;align-items:center;gap:8px;min-width:140px;padding:0 6px}
+#scrubw{order:-1;flex:1 1 100%;display:flex;align-items:center;gap:10px;padding:0 6px}
 #scrub{flex:1;min-width:60px}
 .sp{flex:1 1 0}
 input[type=range]{accent-color:var(--wall);height:28px;margin:0}
@@ -166,7 +166,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radiu
   body.v-stage #app{display:grid;grid-template-columns:minmax(0,1fr) 400px;height:calc(100vh - var(--bar));height:calc(100svh - var(--bar))}
   body.v-stage #stage{flex:1}
   body.v-stage #side{overflow:auto;border-left:1px solid var(--line)}
-  body.v-stage #views,body.v-stage footer{display:none}
+  body.v-stage #views,body.v-stage footer,body.v-stage #banswer{display:none}
   body:not(.v-stage) #player{position:sticky;top:var(--bar);z-index:10}
   body:not(.v-stage) #stage{height:31vh;height:31svh}
   body:not(.v-stage) #side{display:none}
@@ -191,7 +191,6 @@ dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radiu
   #line{font-size:17px;max-height:4em}
   #ctl{padding:2px 6px;gap:0;justify-content:space-between}
   .cb,.cb.txt{flex:1 1 0;min-width:0;max-width:50px;width:auto;height:44px;padding:0}.cb.main{height:46px;max-width:46px;flex:0 0 46px}.cb.txt span{display:none}.cb.txt{justify-content:center;display:inline-grid}
-  #scrubw{order:9;flex-basis:100%;padding:0 8px}
   .sp{display:none}
   #ruler{height:52px}
   body:not(.v-stage) #side{display:none}

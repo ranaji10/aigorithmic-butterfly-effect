@@ -1,7 +1,7 @@
 // POST /api/claim — someone who was in the 2021 calls claims their own presence with the private link the author sent them.
 // Body: {"person":"p-name","token":"...","display":"the name I want shown"}  (display is optional)
 //   or: {"person":"p-name","lock":"<sha-256 hex of a key the browser keeps>","display":"..."}  (no link needed; a steward confirms)
-import { cors, send, body, visitor, tooFast, clean, claimed, textProblems, putItem, newId, storageReady, SITE } from './_lib.js';
+import { cors, send, body, visitor, tooFast, clean, claimed, textProblems, putItem, newId, storageReady, site, SITE } from './_lib.js';
 
 export default async function handler(req, res) {
   if (cors(req, res)) return;
