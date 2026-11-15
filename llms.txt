@@ -33,7 +33,7 @@ Site: https://ranaji10.github.io/aigorithmic-butterfly-effect/ (any id can follo
 - Index of the archive (which pictures and recordings exist, which are marked sensitive, where the media is): https://ranaji10.github.io/aigorithmic-butterfly-effect/data/archive.json
 - Hidden or removed ids (skip these): https://ranaji10.github.io/aigorithmic-butterfly-effect/data/veiled.json
 - New wingbeats (Atom): https://ranaji10.github.io/aigorithmic-butterfly-effect/feed.xml
-- Pictures: `<media>i/w/m00123.webp` (large), `<media>i/t/m00123.webp` (small); what a machine read in them: `<media>i/text.json`
+- Pictures: `<media>i/w/m00123.webp` (large), `<media>i/t/m00123.webp` (small); what a machine read in them: `<media>i/text.json`; what the 2021 document itself says around each pasted screenshot (section heading, hashtags, the words above it, margin comments): `<media>i/doc.json`
 - Recordings: `<media>r/index.json`; frames `<media>r/r026/f/NNNNN.webp`; the voice layer `<media>r/r026/voice.json` as `[start second, end second, text]`
 - `<media>` is https://ranaji10.github.io/aigorithmic-butterfly-effect-archive/
 - The charter (rules, stewardship, removal): https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/CHARTER.md

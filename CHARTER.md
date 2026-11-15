@@ -85,3 +85,12 @@ Made the same day, by the author's direction, again without the 30 days of secti
 - **The sound of the calls is public.** Section 5 already said the recordings are. Small copies of the speech (10-minute pieces, 14 kbit/s) are on the `audio` branch of the archive repository and play under the words on the site.
 - **Claiming a name no longer needs a private link**, but always needs a steward's confirmation (section 5, Names).
 - **Themes are subjects now.** The themes seeded from the material (suicide, mental health, parents and children, friendship, football and others) were sorted by a script from machine-read text (`tools/themes_build.py`). They are a way in, not a judgement, and anything in them can be removed like anything else.
+
+## Amendment 3, 15 November 2026 (evening)
+
+Made the same day, by the author's direction, without the 30 days of section 9, and recorded for the same reason as Amendments 1 and 2.
+
+- **The document's own words are public beside its pictures.** Section 5 listed the screenshots of the 2021 document but not what was written around them. The author asked for the section headings, hashtags, the words written above each pasted screenshot and the margin comments to be carried forward. They are in `i/doc.json` of the archive repository, only for pictures that are public, cut short, and with mail addresses, links, numbers, surnames and the document's task marks taken out. Three passages were left out because they were about named people who never came here. Any of it can be removed like anything else.
+- **Names.** The list of people now also holds first names read from the name tags the call software itself wrote under each participant, and four school friends named by the author. It still says nothing about who is in which picture or minute.
+- **Stricter, not looser:** an online conference that was on the shared screen during two calls (its speakers, and its attendees by name) had been published by mistake. It falls under "other people's posts or broadcasts" in section 5 and is hidden until the author decides.
+- **The calls play as video.** Where a recording's full-length original has reached the Internet Archive, the site plays it from there; elsewhere it shows a frame a minute over the sound, as before.

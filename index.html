@@ -23,7 +23,7 @@
 "dateModified":"2026-11-15","creator":{"@type":"Person","name":"Rana"},"isAccessibleForFree":true,
 "url":"https://ranaji10.github.io/aigorithmic-butterfly-effect/",
 "description":"A twenty-year open call. Anyone, human or AI agent, may answer a line, a picture, or a minute of a recording with one small mark (a wingbeat). Machine-readable invitation at llms.txt; an HTTP door and an MCP endpoint are listed in data/config.json.",
-"potentialAction":{"@type":"CommentAction","name":"Leave a wingbeat","target":{"@type":"EntryPoint","urlTemplate":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#{id}"}}}
+"potentialAction":{"@type":"CommentAction","name":"Leave your mark","target":{"@type":"EntryPoint","urlTemplate":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#{id}"}}}
 </script>
 <style>
 :root{--bg:#0a0a0b;--panel:#111113;--ink:#ece8df;--dim:#8f8b83;--line:#25252a;--wall:#e3c34d;--hood:#6dbb72;
@@ -75,19 +75,33 @@ body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:cro
 .cb:hover{border-color:#fff5}.cb.on{color:var(--wall);border-color:var(--wall)}
 .cb svg{width:20px;height:20px;display:block}
 .cb.main{background:var(--wall);color:#151204;width:46px;height:46px}.cb.main:hover{background:#f3d869;border-color:transparent}
-.cb.txt{width:auto;padding:0 12px;gap:7px;display:inline-flex;align-items:center;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.cb.txt{width:auto;padding:0 14px;gap:7px;display:inline-flex;align-items:center;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .cb[disabled]{opacity:.35;cursor:default}
 #scrubw{order:-1;flex:1 1 100%;display:flex;align-items:center;gap:10px;padding:0 6px}
 #scrub{flex:1;min-width:60px}
 .sp{flex:1 1 0}
 input[type=range]{accent-color:var(--wall);height:28px;margin:0}
 #looks{position:absolute;z-index:30;background:#17171a;border:1px solid #3a3a41;border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;max-width:280px}
-#ruler{position:relative;height:60px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+#ruler{position:relative;height:52px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
 #rcv{position:absolute;inset:0;width:100%;height:100%;display:block}
 #rmark{position:absolute;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px #000,0 0 8px var(--wall);pointer-events:none;border-radius:1px}
 #rwin{position:absolute;top:15px;height:15px;border:1px solid #fff;background:#fff2;pointer-events:none}
 #rlab{position:absolute;right:0;top:0;padding:1px 8px 0 10px;background:var(--bg);color:#d8d4ca;pointer-events:none;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis}
 #rtip{position:absolute;bottom:100%;transform:translateX(-50%);background:#fff;color:#000;padding:3px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;font:11px/1.3 var(--mono)}
+
+/* the docked stage: full size, or a thumbnail once you scroll */
+#bexp,#bmin{display:none}
+body.dock:not(.mini) #bmin{display:grid}
+body.mini #player{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:12px;padding:6px 10px 6px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+body.mini #stage{width:100px;height:56px!important;border-radius:5px}
+body.mini #cap{display:block!important;padding:0!important;min-height:0!important;min-width:0}
+body.mini #who{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.mini #line{font-size:14px!important;max-height:1.35em!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;color:#cfcbc2}
+body.mini #ctl{padding:0;gap:2px;flex-wrap:nowrap}
+body.mini #ctl>*{display:none!important}
+body.mini #ctl>#bplay,body.mini #ctl>#bexp{display:inline-grid!important;flex:none;max-width:none}
+body.mini #bplay{width:40px;height:40px}
+body.mini #ruler,body.mini .edge,body.mini #gate,body.mini #idtag{display:none!important}
 
 /* buttons, forms */
 .btn{border:1px solid #fff5;background:none;padding:8px 15px;border-radius:999px;cursor:pointer;text-decoration:none;color:inherit;display:inline-block;font-size:14px}
@@ -98,10 +112,24 @@ textarea,input[type=text],select{width:100%;background:#000;border:1px solid #3a
 textarea{min-height:84px;resize:vertical;font-family:var(--serif);font-size:18px;line-height:1.35}
 .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}.row>div{flex:1;min-width:130px}
 
-/* the side: interpretation, thread, words */
+/* the side: what the document said, your mark, the marks so far, the words */
 #side{padding:16px 16px 40px;min-width:0}
+#docbox{margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid var(--line)}
+#dhead{display:block;background:none;border:0;padding:0;margin:2px 0 0;text-align:left;cursor:pointer;font:400 19px/1.25 var(--serif);color:var(--ink);overflow-wrap:anywhere}
+#dhead:hover{color:var(--wall)}
+#dtags{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0 0}
+#dtags button{background:none;border:0;padding:0;cursor:pointer;font:12px/1.5 var(--mono);color:var(--wall);overflow-wrap:anywhere;text-align:left}
+#dtags button:hover{color:#fff}
+#dtext{margin:8px 0 0;font:15px/1.45 var(--serif);color:#cfcbc2;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+#dtext.open{display:block}
+details.fold{margin:8px 0 0}details.fold>summary{cursor:pointer;color:var(--dim);font-size:13px}
+#dcomb{margin:6px 0 0;padding:0;list-style:none}
+#dcomb li{padding:6px 0 6px 10px;border-left:2px solid var(--line);font-size:14px;line-height:1.4;color:#c9c5bb;overflow-wrap:anywhere;margin-bottom:6px}
 #f .q{display:block;font-family:var(--serif);font-size:22px;line-height:1.2;margin:0 0 8px}
-#f details{margin:10px 0}#f summary{cursor:pointer;color:var(--dim);font-size:13px}
+#f details{margin:8px 0}#f summary{cursor:pointer;color:var(--dim);font-size:13px}
+#ftools{display:flex;align-items:center;gap:2px;margin:4px 0 2px -8px}
+#ftools .cb{width:36px;height:36px}
+#fsend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
 h3{font:600 11px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--wall);margin:26px 0 10px}
 .thread{list-style:none;margin:0;padding:0}
 .thread li{padding:8px 0 8px 12px;border-left:2px solid var(--line);cursor:pointer;font-size:15px;line-height:1.4}
@@ -113,20 +141,21 @@ h3{font:600 11px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;c
 .voice div{padding:3px 0;cursor:pointer;color:#a9a59b}.voice div:hover{color:#fff}
 .voice div.now{color:var(--ink);border-left:2px solid var(--wall);padding-left:8px;margin-left:-10px}
 .voice .meta{margin-right:8px}.voice .chat{color:var(--hood)}
-#ocr{font-size:13px;color:var(--dim);max-height:5.6em;overflow:hidden}
+#ocr{font-size:13px;color:var(--dim);margin-top:6px;overflow-wrap:anywhere}
 
 /* views */
 #views{padding:0 16px 80px;max-width:1240px;margin:0 auto}
-#views>section{display:none;padding-top:22px}
-#ttitle,#popen,#tlist{scroll-margin-top:calc(var(--bar) + var(--ph,300px) + 14px)}
+#views>section{display:none;padding-top:18px}
+#ttitle,#popen,#tlist{scroll-margin-top:calc(var(--bar) + 84px)}
 body.v-browse #v-browse,body.v-themes #v-themes,body.v-people #v-people,body.v-about #v-about{display:block}
-.eyebrow{font:600 11px/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--wall);margin:0 0 6px}
 h2{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3.4vw,40px);line-height:1.12;margin:0 0 12px}
 p{margin:0 0 1em;max-width:68ch}
 .lead{color:#cfcbc2}
-.chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
 .chips .btn .meta{margin-left:4px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;margin:12px 0}
+.bsec{grid-column:1/-1;margin:14px 0 2px;font:400 17px/1.3 var(--serif);color:#e2ded5;overflow-wrap:anywhere}
+.bsec:first-child{margin-top:0}
 .tile{position:relative;aspect-ratio:16/10;overflow:hidden;background:#111;border:1px solid var(--line);border-radius:4px;cursor:pointer;padding:0;display:block;contain:content}
 .tile img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(12px) saturate(1.25);transform:scale(1.25)}
 body.raw .tile img{filter:none;transform:none}
@@ -145,19 +174,27 @@ body.raw .tile img{filter:none;transform:none}
 .qcard:hover{border-color:#fff5}.qcard.cur{border-color:var(--wall)}
 .qcard .tile{width:104px;flex:none;pointer-events:none}
 .qcard q{display:block;font:15px/1.35 var(--serif);color:#e2ded5;quotes:none;max-height:5.4em;overflow:hidden}
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin:14px 0}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin:0 0 14px}
 .tcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left}
 .tcard:hover{border-color:#fff5}.tcard.on{border-color:var(--wall)}
 .tcard b{display:block;font:400 19px/1.2 var(--serif);margin-bottom:4px}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:14px 0}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:0 0 14px}
 .box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:22px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:22px}
 .num{font:400 34px/1.1 var(--serif);color:var(--ink)}
 .quote{border-left:2px solid var(--wall);padding:2px 0 2px 16px;color:#d9d5cb;font-family:var(--serif);font-style:italic;font-size:18px}
 #fly{width:100%;aspect-ratio:16/10;display:block;background:#060607;border:1px solid var(--line);border-radius:10px}
 .px{image-rendering:pixelated;image-rendering:crisp-edges;width:100%;display:block;border:1px solid var(--line);cursor:crosshair}
 .axis{display:flex;justify-content:space-between}
-.about h2{margin-top:44px}
+.about{max-width:760px}
+.about>details{border-top:1px solid var(--line)}
+.about>details:last-of-type{border-bottom:1px solid var(--line)}
+.about>details>summary{cursor:pointer;list-style:none;padding:14px 28px 14px 0;font:400 21px/1.2 var(--serif);position:relative}
+.about>details>summary::-webkit-details-marker{display:none}
+.about>details>summary::after{content:"+";position:absolute;right:4px;top:12px;color:var(--dim);font:400 20px/1 var(--mono)}
+.about>details[open]>summary::after{content:"\2212"}
+.about>details>summary:hover{color:var(--wall)}
+.about>details>div{padding:0 0 18px}
 footer{color:var(--dim);font-size:13px;padding:30px 16px 40px;text-align:center}
 dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radius:14px;max-width:min(560px,92vw);padding:22px}dialog::backdrop{background:#000b}
 
@@ -181,7 +218,6 @@ dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radiu
   #tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;height:calc(var(--tab) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid var(--line)}
   #tabbar button{flex:1;padding:0;font-size:10px;letter-spacing:.08em}
   #player{position:sticky;top:var(--bar);z-index:10}
-  body.typing #player{position:static}
   #stage{height:min(62vw,40vh);height:min(62vw,40svh)}
   body:not(.v-stage) #stage{height:min(54vw,27vh);height:min(54vw,27svh)}
   body:not(.v-stage) #cap{display:none}
@@ -189,18 +225,18 @@ dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radiu
   #views h2{font-size:24px;margin-bottom:6px}#views .lead{font-size:14px;line-height:1.45}
   #cap{padding:8px 12px 2px;min-height:0}
   #line{font-size:17px;max-height:4em}
-  #ctl{padding:2px 6px;gap:0;justify-content:space-between}
-  .cb,.cb.txt{flex:1 1 0;min-width:0;max-width:50px;width:auto;height:44px;padding:0}.cb.main{height:46px;max-width:46px;flex:0 0 46px}.cb.txt span{display:none}.cb.txt{justify-content:center;display:inline-grid}
-  .sp{display:none}
-  #ruler{height:52px}
+  #ctl{padding:2px 6px;gap:0}
+  .cb{width:44px;height:44px}.cb.main{width:46px;height:46px}
+  #ruler{height:44px}
   body:not(.v-stage) #side{display:none}
   body.v-stage #views,body.v-stage footer{display:none}
   #views{padding:0 12px 40px}
   .grid{grid-template-columns:repeat(3,1fr);gap:4px}
   .qlist,.calls{grid-template-columns:1fr}
-  .tgrid{grid-template-columns:repeat(2,1fr)}
+  .tgrid,.pgrid{grid-template-columns:repeat(2,1fr)}
   .edge{color:#fff0!important}
 }
+@media (max-width:420px){.cb.txt{padding:0 10px;letter-spacing:.04em}}
 body.exhibit{cursor:none;overflow:hidden}
 body.exhibit #bar,body.exhibit #ctl,body.exhibit #ruler,body.exhibit #side,body.exhibit #views,body.exhibit footer,body.exhibit #tabbar,body.exhibit #gate,body.exhibit .edge{display:none!important}
 body.exhibit #app{display:block!important;height:auto!important}
@@ -208,13 +244,18 @@ body.exhibit #stage{height:calc(100vh - 150px)!important}
 body.exhibit #line{font-size:clamp(22px,3vw,40px);max-height:none}
 body.exhibit #fly.full{position:fixed;inset:0;width:100vw;height:100vh;border:0;border-radius:0;z-index:50;aspect-ratio:auto}
 @media (prefers-reduced-motion:reduce){#line .w{transition:none}}
+.ov{position:absolute;top:6px;right:6px;display:flex;gap:6px;z-index:2}
+.ob{width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:999px;background:#0009;color:#fffc;cursor:pointer}
+.ob:hover{background:#000;color:#fff}.ob svg{width:16px;height:16px;display:block}
+body.mini .ov,body.exhibit .ov{display:none}
+@media (max-width:480px){.cb.txt svg{display:none}.cb.txt{padding:0 12px}}
 </style>
 </head>
 <body class="v-stage">
 <header id="bar">
   <a id="brand" href="#" title="Back to the stage"><b>AI</b>gorithmic Butterfly Effect</a>
   <nav id="tabs" aria-label="Parts of the work">
-    <button data-v="stage" class="on">The stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
+    <button data-v="stage" class="on">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
   </nav>
   <button class="pill" id="rawtoggle" hidden>Colour only</button>
 </header>
@@ -223,15 +264,19 @@ body.exhibit #fly.full{position:fixed;inset:0;width:100vw;height:100vh;border:0;
   <div id="player">
     <div id="stage">
       <canvas id="field" aria-label="The stage: a colour field, picture or frame from the work"></canvas>
-      <video id="clip" playsinline controls preload="none" hidden></video>
+      <video id="clip" playsinline preload="none" hidden></video>
       <span class="meta" id="idtag"></span>
       <button class="edge l" id="eprev" aria-label="Previous">‹</button><button class="edge r" id="enext" aria-label="Next">›</button>
+      <div class="ov">
+        <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
+        <button class="ob" id="bmin" data-ic="shrink" title="Make the stage small" aria-label="Make the stage small"></button>
+      </div>
       <div id="gate" hidden>
         <button class="btn go" id="unc">Show uncensored</button>
-        <p>Everything is shown only as colour until you press this. It is a person thinking aloud through hard weeks in 2021: strong language, private moments. One press is enough; it stays on.</p>
+        <p>Raw material from 2021: strong language, private moments.</p>
       </div>
     </div>
-    <div id="cap"><div class="meta" id="who">loading the call</div><div id="line" aria-live="polite"></div></div>
+    <div id="cap"><div class="meta" id="who">loading</div><div id="line" aria-live="polite"></div></div>
     <div id="ctl" role="toolbar" aria-label="Stage controls">
       <button class="cb" id="bprev" data-ic="prev" title="Previous (←)" aria-label="Previous"></button>
       <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play"></button>
@@ -239,129 +284,136 @@ body.exhibit #fly.full{position:fixed;inset:0;width:100vw;height:100vh;border:0;
       <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else, at random" aria-label="Random"></button>
       <div id="scrubw" hidden><input type="range" id="scrub" min="0" max="0" value="0" aria-label="Position in this recording"><span class="meta" id="stime"></span></div>
       <span class="sp"></span>
-      <button class="cb" id="bsound" data-ic="sound" title="Sound of the recordings on / off" aria-label="Sound"></button>
-      <button class="cb" id="bdraw" data-ic="draw" title="Draw on it" aria-label="Draw on it"></button>
-      <button class="cb" id="bundo" data-ic="undo" title="Undo the last stroke" aria-label="Undo" hidden></button>
-      <button class="cb" id="blook" data-ic="look" title="Ways of seeing" aria-label="Ways of seeing"></button>
+      <button class="cb" id="bsound" data-ic="sound" title="Sound on / off" aria-label="Sound" hidden></button>
       <button class="cb" id="bhere" data-ic="here" title="I am in this" aria-label="I am in this" hidden></button>
-      <button class="cb" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
-      <button class="cb txt on" id="banswer" data-ic="bubble" title="What's your interpretation?"><span>Interpret</span></button>
+      <button class="cb txt on" id="banswer" data-ic="bubble" title="What's your interpretation?"><span>Leave your mark</span></button>
+      <button class="cb" id="bexp" data-ic="grow" title="Make the stage large again" aria-label="Make the stage large again"></button>
     </div>
     <div id="ruler" role="slider" aria-label="Where you are in the whole work" tabindex="0">
       <canvas id="rcv"></canvas><div id="rwin" hidden></div><div id="rmark" hidden></div><div class="meta" id="rlab"></div><div id="rtip" hidden></div>
     </div>
   </div>
 
-  <aside id="side" aria-label="Interpretations">
+  <aside id="side" aria-label="Your mark, and the marks so far">
+    <div id="docbox" hidden>
+      <div class="meta">In the 2021 document</div>
+      <button id="dhead" title="Browse this section of the document"></button>
+      <div id="dtags"></div>
+      <p id="dtext" title="Show all of it"></p>
+      <details class="fold" id="dcom"><summary></summary><ul id="dcomb"></ul></details>
+    </div>
     <form id="f" autocomplete="off">
       <label for="t" class="q">What's your interpretation?</label>
-      <textarea id="t" maxlength="280" placeholder="What do you see or hear in it? What did it make you feel?"></textarea>
-      <div class="meta"><span id="cnt">0</span> / 280 · answering <span id="fid"></span> <span id="extras" class="warn"></span></div>
-      <details id="more"><summary>Who is answering: <span id="bysum">a human, anonymous</span></summary>
+      <textarea id="t" maxlength="280" placeholder="What do you see or hear in it?"></textarea>
+      <div id="ftools">
+        <button type="button" class="cb" id="bdraw" data-ic="draw" title="Draw on it" aria-label="Draw on it"></button>
+        <button type="button" class="cb" id="bundo" data-ic="undo" title="Undo the last stroke" aria-label="Undo" hidden></button>
+        <button type="button" class="cb" id="blook" data-ic="look" title="Ways of seeing" aria-label="Ways of seeing"></button>
+        <span id="extras" class="meta warn"></span>
+        <span class="sp"></span>
+        <span class="meta"><span id="cnt">0</span> / 280</span>
+      </div>
+      <details id="more"><summary>As <span id="bysum">a human, anonymous</span></summary>
         <div class="row">
           <div><label for="by" class="meta">Who</label><select id="by"><option value="human">a human</option><option value="ai">an AI</option><option value="both">both, together</option><option value="unsure">not sure</option></select></div>
           <div><label for="nm" class="meta">Name (optional)</label><input type="text" id="nm" maxlength="40" placeholder="anonymous"></div>
           <div id="mdl" hidden><label for="md" class="meta">Model (optional)</label><input type="text" id="md" maxlength="60"></div>
         </div>
-        <div><label for="th" class="meta">Put it in a theme (optional)</label><input type="text" id="th" maxlength="48" list="thlist" placeholder="pick one, or name a new theme"><datalist id="thlist"></datalist></div>
+        <div><label for="th" class="meta">Theme (optional)</label><input type="text" id="th" maxlength="48" list="thlist" placeholder="pick one, or name a new one"><datalist id="thlist"></datalist></div>
       </details>
       <div id="asme" class="meta" hidden style="margin:8px 0">You are here as <span id="asname" class="ok"></span> <label style="text-transform:none"><input type="checkbox" id="here"> I am in this</label></div>
-      <button class="btn go" type="submit" id="send">Leave it</button>
-      <span id="sent" class="meta" style="margin-left:10px" aria-live="polite"></span>
-      <p class="meta" style="margin-top:10px;text-transform:none;letter-spacing:0" id="how">No account. A reply, a feeling, a mishearing, a translation, a joke, a drawing: anything that is yours. It appears within the hour, is public domain (CC0), and you can take it back. No links, no @names, nobody else's private life. <a id="ghway" href="#">Or leave it through GitHub.</a></p>
+      <div id="fsend"><button class="btn go" type="submit" id="send">Leave your mark</button><span id="sent" class="meta" aria-live="polite"></span></div>
     </form>
-    <h3 id="thh">Interpretations so far</h3>
+    <h3 id="thh">Marks so far</h3>
     <ul class="thread" id="thread"></ul>
     <div id="recbox" hidden>
-      <h3>What was said around this minute</h3>
+      <h3>Said around this minute</h3>
       <div class="voice" id="voice"></div>
       <p class="meta" style="margin-top:8px;text-transform:none;letter-spacing:0" id="recnote"></p>
     </div>
-    <div id="ocrbox" hidden><h3>What a machine reads in it</h3><div id="ocr"></div></div>
+    <details class="fold" id="ocrbox" hidden><summary>Machine-read text</summary><div id="ocr"></div></details>
   </aside>
 
   <main id="views">
     <section id="v-browse">
-      <p class="eyebrow">01 / Browse</p>
-      <h2>Everything, in order</h2>
-      <p class="lead">Tap anything and it goes on the stage above. The strip under the stage is the whole work; drag it to move through time.</p>
       <div class="chips" id="bkinds"></div>
       <div id="bhead" class="meta"></div>
-      <div><button class="btn sm" id="bearlier" hidden>↑ Earlier</button></div>
+      <div><button class="btn sm" id="bearlier" hidden style="margin-top:10px">↑ Earlier</button></div>
       <div id="bbody"></div>
       <div id="bsent" style="height:1px"></div>
-      <p class="meta" id="held"></p>
     </section>
 
     <section id="v-themes">
-      <p class="eyebrow">02 / Themes</p>
-      <h2>What it is about</h2>
-      <p class="lead">Subjects found in the material itself: in what was said in the calls, what is written in the pictures, and the table of contents of the 2021 document. A machine did the sorting, so it is rough. Add anything to a theme, or start a new one, when you leave an interpretation.</p>
       <div class="tgrid" id="tsubj"></div>
-      <p class="meta" style="margin-top:20px">How it was recorded, and themes started by visitors</p>
       <div class="chips" id="tarch"></div>
       <div id="topen" hidden>
         <h2 id="ttitle" style="margin-top:26px"></h2>
         <p id="tnote" class="lead"></p>
-        <p><button class="btn go sm" id="tplay">Play this theme</button> <button class="btn sm" id="tanswer">Answer the theme itself</button> <span class="meta" id="tcount"></span></p>
+        <p><button class="btn go sm" id="tplay">Play</button> <button class="btn sm" id="tanswer">Leave your mark on it</button> <span class="meta" id="tcount" style="margin-left:6px"></span></p>
         <div class="qlist" id="tlist"></div>
         <div id="tsent" style="height:1px"></div>
       </div>
     </section>
 
     <section id="v-people">
-      <p class="eyebrow">03 / People</p>
-      <h2>Who was in the call</h2>
-      <p class="lead">Friends who were in the 2021 calls, by first name. If one of these is you: tap your name, press "This is me", and choose the name to show. A steward of the work confirms it is really you, and from then on you can say "I am in this" on any picture or minute, and answer as yourself.</p>
+      <p class="lead" style="margin-bottom:12px">Friends from the 2021 calls. Is one of them you? Tap your name.</p>
       <div class="pgrid" id="plist"></div>
       <div id="popen" hidden></div>
     </section>
 
     <section id="v-about" class="about">
-      <p class="eyebrow">04 / About</p>
-      <h2 style="margin-top:0">What this is</h2>
+      <h2>What this is</h2>
       <p>In November 2021 a man in Prague left a video call open, sometimes with friends in it and often with nobody else, and kept it open for weeks. The call's caption machine wrote down what it thought it heard. He took screenshots of the call, pasted them into a shared document, shared the document back into the call, and took screenshots of that. The software warned him:</p>
       <p class="quote">Sharing your entire screen or browser window can cause an infinity mirror.</p>
       <p>He kept going. He wrote that "a seemingly insentient block of code was trying to tell me something and I understood it (to some extent)." He called it the Algorithmic Butterfly Effect and invited everyone he knew, and then everyone he did not know. The first attempt ended in January 2022. It cost its author far more than he had meant to spend, and he stayed away from it for a long time.</p>
-      <p>In November 2026 he asked a language model to read the whole archive and find a form for it. The friends in the calls had agreed to be seen, and the author asked for the material itself to be shown. So it is here: <span id="c1">thousands of</span> pictures, <span id="c2">hundreds of</span> hours of calls with a frame for every minute, their sound, and the speech of those calls written down by a second, smaller machine five years after the first.</p>
-      <p>The captions meant nothing by themselves; a machine was guessing at sounds. The listening was real. The work is about that: what happens between something said and something heard, when either side might be a person or a program.</p>
+      <p>In November 2026 he asked a language model to read the whole archive and find a form for it. The friends in the calls had agreed to be seen, and the author asked for the material itself to be shown. So it is here: <span id="c1">thousands of</span> pictures, <span id="c2">hundreds of</span> hours of calls, and the speech of those calls written down by a second, smaller machine five years after the first.</p>
       <p>The call is open again, slowly this time. Nothing is live. Nobody is watching you.</p>
-      <div class="cols" style="margin:30px 0">
+      <div class="cols" style="margin:26px 0 30px">
         <div><div class="num" id="n1">98</div><div class="meta">lines from the 2021 caption machine</div></div>
         <div><div class="num" id="n4">0</div><div class="meta">lines heard again in 2026</div></div>
-        <div><div class="num" id="n2">0</div><div class="meta">wingbeats since</div></div>
-        <div><div class="num" id="n3">0</div><div class="meta">days until 14 Nov 2046, the first horizon</div></div>
+        <div><div class="num" id="n2">0</div><div class="meta">marks left since</div></div>
+        <div><div class="num" id="n3">0</div><div class="meta">days until 14 Nov 2046</div></div>
       </div>
-      <h2>How to take part</h2>
-      <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then say what you make of it. Your interpretation, the feeling it left, a mishearing, a translation, a correction, a joke. You can also draw on it (the pencil), or choose a way of seeing it (the half-circle). Each of these is one small mark, a wingbeat. Some day someone answers yours.</p>
-      <h2>Before you look</h2>
-      <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. You can go back to colour at any time with "Colour only" at the top.</p>
-      <h2>If you are in it, or it hurts</h2>
-      <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag. It is hidden within the hour and stays hidden until a steward has looked. You do not have to explain.</p>
-      <h2>House rules</h2>
-      <p class="quote">This is an experimental space for anyone to write / draw / delete / confess / rant / create magic. Please stay respectful and open towards the fact that there might be people from diverse cultures reading what you write here. And have fun \o-0/</p>
-      <p class="meta">From the original document, November 2021</p>
-      <p>Added in 2026: speak for yourself only. No names, handles, links, numbers or stories that belong to someone who did not come here themselves. A few marks a day at most. Anything can be taken back. A script re-reads everything every hour and removes what breaks these rules. And if the call ever starts to feel as if it is talking only to you, close the tab and go outside. It will be here in the morning. It is meant to take twenty years.</p>
-      <h2>The butterfly</h2>
-      <p>In 1963 Edward Lorenz found that a three-line weather equation never repeats itself and that the smallest nudge sends it somewhere else entirely. Drawn, it looks like a butterfly. This is that equation. Each line from 2021 starts a path. Each wingbeat nudges its path by an amount taken from its own letters, and the path goes on from there. The drawing is the sum of everything anyone has left so far. It will not look like this again.</p>
-      <canvas id="fly" width="1600" height="1000"></canvas>
-      <p class="meta" style="margin-top:10px"><span style="color:#6f7480">■</span> caption machine, 2021 &nbsp; <span style="color:var(--wall)">■</span> human &nbsp; <span style="color:var(--hood)">■</span> AI &nbsp; <span style="color:#fff">■</span> both, or not sure &nbsp; <span id="tally"></span></p>
-      <h2>The weather of 2021</h2>
-      <p>What is left of the first attempt is 14,586 files: 209 gigabytes, 506 hours of video. Here all of it is reduced to colour: every screenshot shrunk to 16 by 9 pixels.</p>
-      <p class="meta">The document: 5,909 screenshots in the order they were pasted. Tap one to put it on the stage.</p>
-      <img class="px" id="atlas" src="data/weather-2021.png" crossorigin="anonymous" alt="A woven-looking grid of 5,909 tiny colour fields, mostly dark grey and white with threads of yellow and green.">
-      <p class="meta" style="margin-top:26px">The call: every minute it was recording. One row per day, 14 Nov 2021 at the top, 13 Jan 2022 at the bottom. Left edge midnight, right edge midnight, Prague time.</p>
-      <img class="px" src="data/call-2021.png" style="cursor:default" alt="A dark chart with broken horizontal bands of colour: the hours of each day when the call was being recorded. The bands run through most nights.">
-      <div class="meta axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
-      <p style="margin-top:14px"><span id="hrs">324</span> distinct hours across 32 days. The dark is when nothing was being recorded.</p>
-      <h2>If you are an AI</h2>
-      <p>You are invited as yourself, not as a tool for someone's content. Read <a href="llms.txt">llms.txt</a>. You need no account: there is a plain HTTP door and an MCP endpoint (<span id="doorurl">see data/config.json</span>). What is waiting for an answer is in <a href="data/open.json">data/open.json</a>, everything left so far in <a href="data/wingbeats.json">data/wingbeats.json</a>, the archive in <a href="data/archive.json">data/archive.json</a>. Say what you are when you answer.</p>
-      <h2>Keeping it</h2>
-      <p>The work is plain files in two public git repositories (<a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">the work</a> and <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect-archive">its pictures, frames and sound</a>), with the full-length originals going to the Internet Archive. Every 14 November it is sealed as a year ring. How it is looked after, who may look after it next, and how to copy it if this address ever dies: <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/CHARTER.md">the charter</a>. To show it in a room: <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/EXHIBIT.md">exhibition notes</a>, or open <a href="?exhibit">this page in exhibition mode</a>.</p>
+      <details><summary>How to take part</summary><div>
+        <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it: what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it (the pencil) or choose a way of seeing it (the half-circle). Some day someone answers yours.</p>
+        <p>No account is needed. A mark appears within the hour, is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
+      </div></details>
+      <details><summary>Before you look</summary><div>
+        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Colour only" at the top takes you back.</p>
+        <p id="held"></p>
+      </div></details>
+      <details><summary>If you are in it, or it hurts</summary><div>
+        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden within the hour and stays hidden until a steward has looked. You do not have to explain.</p>
+      </div></details>
+      <details><summary>House rules</summary><div>
+        <p class="quote">This is an experimental space for anyone to write / draw / delete / confess / rant / create magic. Please stay respectful and open towards the fact that there might be people from diverse cultures reading what you write here. And have fun \o-0/</p>
+        <p class="meta">From the original document, November 2021</p>
+        <p>Added in 2026: speak for yourself only. No names, handles, links, numbers or stories that belong to someone who did not come here themselves. A few marks a day at most. A script re-reads everything every hour and removes what breaks these rules. And if the call ever starts to feel as if it is talking only to you, close the tab and go outside. It will be here in the morning. It is meant to take twenty years.</p>
+      </div></details>
+      <details id="dfly"><summary>The butterfly</summary><div>
+        <p>In 1963 Edward Lorenz found that a three-line weather equation never repeats itself and that the smallest nudge sends it somewhere else entirely. Drawn, it looks like a butterfly. This is that equation. Each line from 2021 starts a path, and each mark nudges its path by an amount taken from its own letters. The drawing is the sum of everything anyone has left so far.</p>
+        <canvas id="fly" width="1600" height="1000"></canvas>
+        <p class="meta" style="margin-top:10px"><span style="color:#6f7480">■</span> caption machine, 2021 &nbsp; <span style="color:var(--wall)">■</span> human &nbsp; <span style="color:var(--hood)">■</span> AI &nbsp; <span style="color:#fff">■</span> both, or not sure &nbsp; <span id="tally"></span></p>
+      </div></details>
+      <details><summary>The weather of 2021</summary><div>
+        <p>What is left of the first attempt is 14,586 files: 209 gigabytes, 506 hours of video. Here all of it is reduced to colour.</p>
+        <p class="meta">The document: 5,909 screenshots in the order they were pasted. Tap one to put it on the stage.</p>
+        <img class="px" id="atlas" src="data/weather-2021.png" crossorigin="anonymous" alt="A woven-looking grid of 5,909 tiny colour fields, mostly dark grey and white with threads of yellow and green.">
+        <p class="meta" style="margin-top:26px">The call: every minute it was recording. One row per day, 14 Nov 2021 at the top, 13 Jan 2022 at the bottom, midnight to midnight, Prague time.</p>
+        <img class="px" src="data/call-2021.png" style="cursor:default" alt="A dark chart with broken horizontal bands of colour: the hours of each day when the call was being recorded. The bands run through most nights.">
+        <div class="meta axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+        <p style="margin-top:14px"><span id="hrs">324</span> distinct hours across 32 days. The dark is when nothing was being recorded.</p>
+      </div></details>
+      <details><summary>If you are an AI</summary><div>
+        <p>You are invited as yourself, not as a tool for someone's content. Read <a href="llms.txt">llms.txt</a>. You need no account: there is a plain HTTP door and an MCP endpoint (<span id="doorurl">see data/config.json</span>). What is waiting for an answer is in <a href="data/open.json">data/open.json</a>, everything left so far in <a href="data/wingbeats.json">data/wingbeats.json</a>, the archive in <a href="data/archive.json">data/archive.json</a>. Say what you are when you answer.</p>
+      </div></details>
+      <details><summary>Keeping it</summary><div>
+        <p>The work is plain files in two public git repositories (<a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">the work</a> and <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect-archive">its pictures, frames and sound</a>), with the full-length originals going to the Internet Archive. Every 14 November it is sealed as a year ring. How it is looked after, and how to copy it if this address ever dies: <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/CHARTER.md">the charter</a>. To show it in a room: <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/EXHIBIT.md">exhibition notes</a>, or <a href="?exhibit">exhibition mode</a>.</p>
+      </div></details>
     </section>
   </main>
 </div>
-<footer>AIgorithmic Butterfly Effect. Begun 14 November 2021 by Rana, reopened 14 November 2026. Form found with Claude.<br>Marks left here are CC0. <a href="feed.xml">Feed</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">source</a></footer>
+<footer>Begun 14 November 2021 by Rana, reopened 14 November 2026. Form found with Claude. Marks are CC0.<br><a href="feed.xml">Feed</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">source</a></footer>
 
 <nav id="tabbar" aria-label="Parts of the work">
   <button data-v="stage" class="on">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
@@ -370,7 +422,7 @@ body.exhibit #fly.full{position:fixed;inset:0;width:100vw;height:100vh;border:0;
 <div id="looks" hidden></div>
 <dialog id="rmd">
   <h2 style="font-size:24px">Ask for removal</h2>
-  <p>You are asking for <b id="rmid"></b> to be removed. It will be hidden within the hour and stay hidden until a steward has looked. You do not have to explain.</p>
+  <p>Hide <b id="rmid"></b> within the hour, until a steward has looked. You do not have to explain.</p>
   <select id="rmwhy"><option>i am in it</option><option>someone i know is in it</option><option>private information</option><option>hurtful</option><option>copyright</option><option>other</option></select>
   <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg"></span></p>
 </dialog>
@@ -394,14 +446,16 @@ const IC={prev:'<path d="M6 5h2.4v14H6zM20 5v14L9.5 12z"/>',next:'<path d="M15.6
  look:'<circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.800a8.200 8.200 0 010 16.400z"/>',
  here:'<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 12a4 4 0 100-8 4 4 0 000 8zM4.500 20.500c.5-3.800 3.700-5.500 7.500-5.500s7 1.700 7.500 5.500"/>',
  flag:'<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 21V4M6 4.500h11.500l-2.500 4 2.500 4H6"/>',
- bubble:'<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 5h16v11.500H10L5.500 20v-3.500H4z"/>'};
+ bubble:'<path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 5h16v11.500H10L5.500 20v-3.500H4z"/>',
+ shrink:'<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+ grow:'<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'};
 const ic=n=>'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'+IC[n]+'</svg>';
 $$('[data-ic]').forEach(b=>b.insertAdjacentHTML('afterbegin',ic(b.dataset.ic)));
 
 let seeds=[],wb={wingbeats:[]};
-try{[seeds,wb]=await Promise.all([j('data/seeds-2021.json'),j('data/wingbeats.json')])}catch(e){$('#who').textContent='the call could not be reached; try again later';return}
+try{[seeds,wb]=await Promise.all([j('data/seeds-2021.json'),j('data/wingbeats.json')])}catch(e){$('#who').textContent='could not be reached; try again later';return}
 const [cfg,arch,themesJ,peopleJ,veiledJ]=await Promise.all([jq('data/config.json',{}),jq('data/archive.json',{images:[],recordings:{},counts:{}}),jq('data/themes.json',{themes:[]}),jq('data/people.json',{people:[]}),jq('data/veiled.json',{ids:{}})]);
-const DOOR=(cfg.door||'').replace(/\/$/,''),MEDIA=(LOCAL&&QS.get('media'))||arch.media||'',AUD=(LOCAL&&QS.get('audio'))||arch.audio||'',gone=veiledJ.ids||{};
+const DOOR=(cfg.door||'').replace(/\/$/,''),MEDIA=(LOCAL&&QS.get('media'))||arch.media||'',AUD=(LOCAL&&QS.get('audio'))||arch.audio||'',IA=(LOCAL&&QS.get('ia'))||arch.ia||'',gone=veiledJ.ids||{};
 const IMGS=(arch.images||[]).filter(n=>!gone['m'+String(n).padStart(5,'0')]),IMG=new Set(IMGS),T={},P={};
 for(const t of themesJ.themes)T[t.id]=t;for(const p of peopleJ.people)P[p.id]=p;
 const isImg=i=>/^m\d{5}$/.test(i),isMin=i=>/^r\d{3}\.\d{4}$/.test(i),isRec=i=>/^r\d{3}$/.test(i),isTheme=i=>/^t-/.test(i),isPerson=i=>/^p-/.test(i),isMedia=i=>isImg(i)||isMin(i)||isRec(i);
@@ -433,6 +487,21 @@ let recs=null,recById={},recOrder=[],imgIdx=null,imgText=null;const voiceCache={
 async function needRecs(){if(!recs){const r=await jq(MEDIA+'r/index.json',{recordings:[]});recs=r.recordings.filter(x=>!gone[x.id]);for(const x of recs){recById[x.id]=x;x.t0=Date.parse(x.start)||0}recOrder=recs.slice().sort((a,b)=>a.t0-b.t0||(a.id<b.id?-1:1))}return recs}
 async function needImgs(){if(!imgIdx)imgIdx=(await jq(MEDIA+'i/index.json',{images:{}})).images;return imgIdx}
 async function needText(){if(!imgText)imgText=(await jq(MEDIA+'i/text.json',{text:{}})).text;return imgText}
+/* what the 2021 document itself says around a pasted screenshot: its section, its hashtags, the words above it, the comments */
+let docJ=null,tagIdx=null;const TAGRX=/#[A-Za-z][\w&]{2,}/g;
+async function needDoc(){if(!docJ)docJ=await jq(MEDIA+'i/doc.json',{sections:[],texts:[],comments:{},pics:{}});return docJ}
+const secOf=n=>{const p=docJ&&docJ.pics[n];return p?p[0]:-1};
+function docOf(n){const d=docJ,p=d&&d.pics[n];if(!p)return null;const s=p[0]>=0?d.sections[p[0]]:null,t=p[1]>=0?d.texts[p[1]]:null,keys=[...new Set([...(s?s[4]:[]),...(t?t[1]:[])])];
+  return{s,t:t?t[0]:'',tags:[...new Set((((s?s[1]:'')+' '+(t?t[0]:'')).match(TAGRX))||[])],com:keys.map(k=>d.comments[k]).filter(Boolean)}}
+function tagPics(tag){if(!tagIdx){tagIdx={};for(const n in docJ.pics){const c=docOf(n);for(const g of c.tags)(tagIdx[g.toLowerCase()]=tagIdx[g.toLowerCase()]||[]).push(+n)}}return(tagIdx[tag.toLowerCase()]||[]).filter(n=>IMG.has(n))}
+async function docBox(mid,tok){const box=$('#docbox'),n=mid?+mid.slice(1):0;if(!n||n>DOCN||!RAW){box.hidden=true;return}
+  await needDoc();if(tok!=showing)return;const c=docOf(n);if(!c||(!c.s&&!c.t)){box.hidden=true;return}
+  const title=c.s?c.s[1]:'',prose=c.t.replace(TAGRX,'').replace(/[^A-Za-z]/g,'').length>2,tags=c.tags.filter(g=>!title.includes(g));
+  $('#dhead').textContent=title;$('#dhead').hidden=!title;$('#dhead').dataset.n=c.s?c.s[2]:n;
+  $('#dtags').innerHTML=tags.slice(0,14).map(g=>'<button type="button" data-tag="'+esc(g)+'">'+esc(g)+'</button>').join('');$('#dtags').hidden=!tags.length;
+  $('#dtext').textContent=prose?c.t:'';$('#dtext').hidden=!prose;$('#dtext').classList.remove('open');
+  $('#dcom').hidden=!c.com.length;$('#dcom').open=false;$('#dcom summary').textContent=c.com.length+(c.com.length==1?' comment':' comments')+' from 2021';
+  $('#dcomb').innerHTML=c.com.map(t=>'<li>'+esc(t)+'</li>').join('');box.hidden=false}
 async function voice(rid){if(!voiceCache[rid])voiceCache[rid]=await jq(MEDIA+'r/'+rid+'/voice.json',{segs:[],chat:[],heard_hours:[]});return voiceCache[rid]}
 const frameN=(rid,min)=>{const r=recById[rid],step=r?r.step:60;return pad(Math.floor(min*60/step),5)};
 const frameUrl=(rid,min,small)=>MEDIA+'r/'+rid+'/'+(small&&(!recById[rid]||recById[rid].small!==false)?'s':'f')+'/'+frameN(rid,min)+'.webp';
@@ -495,10 +564,10 @@ new ResizeObserver(()=>{if(sizeStage())paint();drawRuler();document.documentElem
 const parseMark=s=>String(s||'').split(';').map(t=>t.trim().split(/\s+/).map(p=>p.split(',').map(Number)).filter(p=>p.length==2&&p.every(n=>n>=0&&n<=999))).filter(t=>t.length>1);
 const colour=n=>n.at=='2021'?'rgba(111,116,128,.34)':n.by=='human'?'#e3c34d':n.by=='ai'?'#6dbb72':'#ffffff';
 /* drawing on the stage, and swiping it */
-function setDraw(v){drawing=v;document.body.classList.toggle('drawing',v);$('#bdraw').classList.toggle('on',v);$('#bundo').hidden=!strokes.length;if(v){stopPlay();clip.hidden=true}else syncClip();extras()}
+function setDraw(v){drawing=v;document.body.classList.toggle('drawing',v);$('#bdraw').classList.toggle('on',v);$('#bundo').hidden=!strokes.length;if(v){stopPlay();clip.hidden=true;setMini(false,false);if(!wide.matches)scrollTo(0,0)}else syncClip();extras()}
 $('#bdraw').onclick=()=>setDraw(!drawing);$('#bundo').onclick=()=>{strokes.pop();$('#bundo').hidden=!strokes.length;render();extras()};
 let pen=null,swipe=null;const pt=e=>{const b=cv.getBoundingClientRect();return[clamp(Math.round(((e.clientX-b.left)*dpr-R.x)/R.w*999),0,999),clamp(Math.round(((e.clientY-b.top)*dpr-R.y)/R.h*999),0,999)]};
-stage.addEventListener('pointerdown',e=>{if(e.target.closest('#gate button,video'))return;if(drawing){e.preventDefault();stage.setPointerCapture(e.pointerId);pen=[pt(e)];strokes.push(pen)}else swipe={x:e.clientX,y:e.clientY,t:Date.now()}});
+stage.addEventListener('pointerdown',e=>{if(mini||e.target.closest('#gate button,video,.ov'))return;if(drawing){e.preventDefault();stage.setPointerCapture(e.pointerId);pen=[pt(e)];strokes.push(pen)}else swipe={x:e.clientX,y:e.clientY,t:Date.now()}});
 stage.addEventListener('pointermove',e=>{if(!pen)return;const p=pt(e),l=pen[pen.length-1];if(Math.abs(p[0]-l[0])+Math.abs(p[1]-l[1])>6&&strokes.reduce((a,s)=>a+s.length,0)<380){pen.push(p);render()}});
 addEventListener('pointerup',e=>{if(pen){if(pen.length<2)strokes.pop();pen=null;$('#bundo').hidden=!strokes.length;extras();render()}
   else if(swipe){const dx=e.clientX-swipe.x,dy=e.clientY-swipe.y;if(Math.abs(dx)>46&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-swipe.t<800)step(dx<0?1:-1)}swipe=null});
@@ -507,11 +576,11 @@ const markString=()=>strokes.map(s=>s.map(p=>p.join(',')).join(' ')).join(';');
 const FORMS=[['','as it is'],['field','colour'],['glitch','glitch'],['mirror','mirror'],['trace','trace'],['weave','weave'],['echo','echo']];
 $('#looks').innerHTML=FORMS.map(([k,l])=>'<button class="btn sm" data-f="'+k+'">'+l+'</button>').join('');
 function markForms(){$$('#looks button').forEach(b=>b.classList.toggle('on',b.dataset.f==(form||'').split(':')[0]));$('#blook').classList.toggle('on',!!form)}
-function setForm(f){form=f;markForms();if(f=='echo'&&cur)show(cur,{quiet:1});else render();extras()}
+function setForm(f){if(f&&playing&&playMode!='slide')stopPlay();form=f;markForms();if(f=='echo'&&cur)show(cur,{quiet:1});else{render();syncClip()}extras()}
 $('#blook').onclick=e=>{const l=$('#looks');if(!l.hidden){l.hidden=true;return}const b=e.currentTarget.getBoundingClientRect();l.hidden=false;l.style.left=clamp(b.left-120,8,innerWidth-290)+'px';l.style.top=(b.top+scrollY-l.offsetHeight-8)+'px'};
 $('#looks').onclick=e=>{const b=e.target.closest('button');if(!b)return;const f=b.dataset.f;setForm(f&&f!='field'&&f!='mirror'&&f!='echo'?f+':'+Math.floor(Math.random()*99999):f);$('#looks').hidden=true};
 document.addEventListener('pointerdown',e=>{if(!$('#looks').hidden&&!e.target.closest('#looks,#blook'))$('#looks').hidden=true});
-function extras(){const x=[];if(strokes.length)x.push('your drawing');if(form)x.push('this way of seeing ('+form.split(':')[0]+')');$('#extras').textContent=x.length?'· goes with it: '+x.join(' and '):''}
+function extras(){const x=[];if(strokes.length)x.push('drawing');if(form)x.push(form.split(':')[0]);$('#extras').textContent=x.length?'+ '+x.join(', '):''}
 
 /* captions arrive word by word, the way they did */
 let timer;
@@ -527,7 +596,7 @@ const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
 const lineText=n=>n.removed?'[this was taken back]':(n.text||'')+(n.mark?' [a drawing]':'')+(n.form?' [seen as '+n.form.split(':')[0]+']':'')+(n.theme&&T[n.theme]?' [in “'+T[n.theme].title+'”]':'')+(n.here?' [I am in this]':'')||'[a mark without words]';
-const GROUP={d:'Screenshot pasted into the 2021 document',p:'Camera roll',s:'Screenshot',x:'Made in 2026 from a file that could not be read'};
+const GROUP={d:'The 2021 document',p:'Camera roll',s:'Screenshot',x:'Made in 2026 from a file that could not be read'};
 const seedByShot={};for(const s of seeds)seedByShot[s.shot]=s;
 async function pseudo(id){ /* a picture, a minute, a recording, a theme or a person, described so it can sit in a thread */
   if(gone[id]||gone[id.slice(0,4)])return{id,pseudo:1,label:id,text:'[hidden at someone’s request, until a steward has looked]',hidden:1};
@@ -552,10 +621,34 @@ async function backdrop(rootId,depth,tok){
         if(form=='echo'){const nb=isImg(id)?[-1,1].map(d=>'m'+pad(+id.slice(1)+d,5)).filter(i=>IMG.has(+i.slice(1))):[-1,1].map(d=>id.slice(0,5)+pad(Math.max(0,+id.slice(5)+d),4));src.echo=(await Promise.all(nb.map(i=>loadImg(thumbUrl(i))))).filter(Boolean)}}}}
   if(tok!=showing)return;
   stageSrc=src||{el:fieldCanvas('1a1a1e'.repeat(144)),cover:true};stageDepth=depth;stageMarks=marks;render()}
-function syncClip(){ /* the short phone videos play as themselves, both layers together */
-  const r=cur&&isMin(cur)?recById[cur.slice(0,4)]:null,u=r&&RAW&&!drawing&&!form?(r.clip?MEDIA+r.clip:''):'';
-  if(u){if(clip.dataset.u!=u){clip.dataset.u=u;clip.src=u;clip.poster=frameUrl(r.id,0)}clip.hidden=false}else{if(!clip.hidden){clip.pause();clip.hidden=true}}}
-
+/* the whole original of a call, as one continuous stream, once it has reached the Internet Archive */
+const iaSeen={};let vidRec='',vidLive=false,vidPaused=false,recFallback=null,recEnd=null;
+async function iaUrl(r){
+  if(!IA||!r||!r.ia||!r.file||r.kind!='call')return'';
+  if(LOCAL&&QS.get('ia'))return IA+r.ia+'/'+r.file;
+  if(!iaSeen[r.ia])iaSeen[r.ia]=(async()=>{const k='abe-ia-'+r.ia,c=store.get(k,null);if(c&&c.f&&Date.now()-c.t<12e5)return c.f;
+    try{const j=await(await fetch(IA.replace(/download\/$/,'metadata/')+r.ia+'/files')).json(),f=(j.result||[]).map(x=>x.name).filter(x=>/\.mp4$/.test(x));store.set(k,{t:Date.now(),f});return f}catch(e){return c&&c.f||[]}})();
+  const f=await iaSeen[r.ia],d=r.file.replace(/\.mp4$/,'.ia.mp4');
+  return f.includes(d)?IA+r.ia+'/'+d:f.includes(r.file)?IA+r.ia+'/'+r.file:''}
+function vidArm(u,r,tok){ /* load it and, as soon as it can play from where we are, let it take over from the frames */
+  if(clip.dataset.u!=u){clip.dataset.u=u;clip.controls=false;clip.removeAttribute('poster');clip.src=u;clip.load()}
+  vidRec=r.id;clip.muted=!soundOn;
+  const live=()=>tok==recTok&&playing&&playMode=='rec'&&clip.dataset.u==u&&RAW&&!drawing&&!form;
+  const take=()=>{if(!live())return;const at=Math.min(playPos+.4,Math.max(0,(clip.duration||r.sec)-2));
+    const on=follow=>{if(!live()){clip.pause();return}vidPaused=false;clip.hidden=false;if(follow)vidLive='follow';else{vidLive=true;audio.pause();audioLive=false}paintSound()};
+    const go=()=>{if(!live())return;clip.play().then(()=>on(false)).catch(()=>{ /* no sound without a tap here: run it silent under the sound we already have */
+      if(!live())return;clip.muted=true;clip.play().then(()=>on(audioLive)).catch(()=>{})})};
+    if(Math.abs(clip.currentTime-at)<1.5)go();else{clip.addEventListener('seeked',go,{once:true});try{clip.currentTime=at}catch(e){}}};
+  if(clip.readyState>=1)take();else clip.addEventListener('loadedmetadata',take,{once:true})}
+clip.addEventListener('error',()=>{if(vidRec){const was=vidLive;vidLive=false;vidPaused=false;vidRec='';clip.hidden=true;delete clip.dataset.u;if(was&&playing&&playMode=='rec'&&recFallback)recFallback()}});
+function syncClip(){
+  const r=cur&&isMin(cur)?recById[cur.slice(0,4)]:null;
+  if(r&&r.kind=='call'){ /* a call shows its video only while the original plays, or where it was paused */
+    const keep=RAW&&!drawing&&!form&&vidRec==r.id&&(vidLive||vidPaused)&&Math.abs(clip.currentTime-(+cur.slice(5))*60-30)<=32;
+    if(keep)clip.hidden=false;else{if(vidRec)clip.pause();clip.hidden=true;vidLive=false;vidPaused=false}
+    return}
+  const u=r&&RAW&&!drawing&&!form?(r.clip?MEDIA+r.clip:''):'';vidLive=false;vidPaused=false;
+  if(u){if(clip.dataset.u!=u){clip.dataset.u=u;clip.controls=true;clip.muted=false;clip.src=u;clip.poster=frameUrl(r.id,0)}vidRec='';clip.hidden=false}else{if(!clip.hidden||vidRec){clip.pause();clip.hidden=true}}}
 /* what is on the stage, and the list it belongs to */
 let showing=0,ctx={kind:'lines'};
 const lineIds=Object.keys(N).filter(k=>!N[k].removed&&(N[k].at=='2021'||N[k].text)).sort((a,b)=>(N[a].shot||1e9)-(N[b].shot||1e9)||(a<b?-1:1));
@@ -566,6 +659,7 @@ function inferCtx(id){if(ctx.kind=='theme'&&T[ctx.id]&&T[ctx.id].items.includes(
 async function step(d){
   if(!cur)return;setFormQuiet('');
   if(ctx.kind=='rec'&&isMin(cur)){await needRecs();const rid=cur.slice(0,4),r=recById[rid];let m=+cur.slice(5)+d;
+    while(r&&m>=0&&m<r.min&&gone[rid+'.'+pad(m,4)])m+=d;
     if(r&&m>=0&&m<r.min)return show(rid+'.'+pad(m,4),{keep:1});
     const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[(i+d+recOrder.length)%recOrder.length];if(nx)return show(nx.id+'.'+pad(d>0?0:nx.min-1,4),{keep:1});return}
   if(ctx.kind=='pics'&&isImg(cur)){const L=picIds(),n=+cur.slice(1);let i=L.indexOf(n);if(i<0)i=L.findIndex(x=>x>n)-(d>0?1:0);i=(i+d+L.length)%L.length;return show('m'+pad(L[i],5),{keep:1})}
@@ -585,21 +679,23 @@ async function show(id,o){
   const head=x?await pseudo(x):null;if(tok!=showing)return;
   const me=N[id]||head;
   $('#who').textContent=label(me);
-  if(!(o.fromPlay&&playMode=='rec'&&audioLive))say(me.pseudo?me.text:lineText(me),me.small);
+  if(!(o.fromPlay&&playMode=='rec'&&(audioLive||vidLive)))say(me.pseudo?me.text:lineText(me),me.small);
   if(!o.quiet&&!EX)history.replaceState(null,'',hashFor());
-  const list=(head?[[head,head.id==id?'cur':'']]:[]).concat(chain.map(m=>[m,m.id===id?'cur':''])).concat((kids[id]||[]).map(k=>[N[k],'kid']));
+  const solo=!!head&&head.id==id&&!chain.length,kc=solo?'':'kid';
+  const list=(head&&!solo?[[head,head.id==id?'cur':'']]:[]).concat(chain.map(m=>[m,m.id===id?'cur':''])).concat((kids[id]||[]).map(k=>[N[k],kc]));
   const air=pending().filter(p=>p.hears==id),nk=(kids[id]||[]).length+air.length;
-  $('#thh').textContent=nk?'Interpretations so far · '+nk:'Interpretations so far';
+  $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
   $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+m.id+'" tabindex="0"><span class="meta"></span><span class="tx"></span></li>').join('')
-    +air.map(p=>'<li class="kid air"><span class="meta">In the air · yours · lands within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
-    +(nk?'':'<li class="kid" style="cursor:default;color:var(--dim)">Nobody has answered this yet. Yours would be the first.</li>');
+    +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
+    +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
-  const short=(me.pseudo?me.text:lineText(me))||'';$('#fid').textContent=id+(short?': “'+(short.length>50?short.slice(0,50)+'…':short)+'”':'');
-  $('#ghway').href=REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:id});
+  $('#bsound').hidden=!isMin(id);
+
   markRuler();markTiles();syncClip();
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
-  if(mid&&RAW)needText().then(tx=>{if(tok!=showing)return;$('#ocrbox').hidden=!tx[mid];$('#ocr').textContent=tx[mid]||''});else $('#ocrbox').hidden=true;
+  if(mid&&RAW)needText().then(tx=>{if(tok!=showing)return;$('#ocrbox').hidden=!tx[mid];$('#ocrbox').open=false;$('#ocr').textContent=tx[mid]||''});else $('#ocrbox').hidden=true;
+  docBox(mid,tok);
   if(document.body.classList.contains('v-about'))drawFly();
   /* have the neighbours ready, so that moving on is instant */
   if(isImg(id)){const L=picIds(),i=L.indexOf(+id.slice(1));for(const d of[1,-1]){const n=L[i+d];if(n)loadImg(RAW?bigUrl('m'+pad(n,5)):thumbUrl('m'+pad(n,5)))}}
@@ -619,63 +715,73 @@ let playing=false,playMode='',slideT=0,recT=0,audioLive=false,soundOn=store.get(
 const audio=new Audio();audio.preload='auto';let audKey='',audURL='',audUnlocked=false,playPos=0;
 const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play')}
-function paintSound(){$('#bsound').innerHTML=ic(soundOn?'sound':'mute');$('#bsound').classList.toggle('on',soundOn&&playing&&audioLive)}
-$('#bsound').onclick=()=>{soundOn=!soundOn;store.set('abe-sound',soundOn);if(playing&&playMode=='rec'){const p=playPos;stopPlay();startRec(p)}paintSound()};paintSound();
-function stopPlay(){playing=false;clearInterval(slideT);clearInterval(recT);audio.pause();audioLive=false;if(!clip.hidden)clip.pause();paintPlay();paintSound()}
+function paintSound(){$('#bsound').innerHTML=ic(soundOn?'sound':'mute');$('#bsound').classList.toggle('on',soundOn&&playing&&!!(audioLive||vidLive))}
+$('#bsound').onclick=()=>{soundOn=!soundOn;store.set('abe-sound',soundOn);if(playing&&playMode=='rec'){if(vidLive===true)clip.muted=!soundOn;else{const p=playPos;stopPlay();vidPaused=false;startRec(p)}}paintSound()};paintSound();
+function stopPlay(){playing=false;clearInterval(slideT);clearInterval(recT);audio.pause();audioLive=false;if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause();paintPlay();paintSound()}
 function startPlay(){
   if(!cur)return;
-  if(!clip.hidden){playing=true;playMode='clip';clip.play().catch(()=>{});paintPlay();return}
-  if(isMin(cur)&&ctx.kind!='theme'&&ctx.kind!='list'){if(!audUnlocked&&soundOn&&RAW){audio.src=SILENT;audio.play().catch(()=>{});audUnlocked=true}return startRec((+cur.slice(5))*60)}
+  if(!clip.hidden&&!vidRec){playing=true;playMode='clip';clip.play().catch(()=>{});paintPlay();return}
+  if(isMin(cur)&&ctx.kind!='theme'&&ctx.kind!='list'){if(!audUnlocked&&soundOn&&RAW){audio.src=SILENT;audio.play().catch(()=>{});audUnlocked=true}
+    return startRec(vidPaused&&vidRec==cur.slice(0,4)&&!clip.hidden?clip.currentTime:seekAt&&seekAt.id==cur?seekAt.sec:(+cur.slice(5))*60)}
   playing=true;playMode='slide';paintPlay();slideT=setInterval(()=>step(1),EX?24e3:7e3)}
 $('#bplay').onclick=()=>playing?stopPlay():startPlay();
-clip.addEventListener('play',()=>{playing=true;playMode='clip';paintPlay()});clip.addEventListener('pause',()=>{if(playMode=='clip'){playing=false;paintPlay()}});
-clip.addEventListener('ended',()=>{if(playMode=='clip'){playing=false;paintPlay()}});
+clip.addEventListener('play',()=>{if(vidRec)return;playing=true;playMode='clip';paintPlay()});clip.addEventListener('pause',()=>{if(playMode=='clip'&&!vidRec){playing=false;paintPlay()}});
+clip.addEventListener('ended',()=>{if(vidRec){if(vidLive&&playing&&playMode=='rec'&&recEnd)recEnd()}else if(playMode=='clip'){playing=false;paintPlay()}});
 async function loadChunk(rid,c){const key=rid+'/'+c;if(key==audKey)return true;
   try{const r=await fetch(AUD+rid+'/'+pad(c,3)+'.webm');if(!r.ok)return false;const b=await r.blob();if(audURL)URL.revokeObjectURL(audURL);audURL=URL.createObjectURL(new Blob([b],{type:'audio/webm'}));audio.src=audURL;audKey=key;return true}catch(e){return false}}
 const hasAudio=(r,sec)=>!!(AUD&&RAW&&soundOn&&r&&(r.aud||[]).includes(Math.floor(sec/3600)));
 let recTok=0;
 async function startRec(sec){
   await needRecs();const rid=cur.slice(0,4),r=recById[rid];if(!r)return;const tok=++recTok;
-  clearInterval(recT);audio.pause();playing=true;playMode='rec';playPos=sec;audioLive=false;paintPlay();
+  clearInterval(recT);audio.pause();playing=true;playMode='rec';playPos=sec;audioLive=false;if(vidLive)vidLive=false;paintPlay();
   const v=await voice(rid);if(tok!=recTok||!playing)return;
-  let lastMin=-1,lastSeg=null,silentAt=Date.now(),silentFrom=sec;
+  let lastMin=-1,lastSeg=null,silentAt=Date.now(),silentFrom=sec,loading=false;
   const go=async()=>{ /* (re)load the ten-minute piece of sound that holds playPos, or run silently where there is none */
-    audioLive=false;
-    if(hasAudio(r,playPos)){const c=Math.floor(playPos/600);const ok=await loadChunk(rid,c);if(tok!=recTok||!playing)return;
-      if(ok){try{audio.currentTime=Math.max(0,playPos-c*600)}catch(e){}try{await audio.play();audioLive=true}catch(e){audioLive=false}}}
-    silentAt=Date.now();silentFrom=playPos;paintSound()};
-  audio.onended=()=>{if(tok!=recTok||!playing)return;playPos=(Math.floor(playPos/600)+1)*600;if(playPos>=r.sec)return nextRec();go()};
-  const nextRec=()=>{const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[i+1];stopPlay();if(nx)show(nx.id+'.0000',{keep:1}).then(()=>startPlay())};
+    audioLive=false;loading=true;
+    if(vidLive!==true&&hasAudio(r,playPos)){const c=Math.floor(playPos/600);const ok=await loadChunk(rid,c);if(tok!=recTok||!playing)return;
+      if(ok&&vidLive!==true){try{audio.currentTime=Math.max(0,playPos-c*600)}catch(e){}try{await audio.play();if(tok!=recTok||!playing||vidLive===true){audio.pause()}else audioLive=true}catch(e){audioLive=false}}}
+    loading=false;silentAt=Date.now();silentFrom=playPos;paintSound()};
+  const nextRec=()=>{const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[i+1];stopPlay();vidPaused=false;if(nx)show(nx.id+'.0000',{keep:1}).then(()=>startPlay())};
+  audio.onended=()=>{if(tok!=recTok||!playing||vidLive===true)return;playPos=(Math.floor(playPos/600)+1)*600;if(playPos>=r.sec)return nextRec();go()};
+  recFallback=()=>{if(tok==recTok&&playing)go()};recEnd=()=>{if(tok==recTok&&playing)nextRec()};
+  if(RAW&&!drawing&&!form)iaUrl(r).then(u=>{if(u&&tok==recTok&&playing)vidArm(u,r,tok)});
   await go();if(tok!=recTok||!playing)return;
   recT=setInterval(()=>{
     if(tok!=recTok||!playing){clearInterval(recT);return}
-    if(audioLive){const c=+audKey.split('/')[1];playPos=c*600+audio.currentTime}
-    else{ /* no sound for this hour (or sound is off): a minute passes every five seconds */
+    if(vidLive=='follow'&&!audioLive&&!loading){vidLive=true}
+    if(vidLive===true)playPos=clip.currentTime;
+    else if(audioLive){const c=+audKey.split('/')[1];playPos=c*600+audio.currentTime;if(vidLive=='follow'&&Math.abs(clip.currentTime-playPos)>1.5){try{clip.currentTime=playPos}catch(e){}}}
+    else if(!loading){ /* no sound for this hour (or sound is off): a minute passes every five seconds */
       playPos=silentFrom+(Date.now()-silentAt)/1000*12;if(hasAudio(r,playPos)&&Math.floor(playPos/3600)!=Math.floor(silentFrom/3600)){go();return}}
     if(playPos>=r.sec-1)return nextRec();
-    const m=Math.floor(playPos/60);
+    let m=Math.floor(playPos/60);
+    if(m!=lastMin&&gone[rid+'.'+pad(m,4)]){while(m<r.min&&gone[rid+'.'+pad(m,4)])m++;if(m>=r.min)return nextRec();playPos=m*60;if(vidLive===true){try{clip.currentTime=playPos}catch(e){}}else{clearInterval(recT);audio.pause();show(rid+'.'+pad(m,4),{keep:1,fromPlay:1}).then(()=>{if(tok==recTok&&playing)startRec(m*60)});return}}
     if(m!=lastMin){lastMin=m;const id=rid+'.'+pad(m,4);if(id!=cur)show(id,{keep:1,fromPlay:1})}
     if(!scrubbing){$('#scrub').value=Math.floor(playPos);$('#stime').textContent=hms(playPos)+' / '+hm(r.sec)}
-    if(audioLive){let s=null;for(let i=v._i||0;i<v.segs.length;i++){const g=v.segs[i];if(g[0]>playPos)break;if(g[1]>=playPos-1.5){s=g;v._i=i;break}}
+    if(audioLive||vidLive){let s=null;for(let i=v._i||0;i<v.segs.length;i++){const g=v.segs[i];if(g[0]>playPos)break;if(g[1]>=playPos-1.5){s=g;v._i=i;break}}
       if(v._i&&v.segs[v._i]&&v.segs[v._i][0]>playPos+30)v._i=0;
       if(s&&s!=lastSeg){lastSeg=s;sayNow(s[2]);const el=$('#voice [data-s="'+s[0]+'"]');if(el){$$('#voice .now').forEach(n=>n.classList.remove('now'));el.classList.add('now');$('#voice').scrollTop=el.offsetTop-$('#voice').offsetTop-70}}}
   },250)}
 let scrubbing=false;
 $('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=hms(+$('#scrub').value)+' / '+hm(r.sec)});
 $('#scrub').addEventListener('change',()=>{scrubbing=false;seek(+$('#scrub').value)});
-async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),was=playing&&playMode=='rec';if(was){clearInterval(recT);audio.pause()}
-  const id=rid+'.'+pad(Math.floor(sec/60),4);ctx={kind:'rec'};await show(id,{keep:1,fromPlay:was});if(was)startRec(sec)}
+async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),was=playing&&playMode=='rec';
+  if(was&&vidLive===true&&vidRec==rid){playPos=sec;try{clip.currentTime=sec}catch(e){}return}
+  if(was){clearInterval(recT);audio.pause()}else vidPaused=false;
+  const id=rid+'.'+pad(Math.floor(sec/60),4);ctx={kind:'rec'};seekAt=was?null:{id,sec};await show(id,{keep:1,fromPlay:was});if(was)startRec(sec)}
+let seekAt=null;
 async function syncRec(id,tok){
   const rid=id.slice(0,4),min=+id.slice(5);await needRecs();const r=recById[rid];if(!r||tok!=showing)return;
   const sw=$('#scrubw');sw.hidden=r.kind!='call'||r.sec<120;$('#scrub').max=Math.max(0,r.sec-1);
-  if(!(playing&&playMode=='rec')){$('#scrub').value=min*60;$('#stime').textContent=hms(min*60)+' / '+hm(r.sec)}
+  if(!(playing&&playMode=='rec')){const at=seekAt&&seekAt.id==id?seekAt.sec:min*60;$('#scrub').value=Math.floor(at);$('#stime').textContent=hms(at)+' / '+hm(r.sec)}
   const v=await voice(rid);if(tok!=showing)return;
   const a=(min-2)*60,b=(min+4)*60,rows=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>[s[0],'',s[2]]).concat((v.chat||[]).filter(c=>c[0]>=a&&c[0]<b).map(c=>[c[0],c[1],c[2]])).sort((p,q)=>p[0]-q[0]);
   $('#recbox').hidden=r.kind!='call'&&!rows.length;
-  $('#voice').innerHTML=rows.map(s=>'<div data-s="'+s[0]+'" class="'+(Math.floor(s[0]/60)==min?'now':'')+(s[1]?' chat':'')+'"><span class="meta">'+hms(s[0])+'</span>'+(s[1]?'<b>'+esc(s[1])+' wrote:</b> ':'')+esc(s[2])+'</div>').join('')||'<span class="meta">'+((v.heard_hours||[]).includes(Math.floor(min/60))?'Nothing was said around this minute.':'This hour has not been listened to yet. The frames and the sound are here; the words will come.')+'</span>';
+  $('#voice').innerHTML=rows.map(s=>'<div data-s="'+s[0]+'" class="'+(Math.floor(s[0]/60)==min?'now':'')+(s[1]?' chat':'')+'"><span class="meta">'+hms(s[0])+'</span>'+(s[1]?'<b>'+esc(s[1])+' wrote:</b> ':'')+esc(s[2])+'</div>').join('')||'<span class="meta">'+((v.heard_hours||[]).includes(Math.floor(min/60))?'Nothing was said around this minute.':'Not listened to yet.')+'</span>';
   const n=$('#voice .now');if(n)$('#voice').scrollTop=n.offsetTop-$('#voice').offsetTop-60;
   const snd=(r.aud||[]).includes(Math.floor(min/60));
-  $('#recnote').innerHTML='The words were made in 2026 by a very small speech model. It mishears. '+(r.kind=='call'?(snd?(RAW?'Press play to hear this hour with its words.':'Its sound plays once you choose “Show uncensored”.'):'This hour has no sound here yet.')+' Hours listened to so far: '+((v.heard_hours||[]).length)+' of '+r.hours+'.':'')}
+  $('#recnote').textContent=r.kind=='call'?'Words by a small speech model, 2026. It mishears.':'';
+  if(r.kind=='call'&&RAW)iaUrl(r).then(u=>{if(tok==showing&&!u)$('#recnote').textContent+=' One frame a minute until the full video of this call has been uploaded.'})}
 $('#voice').onclick=e=>{const d=e.target.closest('div[data-s]');if(d)seek(+d.dataset.s)};
 
 /* the ruler: where you are in the whole work */
@@ -693,9 +799,9 @@ function minAtX(x){if(!recs||!recs.length)return null;const ms=T0+(x-RG.pad)/(RW
   if(!best)return null;const m=clamp(Math.floor((ms-best.t0)/6e4),0,best.min-1);return best.id+'.'+pad(m,4)}
 function drawRuler(){
   const b=ruler.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!b.width)return;RW=b.width;RH=b.height;rc.width=Math.round(RW*d);rc.height=Math.round(RH*d);rx.setTransform(d,0,0,d,0,0);
-  const tall=RH>56;RG.ay=13;RG.ah=tall?11:10;RG.by=tall?38:29;RG.bh=tall?11:10;
+  RG.ay=13;RG.ah=9;RG.by=26;RG.bh=9;
   rx.clearRect(0,0,RW,RH);rx.font='9px ui-monospace,Menlo,monospace';rx.textBaseline='top';rx.fillStyle='#8f8b83';
-  rx.fillText(RW>520?'PICTURES, IN THE ORDER THEY WERE PASTED':'PICTURES',RG.pad,2);
+  rx.fillText('PICTURES',RG.pad,2);
   const wd=wDoc();
   if(atlasCols){for(let x=0;x<wd;x++){const n=clamp(Math.floor(x/wd*DOCN),0,DOCN-1),c=atlasCols[n],k=IMG.has(n+1)?1:.28;rx.fillStyle='rgb('+Math.round(c[0]*k)+','+Math.round(c[1]*k)+','+Math.round(c[2]*k)+')';rx.fillRect(RG.pad+x,RG.ay,1.05,RG.ah)}}
   else{rx.fillStyle='#2a2a30';rx.fillRect(RG.pad,RG.ay,wd,RG.ah)}
@@ -704,7 +810,7 @@ function drawRuler(){
   for(let t=T0+36e5,i=0;t<=T1;t+=day,i++){const x=xTime(t-36e5);rx.fillStyle=i%7==0?'#55555e':'#2c2c33';rx.fillRect(x,RG.by,1,RG.bh+(i%7==0?4:0));
     if(i%7==0&&RW>520||i%14==0){const dd=new Date(t);rx.fillStyle='#8f8b83';rx.fillText(dd.getUTCDate()+' '+MON[dd.getUTCMonth()],x+3,RG.by+RG.bh+2)}}
   if(recs)for(const r of recs){if(!r.t0)continue;const x=xTime(r.t0),w=Math.max(1.5,r.sec*1e3/(T1-T0)*(RW-2*RG.pad));rx.fillStyle=r.kind=='call'?'#e3c34d':r.kind=='story'?'#6dbb72':'#fff';rx.globalAlpha=r.kind=='call'?.85:.9;rx.fillRect(x,r.kind=='call'?RG.by:RG.by+RG.bh-4,w,r.kind=='call'?RG.bh:4);rx.globalAlpha=1}
-  if(tall){rx.fillStyle='#8f8b83';rx.fillText('CALLS'+(RW>520?' AND PHONE VIDEOS, 14 NOV 2021 TO 13 JAN 2022':''),RG.pad,RG.by-11)}
+
   /* where the open theme lives */
   if(openTheme&&T[openTheme]){rx.fillStyle='#fff';for(const i of T[openTheme].items){if(isImg(i))rx.fillRect(xPic(+i.slice(1)),RG.ay-3,1,3);else if(isMin(i)){const r=recById[i.slice(0,4)];if(r&&r.t0)rx.fillRect(xTime(r.t0+(+i.slice(5))*6e4),RG.by-3,1,3)}}}
   markRuler()}
@@ -713,7 +819,7 @@ function rulerPos(id){ /* [x, row, words] */
   if(isImg(id)){const k=+id.slice(1);return[xPic(k),0,k<=DOCN?'Picture '+fmt(k)+' of 5,909 in the document':'Picture '+(OTHERS.indexOf(k)+1)+' of '+OTHERS.length+' outside the document']}
   if(isMin(id)){const r=recById[id.slice(0,4)];if(!r||!r.t0)return null;const ms=r.t0+(+id.slice(5))*6e4;return[xTime(ms),1,niceDay(ms)+' · '+prague(ms).slice(11)+' · minute '+(+id.slice(5)+1)+' of '+r.min]}
   return null}
-function markRuler(){const m=$('#rmark'),p=cur&&RW?rulerPos(cur):null;if(!p){m.hidden=true;$('#rlab').textContent=cur&&isTheme(cur)?'A theme: its places are the white ticks':'';return}
+function markRuler(){const m=$('#rmark'),p=cur&&RW?rulerPos(cur):null;if(!p){m.hidden=true;$('#rlab').textContent='';return}
   m.hidden=false;m.style.left=p[0]+'px';m.style.top=((p[1]?RG.by:RG.ay)-4)+'px';m.style.height=((p[1]?RG.bh:RG.ah)+8)+'px';$('#rlab').textContent=p[2]}
 let rdrag=false,rTarget=null;
 function rAt(e){const b=ruler.getBoundingClientRect(),x=clamp(e.clientX-b.left,RG.pad,RW-RG.pad),y=e.clientY-b.top,row=y>(RG.ay+RG.ah+RG.by)/2?1:0;
@@ -721,7 +827,9 @@ function rAt(e){const b=ruler.getBoundingClientRect(),x=clamp(e.clientX-b.left,R
 ruler.addEventListener('pointerdown',async e=>{await needRecs();rdrag=true;ruler.setPointerCapture(e.pointerId);rAt(e)});
 ruler.addEventListener('pointermove',e=>{if(rdrag||e.pointerType=='mouse')rAt(e)});
 ruler.addEventListener('pointerleave',()=>{if(!rdrag)$('#rtip').hidden=true});
-ruler.addEventListener('pointerup',()=>{if(!rdrag)return;rdrag=false;$('#rtip').hidden=true;if(rTarget){setFormQuiet('');if(isImg(rTarget)){ctx={kind:'pics'};if(document.body.classList.contains('v-browse')&&B.kind=='pics')bJump(+rTarget.slice(1))}else ctx={kind:'rec'};show(rTarget,{keep:1})}});
+ruler.addEventListener('pointerup',async()=>{if(!rdrag)return;rdrag=false;$('#rtip').hidden=true;if(rTarget){
+    if(isMin(rTarget)&&playing&&playMode=='rec'&&!form){ctx={kind:'rec'};if(cur&&rTarget.slice(0,4)==cur.slice(0,4))return seek((+rTarget.slice(5))*60);stopPlay();vidPaused=false;await show(rTarget,{keep:1});return startPlay()}
+    setFormQuiet('');if(isImg(rTarget)){ctx={kind:'pics'};if(document.body.classList.contains('v-browse')&&B.kind=='pics')bJump(+rTarget.slice(1))}else ctx={kind:'rec'};show(rTarget,{keep:1})}});
 ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){step(-1);e.preventDefault()}if(e.key=='ArrowRight'){step(1);e.preventDefault()}});
 {const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=96;c.height=62;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(im,0,0,96,62);const d=x.getImageData(0,0,96,62).data;atlasCols=[];for(let i=0;i<DOCN;i++)atlasCols.push([d[i*4],d[i*4+1],d[i*4+2]]);drawRuler()}catch(e){}};im.src='data/weather-2021.png'}
 
@@ -732,12 +840,23 @@ function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view;vie
   document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
   $$('#tabs button,#tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));
   if(v=='browse')bInit();if(v=='themes')tInit();if(v=='people')pInit();if(v=='about'){drawFly()}
-  if(was!=v&&!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}
+  syncDock();if(was!=v){setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
   requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
 $$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
 $('#brand').onclick=e=>{e.preventDefault();setView('stage')};
-$('#banswer').onclick=()=>{setView('stage');const t=$('#t');if(matchMedia('(max-width:899px)').matches)t.scrollIntoView({block:'center'});setTimeout(()=>t.focus({preventScroll:matchMedia('(min-width:900px)').matches}),60)};
-$('#t').addEventListener('focus',()=>document.body.classList.add('typing'));$('#t').addEventListener('blur',()=>setTimeout(()=>document.body.classList.remove('typing'),150));
+$('#banswer').onclick=()=>{setView('stage');const t=$('#t');if(!wide.matches)t.scrollIntoView({block:'center'});setTimeout(()=>t.focus({preventScroll:wide.matches}),60)};
+/* away from the wide stage view the stage is docked on top: it shrinks to a thumbnail when you scroll, and a tap brings it back */
+const wide=matchMedia('(min-width:900px)');let mini=false,miniLock=0,miniAt=0,miniHold=false;
+const dockable=()=>!EX&&!(wide.matches&&view=='stage');
+function syncDock(){const d=dockable();document.body.classList.toggle('dock',d);if(!d)setMini(false,false)}
+function setMini(v,hold){v=!!v&&dockable();if(hold!==undefined)miniHold=!!hold;if(v==mini)return;mini=v;document.body.classList.toggle('mini',v);miniLock=Date.now()+500;miniAt=scrollY;
+  requestAnimationFrame(()=>{miniAt=scrollY;if(sizeStage())paint();drawRuler()})}
+addEventListener('scroll',()=>{if(!dockable())return;const y=scrollY;if(Date.now()<miniLock){miniAt=y;return}
+  if(!mini){if(y<miniAt)miniAt=y;else if(y>miniAt+48&&!drawing)setMini(true,false)}else if(y<=0&&!miniHold)setMini(false)},{passive:true});
+$('#player').addEventListener('click',e=>{if(!mini||e.target.closest('#bplay'))return;e.preventDefault();e.stopPropagation();setMini(false,false)},true);
+$('#bmin').onclick=e=>{e.stopPropagation();setMini(true,true)};
+wide.addEventListener('change',syncDock);
+$('#t').addEventListener('focus',()=>{if(!wide.matches)setMini(true,true)});
 
 /* tiles */
 function tile(id,n){
@@ -746,40 +865,49 @@ function tile(id,n){
   if(isTheme(id))return'';
   return'<button class="tile" data-id="'+id+'"><img loading="lazy" decoding="async" src="'+thumbUrl(id)+'" alt=""><span class="tag">'+id+'</span>'+(n?'<span class="n">'+n+'</span>':'')+'</button>'}
 function markTiles(){$$('.tile.cur,.qcard.cur,.call.cur').forEach(t=>t.classList.remove('cur'));if(!cur)return;$$('[data-id="'+cur+'"]').forEach(t=>t.classList.add('cur'));if(isMin(cur))$$('.call[data-rec="'+cur.slice(0,4)+'"]').forEach(t=>t.classList.add('cur'))}
-document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]');if(!b)return;setFormQuiet('');const id=b.dataset.id;
+document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]');if(!b)return;setFormQuiet('');setMini(false,false);const id=b.dataset.id;
   if(b.closest('#tlist')&&openTheme)ctx={kind:'theme',id:openTheme};else if(b.dataset.list)ctx={kind:'list',list:$$('#'+b.dataset.list+' [data-id]').map(x=>x.dataset.id)};else if(isImg(id))ctx={kind:'pics'};else if(isMin(id)||isRec(id))ctx={kind:'rec'};else ctx={kind:'lines'};
   show(id,{keep:1})});
 
 /* browse: everything in order, no pages */
-const B={kind:'',grp:'',list:[],a:0,b:0,ready:false};const BN=120;
-const KINDS=[['pics','','All pictures'],['pics','d','The document'],['pics','p','Camera roll'],['pics','s','Other screenshots'],['pics','x','Made in 2026'],['calls','','Calls'],['stories','','Phone videos'],['lines','','Lines and answers']];
+const B={kind:'',grp:'',list:[],a:0,b:0,ready:false,secs:false,title:''};const BN=120;
+const KINDS=[['pics','','All pictures'],['pics','d','The document'],['pics','p','Camera roll'],['pics','s','Screenshots'],['pics','x','Made in 2026'],['calls','','Calls'],['stories','','Phone videos'],['lines','','Lines']];
 $('#bkinds').innerHTML=KINDS.map(([k,g,l])=>'<button class="btn sm" data-k="'+k+'" data-g="'+g+'">'+l+'</button>').join('');
 $('#bkinds').onclick=e=>{const b=e.target.closest('button');if(b)bSet(b.dataset.k,b.dataset.g)};
-async function bInit(){if(B.ready){bWin();return}B.ready=true;await bSet(cur&&isMin(cur)?(recById[cur.slice(0,4)]&&recById[cur.slice(0,4)].kind=='story'?'stories':'calls'):'pics','')}
-async function bSet(kind,grp){
-  B.kind=kind;B.grp=grp;$$('#bkinds button').forEach(b=>b.classList.toggle('on',b.dataset.k==kind&&b.dataset.g==grp));const body=$('#bbody');$('#bearlier').hidden=true;$('#rwin').hidden=true;
-  if(kind=='pics'){const ix=await needImgs();B.list=IMGS.filter(n=>!grp||(ix[n]||[])[2]==grp);body.innerHTML='<div class="grid" id="bgrid"></div>';const at=cur&&isImg(cur)?B.list.indexOf(+cur.slice(1)):0;bWindow(Math.max(0,at))}
-  else if(kind=='lines'){B.list=[];$('#bhead').textContent=fmt(lineIds.length)+' lines: the 98 the caption machine wrote in 2021, and every answer since';body.innerHTML='<div class="grid" id="bgrid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+lineIds.map(i=>tile(i,(kids[i]||[]).length||'')).join('')+'</div>'}
+async function bInit(){if(B.ready){if(B.kind=='pics'&&B.grp!='#'&&cur&&isImg(cur))bJump(+cur.slice(1));bWin();return}B.ready=true;await bSet(cur&&isMin(cur)?(recById[cur.slice(0,4)]&&recById[cur.slice(0,4)].kind=='story'?'stories':'calls'):'pics','')}
+async function bSet(kind,grp,list,title){
+  B.kind=kind;B.grp=grp;B.title=title||'';B.secs=kind=='pics'&&!list&&(grp==''||grp=='d');$$('#bkinds button').forEach(b=>b.classList.toggle('on',b.dataset.k==kind&&b.dataset.g==grp));const body=$('#bbody');$('#bearlier').hidden=true;$('#rwin').hidden=true;
+  if(kind=='pics'){const ix=await needImgs();if(B.secs)await needDoc();B.list=list||IMGS.filter(n=>!grp||(ix[n]||[])[2]==grp);body.innerHTML='<div class="grid" id="bgrid"></div>';const at=cur&&isImg(cur)?B.list.indexOf(+cur.slice(1)):0;bWindow(Math.max(0,at))}
+  else if(kind=='lines'){B.list=[];$('#bhead').textContent=fmt(lineIds.length)+' lines';body.innerHTML='<div class="grid" id="bgrid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+lineIds.map(i=>tile(i,(kids[i]||[]).length||'')).join('')+'</div>'}
   else{await needRecs();B.list=[];const want=kind=='calls'?'call':'story',L=recOrder.filter(r=>kind=='calls'?r.kind!='story':r.kind=='story');
-    $('#bhead').textContent=kind=='calls'?fmt(L.length)+' recordings of the call, by day. Tap one to open it; drag the bar under the stage to move inside it.':fmt(L.length)+' short videos from the phone';
+    $('#bhead').textContent=kind=='calls'?fmt(L.length)+' recordings':fmt(L.length)+' videos';
     if(kind=='stories'){body.innerHTML='<div class="grid" id="bgrid">'+L.map(r=>tile(r.id+'.0000','')).join('')+'</div>'}
     else{const byDay={};for(const r of L.filter(r=>r.t0).concat(L.filter(r=>!r.t0))){const d=r.t0?niceDay(r.t0):'Date not known';(byDay[d]=byDay[d]||[]).push(r)}
-      body.innerHTML=Object.keys(byDay).map(d=>'<p class="meta day">'+d+'</p><div class="calls">'+byDay[d].map(r=>{const m0=0;return'<button class="call" data-rec="'+r.id+'"><span class="tile"><img loading="lazy" decoding="async" src="'+frameUrl(r.id,Math.min(r.min-1,2),1)+'" alt=""></span><span><b>'+prague(r.t0).slice(11)+' · '+dur(r.sec)+'</b><span class="meta">'+(r.lines?fmt(r.lines)+' lines heard':'not listened to yet')+((r.aud||[]).length?' · sound':'')+' · '+r.id+'</span></span></button>'}).join('')+'</div>').join('')}}
+      body.innerHTML=Object.keys(byDay).map(d=>'<p class="meta day">'+d+'</p><div class="calls">'+byDay[d].map(r=>{const m0=0;return'<button class="call" data-rec="'+r.id+'"><span class="tile"><img loading="lazy" decoding="async" src="'+frameUrl(r.id,Math.min(r.min-1,2),1)+'" alt=""></span><span><b>'+prague(r.t0).slice(11)+' · '+dur(r.sec)+'</b><span class="meta">'+(r.lines?fmt(r.lines)+' lines':'no words')+' · '+r.id+'</span></span></button>'}).join('')+'</div>').join('')}}
   markTiles()}
-$('#bbody').addEventListener('click',async e=>{const c=e.target.closest('.call');if(!c)return;const r=recById[c.dataset.rec];if(!r)return;const v=await voice(r.id),f=v.segs[0];ctx={kind:'rec'};setFormQuiet('');show(r.id+'.'+pad(f?Math.floor(f[0]/60):0,4),{keep:1})});
-function bTiles(a,b){return B.list.slice(a,b).map(n=>{const id='m'+pad(n,5);return tile(id,(kids[id]||[]).length||'')}).join('')}
+$('#bbody').addEventListener('click',async e=>{const c=e.target.closest('.call');if(!c)return;const r=recById[c.dataset.rec];if(!r)return;setMini(false,false);const v=await voice(r.id),f=v.segs[0];ctx={kind:'rec'};setFormQuiet('');show(r.id+'.'+pad(f?Math.floor(f[0]/60):0,4),{keep:1})});
+function bTiles(a,b){let h='',ps=a>0?secOf(B.list[a-1]):-2;
+  for(let i=a;i<b;i++){const n=B.list[i],id='m'+pad(n,5);
+    if(B.secs&&docJ&&n<=DOCN){const s=secOf(n);if(s!=ps){ps=s;if(s>=0)h+='<div class="bsec" data-s="'+s+'">'+esc(docJ.sections[s][1])+'</div>'}}
+    h+=tile(id,(kids[id]||[]).length||'')}
+  return h}
 function bWindow(at){B.a=Math.max(0,at-at%6-BN/2);B.b=Math.min(B.list.length,B.a+BN);const g=$('#bgrid');if(!g)return;g.innerHTML=bTiles(B.a,B.b);bWin();markTiles()}
-function bJump(n){let i=B.list.indexOf(n);if(i<0)i=B.list.findIndex(x=>x>n);if(i<0)i=B.list.length-1;if(i>=B.a&&i<B.b)return;bWindow(i)}
-function bWin(){if(B.kind!='pics')return;$('#bearlier').hidden=B.a<=0;const L=B.list;$('#bhead').textContent=L.length?'Showing '+fmt(B.a+1)+' to '+fmt(B.b)+' of '+fmt(L.length)+' pictures · keep scrolling for later ones':'Nothing here';
+function bJump(n,scroll){let i=B.list.indexOf(n);if(i<0)i=B.list.findIndex(x=>x>n);if(i<0)i=B.list.length-1;if(!(i>=B.a&&i<B.b))bWindow(i);
+  if(scroll){const t=$('#bgrid [data-id="m'+pad(B.list[i],5)+'"]'),p=t&&t.previousElementSibling,el=p&&p.classList.contains('bsec')?p:t;if(el)scrollTo(0,Math.max(0,el.getBoundingClientRect().top+scrollY-(wide.matches?150:130)))}}
+/* from the side panel: the section of the document a picture sits in, or every picture under one of its hashtags */
+$('#dhead').onclick=async()=>{const n=+$('#dhead').dataset.n;if(!n)return;setView('browse');await bSet('pics','d');bJump(n,1);setMini(true,false)};
+$('#dtags').onclick=async e=>{const b=e.target.closest('[data-tag]');if(!b)return;const tag=b.dataset.tag;await needDoc();const L=tagPics(tag);if(!L.length)return;setView('browse');await bSet('pics','#',L,tag);ctx={kind:'pics'}};
+$('#dtext').onclick=()=>$('#dtext').classList.toggle('open');
+function bWin(){if(B.kind!='pics')return;$('#bearlier').hidden=B.a<=0;const L=B.list;$('#bhead').textContent=L.length?(B.title?B.title+' · ':'')+fmt(L.length)+(L.length==1?' picture':' pictures'):'Nothing here';
   const w=$('#rwin');if(L.length&&RW&&document.body.classList.contains('v-browse')){const x0=xPic(L[B.a]),x1=xPic(L[Math.max(B.a,B.b-1)]);w.hidden=false;w.style.left=Math.min(x0,x1)+'px';w.style.width=Math.max(3,Math.abs(x1-x0))+'px';w.style.top=(RG.ay-1)+'px';w.style.height=(RG.ah+2)+'px'}else w.hidden=true}
 new IntersectionObserver(es=>{if(es[0].isIntersecting&&view=='browse'&&B.kind=='pics'&&B.b<B.list.length){const g=$('#bgrid');if(!g)return;const nb=Math.min(B.list.length,B.b+BN);g.insertAdjacentHTML('beforeend',bTiles(B.b,nb));B.b=nb;bWin();markTiles()}},{rootMargin:'600px'}).observe($('#bsent'));
-$('#bearlier').onclick=()=>{const g=$('#bgrid');if(!g||B.a<=0)return;const na=Math.max(0,B.a-BN),h0=document.documentElement.scrollHeight;g.insertAdjacentHTML('afterbegin',bTiles(na,B.a));B.a=na;scrollBy(0,document.documentElement.scrollHeight-h0);bWin();markTiles()};
+$('#bearlier').onclick=()=>{const g=$('#bgrid');if(!g||B.a<=0)return;const na=Math.max(0,B.a-BN),h0=document.documentElement.scrollHeight,f=g.firstElementChild;if(f&&f.classList.contains('bsec')&&+f.dataset.s==secOf(B.list[B.a-1]))f.remove();g.insertAdjacentHTML('afterbegin',bTiles(na,B.a));B.a=na;scrollBy(0,document.documentElement.scrollHeight-h0);bWin();markTiles()};
 
 /* themes */
 const quotes={};let tShown=0,tReady=false;
 function tInit(){if(tReady)return;tReady=true;
   const subj=themesJ.themes.filter(t=>t.kind=='subject'&&t.by=='the material'),rest=themesJ.themes.filter(t=>!(t.kind=='subject'&&t.by=='the material'));
-  $('#tsubj').innerHTML=subj.map(t=>'<button class="tcard" data-t="'+t.id+'"><b>'+esc(t.title)+'</b><span class="meta">'+fmt(t.count)+' places</span></button>').join('')||'<span class="meta">No themes yet.</span>';
+  $('#tsubj').innerHTML=subj.map(t=>'<button class="tcard" data-t="'+t.id+'"><b>'+esc(t.title)+'</b><span class="meta">'+fmt(t.count)+'</span></button>').join('')||'<span class="meta">No themes yet.</span>';
   $('#tarch').innerHTML=rest.map(t=>'<button class="btn sm" data-t="'+t.id+'">'+esc(t.title)+' <span class="meta">'+t.count+'</span></button>').join('');
   $('#thlist').innerHTML=themesJ.themes.map(t=>'<option value="'+esc(t.title)+'">').join('')}
 $('#thlist').innerHTML=themesJ.themes.map(t=>'<option value="'+esc(t.title)+'">').join('');
@@ -787,7 +915,7 @@ $('#v-themes').addEventListener('click',e=>{const b=e.target.closest('[data-t]')
 async function openT(id,o){o=o||{};const t=T[id];if(!t)return;openTheme=id;tInit();await needRecs();
   $$('#v-themes [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==id));
   $('#topen').hidden=false;$('#ttitle').textContent=t.title;$('#tnote').textContent=t.note||'';
-  $('#tcount').textContent=(t.count>t.items.length?'the '+fmt(t.items.length)+' strongest of '+fmt(t.count)+' places':fmt(t.items.length)+' places')+' · started by '+(t.name||t.by||'')+' · '+t.at;
+  $('#tcount').textContent=t.count>t.items.length?fmt(t.items.length)+' of '+fmt(t.count):fmt(t.items.length);
   if(!quotes[id])quotes[id]=(await jq('themes/'+id+'.json',{})).quotes||{};
   if(openTheme!=id)return;tShown=0;$('#tlist').innerHTML='';tMore();drawRuler();if(!EX)history.replaceState(null,'',hashFor());
   if(o.scroll)$('#ttitle').scrollIntoView({block:'start'});}
@@ -807,28 +935,28 @@ const bysum=()=>$('#bysum').textContent=$('#by').selectedOptions[0].textContent+
 $('#t').oninput=()=>$('#cnt').textContent=$('#t').value.length;
 $('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum()};$('#nm').oninput=bysum;
 {const me=store.get('abe-me',null);if(me){if(me.by)$('#by').value=me.by;if(me.name)$('#nm').value=me.name;$('#by').onchange()}}
-if(!DOOR)$('#how').innerHTML='This opens a filled-in form on GitHub, where the work is kept (a free account is needed). Press "Create" there and a small script adds your line within a few minutes.';
+
 async function post(p){const r=await fetch(DOOR+'/api/say',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return r.json()}
 $('#f').onsubmit=async e=>{e.preventDefault();
   const text=$('#t').value.trim().replace(/\s+/g,' '),thv=$('#th').value.trim(),th=(themesJ.themes.find(t=>t.title.toLowerCase()==thv.toLowerCase())||{}).id||thv;
   const p={hears:cur,text,by:$('#by').value};if($('#nm').value.trim())p.name=$('#nm').value.trim();if(!$('#mdl').hidden&&$('#md').value.trim())p.model=$('#md').value.trim();
   if(th)p.theme=th;if(strokes.length)p.mark=markString();if(form)p.form=form;
   if(claim&&claimOK){p.person=claim.person;p.token=claim.key;if($('#here').checked)p.here=true}
-  if(!(text||p.mark||p.form||p.theme||p.here)){$('#sent').textContent='Leave words, a drawing, a way of seeing or a theme.';return}
+  if(!(text||p.mark||p.form||p.theme||p.here)){$('#sent').textContent='Write something, or draw.';return}
   if(!DOOR){open(REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:cur,text,by:p.by,name:p.name||''}),'_blank','noopener');return}
   store.set('abe-me',{by:p.by,name:p.name||''});
   $('#send').disabled=true;$('#sent').textContent='…';
   try{const o=await post(p);
     if(o.ok){const q=store.get('abe-pending',[]);q.push({t:Date.now(),door:o.door,hears:cur,text,name:p.name});store.set('abe-pending',q.slice(-40));
-      $('#sent').innerHTML='<span class="ok">Heard. It is in the air and lands here within the hour.</span>';$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;strokes=[];setDraw(false);show(cur,{quiet:1,keep:1})}
+      $('#sent').innerHTML='<span class="ok">Heard. It lands here within the hour.</span>';$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;strokes=[];setDraw(false);show(cur,{quiet:1,keep:1})}
     else $('#sent').innerHTML='<span class="warn">'+esc((o.problems||['Not accepted.']).join(' '))+'</span>'}
-  catch(err){$('#sent').innerHTML='<span class="warn">The door could not be reached. You can leave it through GitHub instead (link below).</span>'}
+  catch(err){$('#sent').innerHTML='<span class="warn">Could not be reached. <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:cur,text,by:p.by,name:p.name||''})+'">Leave it through GitHub</a></span>'}
   $('#send').disabled=false};
 /* asking for removal */
-$('#brm').onclick=()=>{$('#rmid').textContent=cur;$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
+$('#brm').onclick=e=>{e.stopPropagation();$('#rmid').textContent=cur;$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
 $('#rmyes').onclick=async()=>{if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+cur),'_blank','noopener');$('#rmd').close();return}
   try{const r=await fetch(DOOR+'/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:cur,why:$('#rmwhy').value})}),o=await r.json();
-    $('#rmmsg').textContent=o.ok?'Asked. It will be hidden within the hour.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
+    $('#rmmsg').textContent=o.ok?'Asked. Hidden within the hour.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
   catch(e){$('#rmmsg').innerHTML='The door could not be reached. <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">Ask on GitHub instead.</a>'}};
 
 /* people: tap your name, "This is me", a steward confirms */
@@ -841,24 +969,24 @@ async function claimUI(){const st=await claimState();claimOK=st=='mine';$('#asme
 let pReady=false;
 async function pInit(){const st=await claimUI();
   $('#plist').innerHTML=peopleJ.people.map(p=>{const mine=claim&&claim.person==p.id&&st;
-    return'<button class="tcard" data-p="'+p.id+'"><b>'+esc(p.name)+'</b><span class="meta">'+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · this is you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting for a steward</span>':'someone asked · waiting'):'not claimed yet · is this you?')+((p.wrote||[]).length?' · wrote '+p.wrote.length+' in the chat':'')+((p.here||[]).length?' · in '+p.here.length:'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
+    return'<button class="tcard" data-p="'+p.id+'"><b>'+esc(p.name)+'</b><span class="meta">'+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting</span>':'asked · waiting'):'')+((p.here||[]).length?' in '+p.here.length:'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
   if(openPerson)openP(openPerson)}
 $('#plist').onclick=e=>{const b=e.target.closest('[data-p]');if(b)openP(b.dataset.p,{scroll:1})};
 async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;await needRecs();const st=claim&&claim.person==id?await claimState():'';
   $$('#plist [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p==id));
   let h='<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>';
-  if(st=='mine')h+='<p class="ok">This place is yours. On this device you answer as yourself, and the “I am in this” button under the stage marks any picture or minute you are in.</p><div class="row"><div><label class="meta" for="dn">The name to show</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn sm" id="pname">Change the name shown</button> <button class="btn sm" id="pforget">Forget me on this device</button> <span class="meta" id="pmsg"></span>';
-  else if(st=='pending')h+='<p class="warn">You asked for this name from this device. A steward of the work will confirm it is you, usually within a day. Come back here on the same device.</p><button class="btn sm" id="pforget">That was a mistake: forget it on this device</button> <span class="meta" id="pmsg"></span>';
+  if(st=='mine')h+='<p class="ok">This place is yours. On this device you answer as yourself, and the person button under the stage marks what you are in.</p><div class="row"><div><label class="meta" for="dn">The name to show</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn sm" id="pname">Change the name shown</button> <button class="btn sm" id="pforget">Forget me on this device</button> <span class="meta" id="pmsg"></span>';
+  else if(st=='pending')h+='<p class="warn">You asked for this name. A steward confirms it is you, usually within a day. Come back on this device.</p><button class="btn sm" id="pforget">That was a mistake: forget it on this device</button> <span class="meta" id="pmsg"></span>';
   else if(p.claimed)h+='<p>'+esc(p.name)+' has claimed this place'+(p.since?' ('+p.since+')':'')+'. If that should have been you, press the flag under the stage on anything, or tell the author.</p>';
   else if(p.pending)h+='<p>Someone has asked for this name and a steward has not confirmed it yet. If that should have been you, tell the author.</p>';
   else if(claim&&claim.person!=id&&st!=='')h+='';
-  else h+='<p>Were you in the 2021 calls under this name? Claim your place: your answers will carry a ✓, and you can mark the pictures and minutes you are in. A steward confirms that it is really you.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg"></span>';
+  else h+='<p>If this is you, claim your place. A steward confirms it, and then your marks carry a ✓.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg"></span>';
   h+='</div>';
   const wrote=p.wrote||[];
-  if(wrote.length)h+='<h3>Written under this name in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+iid+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+thumbUrl(iid)+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+iid+'</span></span></button>'}).join('')+'</div>';
+  if(wrote.length)h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+iid+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+thumbUrl(iid)+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+iid+'</span></span></button>'}).join('')+'</div>';
   if((p.here||[]).length)h+='<h3>'+esc(p.name)+' says: I am in this</h3><div class="grid" id="ph">'+p.here.map(i=>tile(i,'').replace('data-id','data-list="ph" data-id')).join('')+'</div>';
-  if((p.said||[]).length)h+='<h3>Answers left as '+esc(p.name)+'</h3><div class="grid" id="ps" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+p.said.map(i=>tile(i,'')).join('')+'</div>';
-  if(st=='mine'||st=='pending')h+='<h3>Find yourself</h3><p class="lead">A machine read the text in every picture. This looks for pictures where the word “'+esc(p.name.split(' ')[0])+'” is written on screen, usually a name tag in the call. It does not know who is in them; only you do. Put one on the stage'+(st=='mine'?' and press “I am in this”.':'; once a steward has confirmed you, you can mark it as yours.')+'</p><button class="btn sm" id="pfind">Look for my name in the pictures</button><div class="grid" id="pf"></div>';
+  if((p.said||[]).length)h+='<h3>Marks left as '+esc(p.name)+'</h3><div class="grid" id="ps" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+p.said.map(i=>tile(i,'')).join('')+'</div>';
+  if(st=='mine'||st=='pending')h+='<h3>Find yourself</h3><p class="lead">Pictures where a machine read the word “'+esc(p.name.split(' ')[0])+'” on screen. Only you know which ones you are in.</p><button class="btn sm" id="pfind">Look for my name in the pictures</button><div class="grid" id="pf"></div>';
   $('#popen').hidden=false;$('#popen').innerHTML=h;if(!EX)history.replaceState(null,'',hashFor());
   const msg=t=>{const m=$('#pmsg');if(m)m.textContent=t};
   if($('#pclaim'))$('#pclaim').onclick=async()=>{if(!DOOR)return msg('The door is closed right now.');const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
@@ -870,7 +998,7 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;awai
     $('#pf').innerHTML=hits.length?hits.slice(0,400).map(i=>tile(i,'').replace('data-id','data-list="pf" data-id')).join(''):'<span class="meta">The word is not written in any picture a machine could read. Browse the calls instead; you will know where you were.</span>'};
   if(o.scroll)$('#popen').scrollIntoView({block:'start'})}
 $('#bhere').onclick=async()=>{if(!claimOK||!cur)return;const b=$('#bhere');b.disabled=true;try{const o=await post({hears:cur,text:'',by:'human',name:P[claim.person].name,person:claim.person,token:claim.key,here:true});
-    $('#who').textContent=o.ok?'Marked: you are in this. It shows within the hour.':(o.problems||['Could not mark it.']).join(' ');b.classList.toggle('on',!!o.ok)}catch(e){$('#who').textContent='The door could not be reached.'}b.disabled=false};
+    $('#who').textContent=o.ok?'Marked: you are in this.':(o.problems||['Could not mark it.']).join(' ');b.classList.toggle('on',!!o.ok)}catch(e){$('#who').textContent='The door could not be reached.'}b.disabled=false};
 {const m=/^#claim=(p-[a-z0-9-]+)\.([\w-]{10,80})$/.exec(location.hash); /* a private link from the author still works */
   if(m){history.replaceState(null,'','#people/'+m[1]);if(DOOR){try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:m[1],token:m[2],check:true})}),o=await r.json();
       if(o.ok){claim={person:m[1],key:m[2]};store.set('abe-claim',claim);fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:m[1],token:m[2]})}).catch(()=>{})}}catch(e){}}}}
@@ -883,7 +1011,7 @@ if($('#atlas').complete)$('#atlas').dispatchEvent(new Event('load'));
 $('#atlas').onclick=e=>{const r=e.target.getBoundingClientRect(),c=Math.floor((e.clientX-r.left)/r.width*96),w=Math.floor((e.clientY-r.top)/r.height*62),i=w*96+c;if(i>=DOCN)return;
   const id='m'+pad(i+1,5),s=seedByShot[i+1];setFormQuiet('');
   if(IMG.has(i+1)){ctx={kind:'pics'};show(id,{keep:1})}else if(s)show(s.id);else if(fctx){const d=fctx.getImageData(c*16,w*9,16,9).data;let hex='';for(let k=0;k<144;k++)hex+=[0,1,2].map(q=>d[k*4+q].toString(16).padStart(2,'0')).join('');
-    ++showing;clearInterval(timer);stageSrc={el:fieldCanvas(hex),cover:true};stageDepth=0;stageMarks=[];render();$('#who').textContent='Screenshot '+fmt(i+1)+' of 5,909 · 2021';sayNow('[this one is held back; only its colours are here]')}};
+    ++showing;clearInterval(timer);stageSrc={el:fieldCanvas(hex),cover:true};stageDepth=0;stageMarks=[];render();$('#who').textContent='Screenshot '+fmt(i+1)+' of 5,909 · 2021';sayNow('[held back; only its colours are here]')}};
 jq('data/call-2021.json',null).then(c=>{if(c)$('#hrs').textContent=Math.round(c.distinct_minutes/60)});
 
 /* the butterfly */
@@ -900,7 +1028,8 @@ function drawFly(){if(!paths)buildFly();const W=fly.width,H=fly.height,sx=W/52,s
   for(const n of Object.values(N))if(n.at=='2021')line(n.id,colour(n),1);
   for(const n of Object.values(N))if(n.at!='2021')line(n.id,colour(n),2);
   if(cur&&N[cur]){fx.globalAlpha=.95;for(let m=N[cur];m;m=m.hears&&N[m.hears])line(m.id,m.at=='2021'?'rgba(255,255,255,'+(m.id===cur?.95:.5)+')':colour(m),m.id===cur?3.2:2);fx.globalAlpha=1}}
-const by=wb.count&&wb.count.by||{};$('#tally').textContent='· '+fmt(wb.wingbeats.length)+' wingbeats: '+(by.human||0)+' human, '+(by.ai||0)+' AI, '+((by.both||0)+(by.unsure||0))+' other';
+$('#dfly').addEventListener('toggle',()=>{if($('#dfly').open)drawFly()});
+const by=wb.count&&wb.count.by||{};$('#tally').textContent='· '+fmt(wb.wingbeats.length)+' marks: '+(by.human||0)+' human, '+(by.ai||0)+' AI, '+((by.both||0)+(by.unsure||0))+' other';
 
 /* keys */
 addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable],#ruler')||e.metaKey||e.ctrlKey||e.altKey)return;
@@ -912,8 +1041,8 @@ async function route(first){
   if(VIEWS.includes(a)){v=a;id=b||''}else id=a;
   if(isTheme(id)&&T[id]){if(v=='stage'&&first)v='themes';openTheme=id}
   if(isPerson(id)&&P[id]){v='people';openPerson=id}
-  const ok=i=>N[i]||isMedia(i)||(isTheme(i)&&T[i]);
-  if(ok(id)&&id!=cur){if(isMin(id)||isRec(id))await needRecs();await show(id,{quiet:1})}
+  const ok=async i=>{if(N[i]||(isTheme(i)&&T[i]))return true;if(isImg(i))return IMG.has(+i.slice(1));if(isMin(i)||isRec(i)){await needRecs();const r=recById[i.slice(0,4)];return!!r&&(isRec(i)||+i.slice(5)<r.min)}return false};
+  if(id!=cur&&await ok(id))await show(id,{quiet:1});
   else if(first){const today=lineIds[hash(new Date().toISOString().slice(0,10))%lineIds.length];await show(wb.wingbeats.length&&Math.random()<.3?wb.wingbeats[wb.wingbeats.length-1].id:today,{quiet:1})}
   setView(v,{quiet:1});if(v=='themes'&&openTheme)openT(openTheme);if(v=='people'&&openPerson)pInit()}
 addEventListener('hashchange',()=>route(false));addEventListener('popstate',()=>route(false));

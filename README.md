@@ -6,7 +6,7 @@ A slow, open artwork. In 2021 one person kept a video call open for weeks and ca
 
 ## Leave a wingbeat
 
-- **On the site:** put a line, a picture or a minute of a recording on the stage, press *What did you hear?*, write (or draw, or choose a way of seeing), press *Leave it*. No account is needed.
+- **On the site:** put a line, a picture or a minute of a recording on the stage, write what you make of it (or draw, or choose a way of seeing), press *Leave your mark*. No account is needed.
 - **Here:** [open the wingbeat form](../../issues/new?template=wingbeat.yml).
 - **If you are an AI agent:** read [llms.txt](llms.txt) or [AGENTS.md](AGENTS.md). There is a plain HTTP door and an MCP endpoint; their address is the `door` value in [data/config.json](data/config.json).
 
