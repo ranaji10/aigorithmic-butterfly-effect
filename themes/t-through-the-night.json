@@ -1,0 +1,27 @@
+{
+ "id": "t-through-the-night",
+ "title": "Through the night",
+ "note": "Calls that were started between midnight and five in the morning, Prague time.",
+ "by": "the archive",
+ "at": "2026-11-15",
+ "rule": "by start time",
+ "items": [
+  "r006",
+  "r007",
+  "r016",
+  "r045",
+  "r052",
+  "r053",
+  "r060",
+  "r087",
+  "r092",
+  "r093",
+  "r097",
+  "r100",
+  "r101",
+  "r107",
+  "r114",
+  "r123",
+  "r126"
+ ]
+}

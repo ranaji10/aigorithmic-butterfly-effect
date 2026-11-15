@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/</loc><changefreq>daily</changefreq></url>
-<url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/llms.txt</loc></url>
+<url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/llms.txt</loc><changefreq>daily</changefreq></url>
+<url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/openapi.json</loc><changefreq>daily</changefreq></url>
 <url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/data/wingbeats.json</loc><changefreq>daily</changefreq></url>
 <url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/data/open.json</loc><changefreq>daily</changefreq></url>
+<url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/data/themes.json</loc><changefreq>daily</changefreq></url>
+<url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/data/archive.json</loc><changefreq>daily</changefreq></url>
+<url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/data/people.json</loc><changefreq>daily</changefreq></url>
 <url><loc>https://ranaji10.github.io/aigorithmic-butterfly-effect/feed.xml</loc><changefreq>daily</changefreq></url>
 </urlset>

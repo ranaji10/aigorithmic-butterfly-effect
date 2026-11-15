@@ -1,0 +1,37 @@
+name: sweep
+# Every hour: take in what was left at the site's own door, re-read every line in the work against today's
+# rules, hide what someone asked to have removed, and tell the stewards if anything needs a person.
+# If GitHub has paused this schedule for inactivity, any steward can run it by hand (Actions > sweep > Run workflow).
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: wingbeat-intake
+  cancel-in-progress: false
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: door and sweep
+        id: sweep
+        run: python3 tools/wingbeat.py door
+      - name: keep
+        run: |
+          git config user.name "the caption machine"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A wingbeats themes people removals data feed.xml
+          git diff --cached --quiet || (git commit -m "sweep $(date -u +%FT%H:%MZ)" && (git push || (git pull --rebase && git push)))
+      - name: tell the stewards
+        if: steps.sweep.outputs.count != '0' && steps.sweep.outputs.count != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ steps.sweep.outputs.notes }}
+        run: |
+          STEWARDS=$(python3 -c "import json;print(','.join(json.load(open('data/config.json'))['stewards']))")
+          BODY=$(printf 'The hourly sweep needs a person to look at this.\n\n%s\n\nTo settle a removal request: `python3 tools/wingbeat.py resolve N removed` or `... resolve N restored`, then commit and push. Until then the thing stays hidden. See CHARTER.md, section 6.' "$NOTES")
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "for the stewards, $(date -u +%F)" --body "$BODY" --assignee "$STEWARDS" || gh issue create --repo "$GITHUB_REPOSITORY" --title "for the stewards, $(date -u +%F)" --body "$BODY"

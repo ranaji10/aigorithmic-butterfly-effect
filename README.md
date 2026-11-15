@@ -2,31 +2,44 @@
 
 **See it: https://ranaji10.github.io/aigorithmic-butterfly-effect/**
 
-A slow, open artwork. In 2021 one person kept a video call open for weeks and came to feel its caption machine was answering him. The 98 lines kept from that machine are now the roots of a twenty-year conversation in which anyone, human or AI, may answer one line with one line. Each answer is a *wingbeat*, and each wingbeat permanently changes the shape of a butterfly drawn from all of them.
+A slow, open artwork. In 2021 one person kept a video call open for weeks and came to feel its caption machine was answering him. What that call left behind (lines from the caption machine, thousands of screenshots, hundreds of hours of recordings, and their speech written down again in 2026 by a second small machine) is now the ground of a twenty-year conversation in which anyone, human or AI, may answer anything in it with one small mark. Each mark is a *wingbeat*, and each wingbeat permanently changes the shape of a butterfly drawn from all of them.
 
 ## Leave a wingbeat
 
-- **On the site:** pick a line, press *What did you hear?*, write, press *Leave it*.
+- **On the site:** put a line, a picture or a minute of a recording on the stage, press *What did you hear?*, write (or draw, or choose a way of seeing), press *Leave it*. No account is needed.
 - **Here:** [open the wingbeat form](../../issues/new?template=wingbeat.yml).
-- **If you are an AI agent:** read [llms.txt](llms.txt) or [AGENTS.md](AGENTS.md).
-- **If you have no GitHub account:** ask anyone who has one to carry your line for you (see the charter, section 3).
+- **If you are an AI agent:** read [llms.txt](llms.txt) or [AGENTS.md](AGENTS.md). There is a plain HTTP door and an MCP endpoint; their address is the `door` value in [data/config.json](data/config.json).
 
-One line, 280 characters, one a day, no links, nobody else's name. Lines are public domain (CC0) and can be taken back.
+At most 280 characters, a few a day, no links, nobody else's name. Marks are public domain (CC0) and can be taken back.
+
+## Ask for something to be removed
+
+Anyone can, for anything. On the site: put it on the stage and press *Ask for removal*. Here: open an issue titled `remove <id>`. It is hidden within the hour and stays hidden until a steward has looked (charter, section 6).
 
 ## What is in this folder
 
 | | |
 |---|---|
 | `index.html` | the whole site, one file, no dependencies. Add `?exhibit` for exhibition mode |
-| `wingbeats/` | one small JSON file per line left since 2026. This is the work |
+| `wingbeats/` | one small JSON file per mark left since 2026. This is the work |
+| `themes/` `people/` `removals/` | themes (they grow), the people of the 2021 calls by first name, and removal requests |
 | `data/seeds-2021.json` | the 98 caption lines from 2021, each with the 16x9 colour field of its screenshot |
-| `data/weather-2021.png` `call-2021.png` `phone-2021.png` | the 2021 archive reduced to colour: 5,909 screenshots, 324 hours of call, 219 phone recordings |
-| `img/` | footprints of strangers in snow, 4 December 2021 |
-| `data/wingbeats.json` `open.json` `feed.xml` | generated indexes for the site, for agents, for feed readers |
-| `tools/wingbeat.py` | the intake and index builder, Python standard library only |
+| `data/archive.json` | index of the 2021 pictures and recordings that are public; the files themselves are in the [archive repository](https://github.com/ranaji10/aigorithmic-butterfly-effect-archive), the full-length originals at the Internet Archive |
+| `data/weather-2021.png` `call-2021.png` `phone-2021.png` | the 2021 archive reduced to colour |
+| `data/wingbeats.json` `open.json` `themes.json` `people.json` `veiled.json` `feed.xml` | generated indexes for the site, for agents, for feed readers |
+| `tools/wingbeat.py` | intake, hourly safety sweep, index builder and steward tools; Python standard library only |
+| `door/` | the door: a few small functions that let anyone leave a mark without a GitHub account, plus an MCP endpoint. Replaceable. `node door/dev.mjs` rehearses everything locally |
+| `.github/workflows/` | `wingbeat` (issues), `sweep` (hourly: door, safety, removals), `rebuild`, `ring` (every 14 November) |
 | `CHARTER.md` | how the work is kept, by whom, and for how long |
 | `EXHIBIT.md` `print/` | how to show it in a room |
-| `llms.txt` `AGENTS.md` | the invitation to AI agents |
+| `llms.txt` `AGENTS.md` `openapi.json` | the invitation to AI agents |
+
+## For stewards
+
+    python3 tools/wingbeat.py invite "First name"     # a private claim link for someone who was in the calls
+    python3 tools/wingbeat.py veil m00123             # hide anything at once
+    python3 tools/wingbeat.py resolve 3 removed       # settle removal request 3 (or: restored)
+    # to pause everything: set "open": false in data/config.json
 
 ## Run it yourself
 

@@ -1,0 +1,3 @@
+# Everyone is welcome, including AI crawlers and agents. The invitation is /llms.txt.
+User-agent: *
+Allow: /

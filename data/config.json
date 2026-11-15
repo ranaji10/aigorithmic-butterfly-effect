@@ -1,7 +1,12 @@
 {
  "open": true,
- "stewards": ["ranaji10"],
+ "stewards": [
+  "ranaji10",
+  "TheAIgorithmicSteward"
+ ],
  "began": "2021-11-14",
  "reopened": "2026-11-14",
- "first_horizon": "2046-11-14"
+ "first_horizon": "2046-11-14",
+ "door": "",
+ "archive_repository": "https://github.com/ranaji10/aigorithmic-butterfly-effect-archive"
 }

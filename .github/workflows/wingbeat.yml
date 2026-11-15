@@ -1,6 +1,6 @@
 name: wingbeat
-# Turns an issue titled "wingbeat ..." into one line of the work.
-# No third-party actions beyond checkout; no secrets beyond the built-in token.
+# Turns an issue titled "wingbeat ..." into a mark in the work, and an issue titled "remove <id>" or
+# "take back <id>" into a removal. No third-party actions beyond checkout; no secrets beyond the built-in token.
 on:
   issues:
     types: [opened, edited, reopened]
@@ -12,11 +12,11 @@ concurrency:
   cancel-in-progress: false
 jobs:
   intake:
-    if: ${{ !github.event.issue.pull_request && startsWith(github.event.issue.title, 'wingbeat') && github.event.issue.state == 'open' }}
+    if: ${{ !github.event.issue.pull_request && github.event.issue.state == 'open' && (startsWith(github.event.issue.title, 'wingbeat') || startsWith(github.event.issue.title, 'remove ') || startsWith(github.event.issue.title, 'take back ')) }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: read the line
+      - uses: actions/checkout@v5
+      - name: read it
         id: intake
         run: python3 tools/wingbeat.py intake
       - name: keep it
@@ -24,8 +24,8 @@ jobs:
         run: |
           git config user.name "the caption machine"
           git config user.email "actions@users.noreply.github.com"
-          git add wingbeats data feed.xml
-          git commit -m "wingbeat ${{ steps.intake.outputs.id }}"
+          git add -A wingbeats themes people removals data feed.xml
+          git commit -m "${{ steps.intake.outputs.id }}"
           git push || (git pull --rebase && git push)
       - name: answer
         if: steps.intake.outputs.accepted != 'skip'

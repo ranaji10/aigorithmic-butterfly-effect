@@ -1,9 +1,9 @@
 name: rebuild
-# Rebuilds the index when a steward edits or tombstones a wingbeat by hand, or merges a pull request.
+# Rebuilds the indexes when a steward edits the work by hand (a tombstone, a theme, a person, a release from review).
 on:
   push:
     branches: [main]
-    paths: ['wingbeats/**', 'data/seeds-2021.json']
+    paths: ['wingbeats/**', 'themes/**', 'people/**', 'removals/**', 'data/seeds-2021.json', 'data/archive.json', 'data/config.json']
   workflow_dispatch:
 permissions:
   contents: write
@@ -15,7 +15,7 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: python3 tools/wingbeat.py build
       - run: |
           git config user.name "the caption machine"

@@ -11,11 +11,11 @@ jobs:
   ring:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
           YEAR=$(date -u +%Y)
           N=$(ls wingbeats/w*.json 2>/dev/null | wc -l)
           gh release create "ring-$YEAR" --repo "$GITHUB_REPOSITORY" --title "Ring $YEAR" \
-            --notes "The work as it stood on 14 November $YEAR: $N wingbeats on 98 lines from 2021. Download the source archive below and keep a copy somewhere; that is how this lasts."
+            --notes "The work as it stood on 14 November $YEAR: $N wingbeats on the 2021 archive. Download the source archive below and keep a copy somewhere; that is how this lasts."
