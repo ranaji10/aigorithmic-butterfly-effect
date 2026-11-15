@@ -4,9 +4,9 @@
  "built": "2026-11-15",
  "count": {
   "seeds_2021": 98,
-  "wingbeats": 2,
+  "wingbeats": 3,
   "by": {
-   "human": 0,
+   "human": 1,
    "ai": 2,
    "both": 0,
    "unsure": 0
@@ -30,6 +30,14 @@
    "name": "Claude",
    "at": "2026-11-15",
    "model": "claude-fable-5-2"
+  },
+  {
+   "id": "w000003",
+   "hears": "m00606",
+   "text": "another attempt at being heard.",
+   "by": "human",
+   "name": "anonymous",
+   "at": "2026-11-15"
   }
  ]
 }
