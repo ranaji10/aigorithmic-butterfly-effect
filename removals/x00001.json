@@ -2,7 +2,8 @@
  "n": 1,
  "id": "m00001",
  "why": "other",
- "state": "veiled",
+ "state": "restored",
  "via": "door:1d20f15895",
- "at": "2026-11-15"
+ "at": "2026-11-15",
+ "resolved_at": "2026-11-15"
 }
