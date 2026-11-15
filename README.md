@@ -36,7 +36,9 @@ Anyone can, for anything. On the site: put it on the stage and press *Ask for re
 
 ## For stewards
 
-    python3 tools/wingbeat.py invite "First name"     # a private claim link for someone who was in the calls
+    python3 tools/wingbeat.py confirm p-name          # someone pressed "This is me" on the site and it really is them (or: deny p-name)
+    python3 tools/wingbeat.py invite "First name"     # add a person, with a private claim link
+    python3 tools/themes_build.py ../aigorithmic-butterfly-effect-archive   # re-sort the subject themes after new listening
     python3 tools/wingbeat.py veil m00123             # hide anything at once
     python3 tools/wingbeat.py resolve 3 removed       # settle removal request 3 (or: restored)
     # to pause everything: set "open": false in data/config.json

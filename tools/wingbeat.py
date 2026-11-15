@@ -9,6 +9,9 @@ Standard library only, on purpose: this has to keep running for decades.
   python3 tools/wingbeat.py door               (GitHub Actions, scheduled) collect what was left at the site's own door
   python3 tools/wingbeat.py sweep              (GitHub Actions, scheduled) re-check every line against today's rules
   python3 tools/wingbeat.py invite "Name"      (steward) add a person and print their private claim link
+  python3 tools/wingbeat.py confirm p-name     (steward) confirm that the person who asked for this name on the site is that person
+  python3 tools/wingbeat.py deny p-name        (steward) refuse the pending request for this name (the name can be asked for again)
+  python3 tools/wingbeat.py unclaim p-name     (steward) undo a confirmed claim
   python3 tools/wingbeat.py veil ID [why]      (steward) hide any line, picture, recording or minute at once
   python3 tools/wingbeat.py resolve N removed|restored   (steward) settle removal request N
 
@@ -30,6 +33,7 @@ import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://ranaji10.github.io/aigorithmic-butterfly-effect/"
+SITE_REPO = "https://github.com/ranaji10/aigorithmic-butterfly-effect"
 MAX_TEXT = 280
 MAX_NAME = 40
 MAX_MODEL = 60
@@ -374,26 +378,32 @@ def build():
     for t in themes_seed():
         T[t["id"]] = {"id": t["id"], "title": t["title"], "note": t.get("note", ""), "by": t.get("by", "the archive"),
                       "name": t.get("name", ""), "at": t.get("at", "2026-11-14"), "items": list(t.get("items", [])),
-                      "rule": t.get("rule", "")}
+                      "rule": t.get("rule", ""), "kind": t.get("kind", "subject" if t.get("by") != "the archive" else "archive"),
+                      "found": t.get("found", 0)}
     for w in live_w:
         if w.get("theme") in T and not w.get("removed") and w["hears"] not in T[w["theme"]]["items"]:
             T[w["theme"]]["items"].append(w["hears"])
     for t in T.values():
         t["items"] = [i for i in t["items"] if i not in gone]
-        t["count"] = len(t["items"])
+        t["count"] = max(len(t["items"]), t.pop("found", 0) or 0)
     save("data/themes.json", {"note": "Themes grow: any wingbeat may name a theme, existing or new.", "built": day,
-                              "themes": sorted(T.values(), key=lambda t: (-t["count"], t["id"]))}, compact=True)
+                              "themes": sorted(T.values(), key=lambda t: (t["kind"] == "archive", -t["count"], t["id"]))}, compact=True)
 
-    # people: first names until someone claims themselves; the claim token itself is never stored, only its hash
+    # people: first names until someone claims themselves. A friend asks for their name on the site ("This is me"); a steward
+    # confirms. Only hashes of keys are ever stored. "wrote" lists what was typed under that name in the call chats
+    # (it does not say who is in a picture). People place themselves.
     ppl = []
     for p in P:
         if p["id"] in gone:
             continue
         mine = [w["hears"] for w in live_w if w.get("as") == p["id"] and w.get("here") and not w.get("removed")]
         said = [w["id"] for w in live_w if w.get("as") == p["id"] and not w.get("removed")]
+        pend = p.get("pending") or {}
         ppl.append({"id": p["id"], "name": p.get("display") or p["name"], "claimed": bool(p.get("claimed")),
-                    "since": p.get("since"), "lock": p.get("lock"), "here": mine, "said": said})
-    save("data/people.json", {"note": "People who were in the 2021 calls. Each can claim their own presence with a private link from the author.",
+                    "since": p.get("since"), "lock": p.get("lock") if p.get("claimed") or not pend else None,
+                    "pending": (pend.get("lock") or "")[:12] or None,
+                    "here": mine, "said": said, "wrote": p.get("wrote", [])})
+    save("data/people.json", {"note": "People who were in the 2021 calls. Anyone of them can press \"This is me\" on their name; a steward confirms.",
                               "built": day, "people": ppl}, compact=True)
 
     save("data/veiled.json", {"note": "Hidden at someone's request, or removed. The site and well-behaved readers skip these.",
@@ -468,6 +478,15 @@ def intake():
         build()
         set_output(accepted="yes", id="x%05d" % x["n"],
                    message=f"`{target}` is hidden from the site as of the next few minutes, and the stewards have been asked to settle it. No reason needs to be given.")
+        return
+
+    m = re.match(r"^(confirm|deny|unclaim)\s+(p-[a-z0-9-]+)", title)
+    if m:
+        if not steward:
+            set_output(accepted="no", message="Only a steward of the work can settle who a name belongs to.")
+            return
+        set_output(accepted="yes", id=m.group(1) + " " + m.group(2), message=settle_claim(m.group(2), m.group(1)))
+        build()
         return
 
     if not cfg.get("open", True):
@@ -555,6 +574,26 @@ def door(items=None):
                 save("people/%s.json" % pid, p)
                 notes.append(f"{p['name']} claimed their own presence ({pid})")
                 verdict = "claimed"
+        elif kind == "ask":
+            # "This is me", pressed on the site without a private link: held until a steward confirms
+            pid = clean(it.get("person"), 44)
+            p = known.people.get(pid)
+            lock = clean(it.get("lock"), 64).lower()
+            if p and not p.get("claimed") and re.match(r"^[0-9a-f]{64}$", lock):
+                pend = p.get("pending") or {}
+                if pend and pend.get("lock") != lock:
+                    verdict = "refused: someone has already asked for this name; a steward has to settle that first"
+                else:
+                    display = clean(it.get("display"), MAX_NAME)
+                    if not display or text_problems("name", display):
+                        display = p["name"]
+                    p["pending"] = {"lock": lock, "display": display, "at": day}
+                    save("people/%s.json" % pid, p)
+                    repo = SITE_REPO + "/issues/new?title="
+                    notes.append(f"**{p['name']}** was claimed on the site (`{pid}`, name to show: “{display}”). "
+                                 f"If that really is {p['name']}: [confirm]({repo}confirm+{pid}). If not: [deny]({repo}deny+{pid}). "
+                                 "Each link opens a new issue; press Create and it is done.")
+                    verdict = "pending"
         elif not cfg.get("open", True):
             continue  # paused: leave it at the door, read it when the call reopens
         else:
@@ -627,6 +666,29 @@ def run_scheduled():
 
 # ---------- steward tools ----------
 
+def settle_claim(pid, what):
+    p = load("people/%s.json" % pid, {})
+    if not p:
+        return f"There is nobody listed as `{pid}`."
+    pend = p.get("pending")
+    if what == "unclaim":
+        for k in ("claimed", "since", "lock", "display", "pending"):
+            p.pop(k, None)
+        save("people/%s.json" % pid, p)
+        return f"{p['name']} is unclaimed again. Anyone can press “This is me” on that name."
+    if not pend:
+        return f"Nobody is waiting to be confirmed as {p['name']}."
+    if what == "confirm":
+        p.update({"claimed": True, "since": today(), "lock": pend["lock"], "display": pend.get("display") or p["name"]})
+        p.pop("pending", None)
+        save("people/%s.json" % pid, p)
+        return (f"Confirmed. {p['name']} now holds their own place in the work, shown as “{p['display']}”. "
+                "On the device they asked from, they can say “I am in this” and answer as themselves.")
+    p.pop("pending", None)
+    save("people/%s.json" % pid, p)
+    return f"Refused. The name {p['name']} is free to be asked for again."
+
+
 def invite(name):
     name = clean(name, MAX_NAME)
     first = name.split()[0]
@@ -678,6 +740,9 @@ if __name__ == "__main__":
         sys.exit(1 if bad else 0)
     elif cmd == "invite" and len(sys.argv) > 2:
         invite(" ".join(sys.argv[2:]))
+    elif cmd in ("confirm", "deny", "unclaim") and len(sys.argv) > 2:
+        print(settle_claim(sys.argv[2].lower(), cmd))
+        build()
     elif cmd == "veil" and len(sys.argv) > 2:
         x = veil(sys.argv[2].lower(), " ".join(sys.argv[3:]) or "steward")
         build()

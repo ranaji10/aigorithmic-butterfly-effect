@@ -1,6 +1,6 @@
 name: wingbeat
-# Turns an issue titled "wingbeat ..." into a mark in the work, and an issue titled "remove <id>" or
-# "take back <id>" into a removal. No third-party actions beyond checkout; no secrets beyond the built-in token.
+# Turns an issue titled "wingbeat ..." into a mark in the work, an issue titled "remove <id>" or
+# "take back <id>" into a removal, and a steward's issue titled "confirm p-name" / "deny p-name" into a settled claim. No third-party actions beyond checkout; no secrets beyond the built-in token.
 on:
   issues:
     types: [opened, edited, reopened]
@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   intake:
-    if: ${{ !github.event.issue.pull_request && github.event.issue.state == 'open' && (startsWith(github.event.issue.title, 'wingbeat') || startsWith(github.event.issue.title, 'remove ') || startsWith(github.event.issue.title, 'take back ')) }}
+    if: ${{ !github.event.issue.pull_request && github.event.issue.state == 'open' && (startsWith(github.event.issue.title, 'wingbeat') || startsWith(github.event.issue.title, 'remove ') || startsWith(github.event.issue.title, 'take back ') || startsWith(github.event.issue.title, 'confirm ') || startsWith(github.event.issue.title, 'deny ') || startsWith(github.event.issue.title, 'unclaim ')) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
