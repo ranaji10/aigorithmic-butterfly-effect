@@ -15,7 +15,7 @@
  },
  "servers": [
   {
-   "url": "DOOR_URL"
+   "url": "https://aigorithmic-butterfly-effect-door.vercel.app"
   }
  ],
  "paths": {

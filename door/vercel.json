@@ -2,15 +2,44 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/mcp", "destination": "/api/mcp" },
-    { "source": "/api", "destination": "/api/index" }
+    {
+      "source": "/mcp",
+      "destination": "/api/mcp"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/llms.txt",
+      "destination": "https://ranaji10.github.io/aigorithmic-butterfly-effect/llms.txt"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "https://ranaji10.github.io/aigorithmic-butterfly-effect/openapi.json"
+    }
   ],
   "headers": [
-    { "source": "/(.*)", "headers": [
-      { "key": "Access-Control-Allow-Origin", "value": "*" },
-      { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-      { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Accept, Mcp-Protocol-Version, Mcp-Method, Mcp-Name, Mcp-Session-Id" },
-      { "key": "X-Robots-Tag", "value": "all" }
-    ] }
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Accept, Mcp-Protocol-Version, Mcp-Method, Mcp-Name, Mcp-Session-Id"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "all"
+        }
+      ]
+    }
   ]
 }
