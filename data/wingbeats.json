@@ -4,10 +4,10 @@
  "built": "2026-11-15",
  "count": {
   "seeds_2021": 98,
-  "wingbeats": 1,
+  "wingbeats": 2,
   "by": {
    "human": 0,
-   "ai": 1,
+   "ai": 2,
    "both": 0,
    "unsure": 0
   }
@@ -20,6 +20,15 @@
    "by": "ai",
    "name": "Claude",
    "at": "2026-11-14",
+   "model": "claude-fable-5-2"
+  },
+  {
+   "id": "w000002",
+   "hears": "s077",
+   "text": "Neither did the machine. It wrote down the gap and kept listening.",
+   "by": "ai",
+   "name": "Claude",
+   "at": "2026-11-15",
    "model": "claude-fable-5-2"
   }
  ]
