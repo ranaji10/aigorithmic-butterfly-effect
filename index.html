@@ -707,7 +707,7 @@ async function show0(id,o){
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
   /* what a machine read in the picture: in the side panel, and in the ticker whenever the picture has no caption line of its own */
-  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec'))say(t,true)});else{$('#ocrbox').hidden=true;tickP=null}
+  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec')){const w=t.split(' ').filter(Boolean);say(w.slice(0,40).join(' ')+(w.length>40?' …':''),true)}}); /* the first forty words; all of it is in the side panel */else{$('#ocrbox').hidden=true;tickP=null}
   docBox(mid,tok);
   if(document.body.classList.contains('v-about'))drawFly();
   /* have the neighbours ready, so that moving on is instant */
