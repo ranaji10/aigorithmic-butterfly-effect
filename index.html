@@ -64,7 +64,14 @@ button{-webkit-tap-highlight-color:transparent}
 .edge.l{left:0;text-align:left;padding-left:10px}.edge.r{right:0;text-align:right;padding-right:10px}
 #stage:hover .edge{color:#fff8}.edge:hover{color:#fff!important}
 body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:crosshair}
-#idtag{position:absolute;left:10px;top:8px;pointer-events:none;color:#fffb;text-shadow:0 0 6px #000}
+#idtag{position:absolute;left:6px;top:4px;z-index:2;background:none;border:0;padding:4px;cursor:pointer;color:#fffb;text-shadow:0 0 6px #000}
+#idtag:hover{color:#fff}
+#dbar{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-radius:999px;background:#000c;white-space:nowrap;max-width:calc(100% - 12px)}
+#dbar .meta{color:var(--wall)}#dbar .btn{background:#000a}#dbar .btn.go{background:var(--wall)}
+body.mini #dbar,body.exhibit #dbar{display:none!important}
+.ob.tx{width:auto;padding:0 11px;font:10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+#dnote{margin:8px 0 0;text-transform:none;letter-spacing:0;font-size:12px;color:#cfcbc2}
+#dnote button{background:none;border:0;padding:0 2px;cursor:pointer;color:var(--wall);font:inherit;text-decoration:underline}
 #cap{padding:10px 16px 6px;min-height:58px}
 #who{color:#b9b5ab}
 #line{font-family:var(--serif);font-size:clamp(17px,1.55vw,23px);line-height:1.32;margin-top:3px;max-height:5.3em;overflow:hidden}
@@ -81,13 +88,16 @@ body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:cro
 #scrub{flex:1;min-width:60px}
 .sp{flex:1 1 0}
 input[type=range]{accent-color:var(--wall);height:28px;margin:0}
-#looks{position:absolute;z-index:30;background:#17171a;border:1px solid #3a3a41;border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;max-width:280px}
-#ruler{position:relative;height:52px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+#ruler{position:relative;height:52px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+#rin{position:absolute;left:0;right:0;bottom:0;height:100%;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#ruler.big #rin{height:124px;z-index:16;box-shadow:0 -14px 28px #000d}
 #rcv{position:absolute;inset:0;width:100%;height:100%;display:block}
 #rmark{position:absolute;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px #000,0 0 8px var(--wall);pointer-events:none;border-radius:1px}
 #rwin{position:absolute;top:15px;height:15px;border:1px solid #fff;background:#fff2;pointer-events:none}
 #rlab{position:absolute;right:0;top:0;padding:1px 8px 0 10px;background:var(--bg);color:#d8d4ca;pointer-events:none;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis}
-#rtip{position:absolute;bottom:100%;transform:translateX(-50%);background:#fff;color:#000;padding:3px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;font:11px/1.3 var(--mono)}
+#rtip{position:absolute;bottom:calc(100% + 4px);transform:translateX(-50%);background:#fff;color:#000;padding:3px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;font:11px/1.3 var(--mono);text-align:center;z-index:17}
+#rtip img{display:block;width:168px;height:96px;object-fit:cover;margin:2px auto 4px;border-radius:3px;background:#222}
+body:not(.raw) #rtip img{filter:blur(9px)}
 
 /* the docked stage: full size, or a thumbnail once you scroll */
 #bexp,#bmin{display:none}
@@ -253,11 +263,10 @@ body.mini .ov,body.exhibit .ov{display:none}
 </head>
 <body class="v-stage">
 <header id="bar">
-  <a id="brand" href="#" title="Back to the stage"><b>AI</b>gorithmic Butterfly Effect</a>
+  <a id="brand" href="#" title="The stage. Already there? Then this lets you draw on it."><b>AI</b>gorithmic Butterfly Effect</a>
   <nav id="tabs" aria-label="Parts of the work">
     <button data-v="stage" class="on">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
   </nav>
-  <button class="pill" id="rawtoggle" hidden>Colour only</button>
 </header>
 
 <div id="app">
@@ -265,12 +274,14 @@ body.mini .ov,body.exhibit .ov{display:none}
     <div id="stage">
       <canvas id="field" aria-label="The stage: a colour field, picture or frame from the work"></canvas>
       <video id="clip" playsinline preload="none" hidden></video>
-      <span class="meta" id="idtag"></span>
+      <button class="meta" id="idtag" title="Copy a link to this"></button>
       <button class="edge l" id="eprev" aria-label="Previous">‹</button><button class="edge r" id="enext" aria-label="Next">›</button>
       <div class="ov">
+        <button class="ob tx" id="bcens" title="Censor it again: colours only, no sound" hidden>Censor again</button>
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
         <button class="ob" id="bmin" data-ic="shrink" title="Make the stage small" aria-label="Make the stage small"></button>
       </div>
+      <div id="dbar" hidden><span class="meta">Drawing</span><button class="btn sm" id="dundo">Undo</button><button class="btn sm" id="ddone">Done</button><button class="btn go sm" id="dsend">Leave your mark</button></div>
       <div id="gate" hidden>
         <button class="btn go" id="unc">Show uncensored</button>
         <p>Raw material from 2021: strong language, private moments.</p>
@@ -284,13 +295,13 @@ body.mini .ov,body.exhibit .ov{display:none}
       <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else, at random" aria-label="Random"></button>
       <div id="scrubw" hidden><input type="range" id="scrub" min="0" max="0" value="0" aria-label="Position in this recording"><span class="meta" id="stime"></span></div>
       <span class="sp"></span>
-      <button class="cb" id="bsound" data-ic="sound" title="Sound on / off" aria-label="Sound" hidden></button>
+      <button class="cb" id="bsound" data-ic="sound" title="Sound and the reading voice, on / off" aria-label="Sound" hidden></button>
       <button class="cb" id="bhere" data-ic="here" title="I am in this" aria-label="I am in this" hidden></button>
       <button class="cb txt on" id="banswer" data-ic="bubble" title="What's your interpretation?"><span>Leave your mark</span></button>
       <button class="cb" id="bexp" data-ic="grow" title="Make the stage large again" aria-label="Make the stage large again"></button>
     </div>
     <div id="ruler" role="slider" aria-label="Where you are in the whole work" tabindex="0">
-      <canvas id="rcv"></canvas><div id="rwin" hidden></div><div id="rmark" hidden></div><div class="meta" id="rlab"></div><div id="rtip" hidden></div>
+      <div id="rin"><canvas id="rcv"></canvas><div id="rwin" hidden></div><div id="rmark" hidden></div><div class="meta" id="rlab"></div><div id="rtip" hidden><img alt="" hidden><span></span></div></div>
     </div>
   </div>
 
@@ -308,7 +319,6 @@ body.mini .ov,body.exhibit .ov{display:none}
       <div id="ftools">
         <button type="button" class="cb" id="bdraw" data-ic="draw" title="Draw on it" aria-label="Draw on it"></button>
         <button type="button" class="cb" id="bundo" data-ic="undo" title="Undo the last stroke" aria-label="Undo" hidden></button>
-        <button type="button" class="cb" id="blook" data-ic="look" title="Ways of seeing" aria-label="Ways of seeing"></button>
         <span id="extras" class="meta warn"></span>
         <span class="sp"></span>
         <span class="meta"><span id="cnt">0</span> / 280</span>
@@ -322,6 +332,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <div><label for="th" class="meta">Theme (optional)</label><input type="text" id="th" maxlength="48" list="thlist" placeholder="pick one, or name a new one"><datalist id="thlist"></datalist></div>
       </details>
       <div id="asme" class="meta" hidden style="margin:8px 0">You are here as <span id="asname" class="ok"></span> <label style="text-transform:none"><input type="checkbox" id="here"> I am in this</label></div>
+      <div id="dnote" class="meta" hidden></div>
       <div id="fsend"><button class="btn go" type="submit" id="send">Leave your mark</button><span id="sent" class="meta" aria-live="polite"></span></div>
     </form>
     <h3 id="thh">Marks so far</h3>
@@ -356,7 +367,7 @@ body.mini .ov,body.exhibit .ov{display:none}
     </section>
 
     <section id="v-people">
-      <p class="lead" style="margin-bottom:12px">Friends from the 2021 calls. Is one of them you? Tap your name.</p>
+      <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all. Is one of them you? Tap your name.</p>
       <div class="pgrid" id="plist"></div>
       <div id="popen" hidden></div>
     </section>
@@ -375,11 +386,11 @@ body.mini .ov,body.exhibit .ov{display:none}
         <div><div class="num" id="n3">0</div><div class="meta">days until 14 Nov 2046</div></div>
       </div>
       <details><summary>How to take part</summary><div>
-        <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it: what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it (the pencil) or choose a way of seeing it (the half-circle). Some day someone answers yours.</p>
+        <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it: what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
         <p>No account is needed. A mark appears within the hour, is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
       <details><summary>Before you look</summary><div>
-        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Colour only" at the top takes you back.</p>
+        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, pictures are read aloud by whatever synthetic voice your own device has; the speaker button silences it.</p>
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
@@ -419,7 +430,11 @@ body.mini .ov,body.exhibit .ov{display:none}
   <button data-v="stage" class="on">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
 </nav>
 
-<div id="looks" hidden></div>
+<dialog id="lvd">
+  <h2 style="font-size:24px">Your marks are not saved yet</h2>
+  <p id="lvtxt"></p>
+  <p style="margin-top:16px"><button class="btn go" id="lvsave">Save and close site</button> <button class="btn" id="lvback">Go back to site</button> <span class="meta" id="lvmsg" aria-live="polite"></span></p>
+</dialog>
 <dialog id="rmd">
   <h2 style="font-size:24px">Ask for removal</h2>
   <p>Hide <b id="rmid"></b> within the hour, until a steward has looked. You do not have to explain.</p>
@@ -478,9 +493,10 @@ if(DOOR)$('#doorurl').innerHTML='door: <code>'+esc(DOOR)+'/api/say</code>, MCP: 
 
 /* one press: show uncensored, and it stays */
 let RAW=store.get('abe-raw',false)===true;
-function setRaw(v){RAW=v;store.set('abe-raw',v);document.body.classList.toggle('raw',v);$('#gate').hidden=v||EX;$('#rawtoggle').hidden=!v;if(!v)stopPlay();if(cur)show(cur,{quiet:1})}
-document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#rawtoggle').hidden=!RAW;
-$('#unc').onclick=()=>setRaw(true);$('#rawtoggle').onclick=()=>setRaw(false);
+function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;$('#bsound').hidden=!RAW}
+function setRaw(v){RAW=v;store.set('abe-raw',v);paintRaw();if(!v)stopPlay();return cur?show(cur,{quiet:1}):Promise.resolve()}
+paintRaw();
+$('#unc').onclick=async()=>{await setRaw(true);startPlay()};$('#bcens').onclick=e=>{e.stopPropagation();setRaw(false)};
 
 /* lazy indexes of the archive */
 let recs=null,recById={},recOrder=[],imgIdx=null,imgText=null;const voiceCache={};
@@ -499,8 +515,8 @@ async function docBox(mid,tok){const box=$('#docbox'),n=mid?+mid.slice(1):0;if(!
   const title=c.s?c.s[1]:'',prose=c.t.replace(TAGRX,'').replace(/[^A-Za-z]/g,'').length>2,tags=c.tags.filter(g=>!title.includes(g));
   $('#dhead').textContent=title;$('#dhead').hidden=!title;$('#dhead').dataset.n=c.s?c.s[2]:n;
   $('#dtags').innerHTML=tags.slice(0,14).map(g=>'<button type="button" data-tag="'+esc(g)+'">'+esc(g)+'</button>').join('');$('#dtags').hidden=!tags.length;
-  $('#dtext').textContent=prose?c.t:'';$('#dtext').hidden=!prose;$('#dtext').classList.remove('open');
-  $('#dcom').hidden=!c.com.length;$('#dcom').open=false;$('#dcom summary').textContent=c.com.length+(c.com.length==1?' comment':' comments')+' from 2021';
+  $('#dtext').textContent=prose?c.t:'';$('#dtext').hidden=!prose;$('#dtext').classList.toggle('open',dtextOpen);
+  $('#dcom').hidden=!c.com.length;$('#dcom').open=dcomOpen;$('#dcom summary').textContent=c.com.length+(c.com.length==1?' comment':' comments')+' from 2021';
   $('#dcomb').innerHTML=c.com.map(t=>'<li>'+esc(t)+'</li>').join('');box.hidden=false}
 async function voice(rid){if(!voiceCache[rid])voiceCache[rid]=await jq(MEDIA+'r/'+rid+'/voice.json',{segs:[],chat:[],heard_hours:[]});return voiceCache[rid]}
 const frameN=(rid,min)=>{const r=recById[rid],step=r?r.step:60;return pad(Math.floor(min*60/step),5)};
@@ -518,44 +534,31 @@ function loadImg(u){if(imgCache.has(u))return imgCache.get(u);const p=new Promis
 
 /* the stage */
 const stage=$('#stage'),cv=$('#field'),cx=cv.getContext('2d'),clip=$('#clip');
-let R={x:0,y:0,w:1,h:1},form='',strokes=[],drawing=false,stageSrc=null,stageDepth=0,stageMarks=[],cur=null;
+let R={x:0,y:0,w:1,h:1},strokes=[],drawing=false,stageSrc=null,stageDepth=0,stageMarks=[],cur=null;
+/* what was drawn and not sent yet, kept on this device: {id: strokes} */
+let drafts=store.get('abe-drafts',{});if(!drafts||typeof drafts!='object'||Array.isArray(drafts))drafts={};
+const draftIds=()=>Object.keys(drafts).filter(k=>Array.isArray(drafts[k])&&drafts[k].length);
 function fieldCanvas(hex){const c=document.createElement('canvas');c.width=16;c.height=9;const sx=c.getContext('2d'),im=sx.createImageData(16,9);
   for(let i=0;i<144;i++){im.data[i*4]=parseInt(hex.substr(i*6,2),16);im.data[i*4+1]=parseInt(hex.substr(i*6+2,2),16);im.data[i*4+2]=parseInt(hex.substr(i*6+4,2),16);im.data[i*4+3]=255}
   sx.putImageData(im,0,0);return c}
 function reduce(img){const c=document.createElement('canvas');c.width=16;c.height=9;const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(img,0,0,16,9);return c}
-function transform(img,f){ /* ways of seeing: each makes a new picture from the old one, in the browser, from a number */
-  const[name,sd]=(f||'').split(':'),iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height,w=Math.min(640,iw),h=Math.max(1,Math.round(w*ih/iw));
-  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,w,h);
-  const r=rng(+sd||1);
-  if(name=='glitch'){for(let k=0;k<18;k++){const y=Math.floor(r()*h),bh=Math.floor(2+r()*h*.09),dx=Math.floor((r()-.5)*w*.5);x.drawImage(c,0,y,w,bh,dx,y,w,bh);if(dx>0)x.drawImage(c,w-dx,y,dx,bh,0,y,dx,bh)}
-    const d=x.getImageData(0,0,w,h),a=d.data,o=4*Math.floor(3+r()*14);for(let i=0;i<a.length-o;i+=4)a[i]=a[i+o];x.putImageData(d,0,0)}
-  else if(name=='trace'){const d=x.getImageData(0,0,w,h),a=d.data,g=new Float32Array(w*h);for(let i=0;i<w*h;i++)g[i]=(a[i*4]*.3+a[i*4+1]*.59+a[i*4+2]*.11);
-    for(let y=1;y<h-1;y++)for(let X=1;X<w-1;X++){const i=y*w+X,gx=g[i+1]-g[i-1],gy=g[i+w]-g[i-w],v=Math.min(255,Math.hypot(gx,gy)*3);a[i*4]=a[i*4+1]=a[i*4+2]=v}x.putImageData(d,0,0)}
-  else if(name=='weave'){const src=document.createElement('canvas');src.width=w;src.height=h;src.getContext('2d').drawImage(c,0,0);const n=6+Math.floor(r()*18),bh=h/n;
-    for(let k=0;k<n;k++)if(k%2){x.save();x.translate(w,0);x.scale(-1,1);x.drawImage(src,0,k*bh,w,bh,0,k*bh,w,bh);x.restore()}
-    const bw=w/n;x.globalAlpha=.5;for(let k=0;k<n;k+=2)x.drawImage(src,(n-1-k)*bw,0,bw,h,k*bw,0,bw,h);x.globalAlpha=1}
-  return c}
 let cw=0,ch=0,dpr=1,rafR=0;
 function sizeStage(){const b=stage.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.round(b.width*dpr),h=Math.round(b.height*dpr);if(w&&h&&(w!=cw||h!=ch)){cw=cv.width=w;ch=cv.height=h;return true}return false}
 function render(){cancelAnimationFrame(rafR);rafR=requestAnimationFrame(paint)}
 function paint(){
   if(!cw)sizeStage();const W=cw,H=ch;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#000';cx.fillRect(0,0,W,H);if(!stageSrc)return;
-  const fname=(form||'').split(':')[0];let src=stageSrc.el,cover=stageSrc.cover;
-  if(stageSrc.img){const showRaw=RAW&&fname!='field';
-    if(!stageSrc.small)stageSrc.small=reduce(stageSrc.img);
-    if(showRaw){if(fname&&fname!='mirror'&&fname!='echo'){if(stageSrc.fxk!=form){stageSrc.fx=transform(stageSrc.img,form);stageSrc.fxk=form}src=stageSrc.fx}else src=stageSrc.img;cover=false}
-    else{src=stageSrc.small;cover=true}}
+  let src=stageSrc.el,cover=stageSrc.cover;
+  if(stageSrc.img){if(!stageSrc.small)stageSrc.small=reduce(stageSrc.img);if(RAW){src=stageSrc.img;cover=false}else{src=stageSrc.small;cover=true}}
   cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';
   const sw=src.naturalWidth||src.width,sh=src.naturalHeight||src.height;
   if(cover)R={x:0,y:0,w:W,h:H};
   else{ /* the picture whole, never blown up past three times its size, on a wash of its own colours */
     cx.globalAlpha=.3;cx.drawImage(stageSrc.small,0,0,W,H);cx.globalAlpha=1;
     const s=Math.min(W/sw,H/sh,3*dpr);R={x:(W-sw*s)/2,y:(H-sh*s)/2,w:sw*s,h:sh*s}}
-  let x=R.x,y=R.y,w=R.w,h=R.h;const depth=stageDepth+(fname=='mirror'?4:0);
+  let x=R.x,y=R.y,w=R.w,h=R.h;const depth=stageDepth;
   for(let d=0;d<=Math.min(depth+(cover?1:0),9);d++){cx.drawImage(src,x,y,w,h);
     if(d){cx.strokeStyle='rgba(255,255,255,.18)';cx.lineWidth=dpr;cx.strokeRect(x+.5,y+.5,w-1,h-1)}
     const nw=w*.56,nh=h*.56;x+=w*.07;y+=h*.12;w=nw;h=nh}
-  if(fname=='echo'&&stageSrc.echo)for(const e of stageSrc.echo){cx.globalAlpha=.33;cx.drawImage(RAW?e:reduce(e),R.x,R.y,R.w,R.h);cx.globalAlpha=1}
   const pen=(pts,col,lw)=>{cx.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.strokeStyle=col;cx.lineWidth=lw*dpr;cx.lineJoin=cx.lineCap='round';cx.stroke()};
   for(const m of stageMarks)for(const s of m.strokes)pen(s,m.col,2.5);
   for(const s of strokes)pen(s,'#fff',3);
@@ -563,39 +566,45 @@ function paint(){
 new ResizeObserver(()=>{if(sizeStage())paint();drawRuler();document.documentElement.style.setProperty('--ph',$('#player').offsetHeight+'px')}).observe(stage);
 const parseMark=s=>String(s||'').split(';').map(t=>t.trim().split(/\s+/).map(p=>p.split(',').map(Number)).filter(p=>p.length==2&&p.every(n=>n>=0&&n<=999))).filter(t=>t.length>1);
 const colour=n=>n.at=='2021'?'rgba(111,116,128,.34)':n.by=='human'?'#e3c34d':n.by=='ai'?'#6dbb72':'#ffffff';
-/* drawing on the stage, and swiping it */
-function setDraw(v){drawing=v;document.body.classList.toggle('drawing',v);$('#bdraw').classList.toggle('on',v);$('#bundo').hidden=!strokes.length;if(v){stopPlay();clip.hidden=true;setMini(false,false);if(!wide.matches)scrollTo(0,0)}else syncClip();extras()}
-$('#bdraw').onclick=()=>setDraw(!drawing);$('#bundo').onclick=()=>{strokes.pop();$('#bundo').hidden=!strokes.length;render();extras()};
+/* drawing on the stage, and swiping it. A tap on the picture itself leaves a dot and turns drawing on. */
+function setDraw(v){drawing=v;document.body.classList.toggle('drawing',v);$('#bdraw').classList.toggle('on',v);if(v){stopPlay();clip.hidden=true;setMini(false,false);if(!wide.matches)scrollTo(0,0)}else syncClip();paintDraw()}
+function keepDraft(){if(cur){if(strokes.length)drafts[cur]=strokes;else delete drafts[cur];store.set('abe-drafts',drafts)}paintDraw();render()}
+function paintDraw(){const n=strokes.length,ids=draftIds(),k=ids.length,lab=k>1?'Leave your '+k+' marks':'Leave your mark';
+  $('#bundo').hidden=!n;$('#dbar').hidden=!drawing;$('#dundo').disabled=!n;$('#send').textContent=lab;$('#dsend').textContent=lab;$('#dsend').hidden=!k;$('#banswer span').textContent=lab;
+  $('#extras').textContent=n?'+ drawing':'';
+  const others=ids.filter(i=>i!=cur),dn=$('#dnote');dn.hidden=!others.length;
+  dn.innerHTML=others.length?'Also drawn on, and saved together with this: '+others.map(i=>'<button type="button" data-go="'+esc(i)+'">'+esc(i)+'</button>').join(' ')+' · <button type="button" data-clear="1">forget those</button>':''}
+$('#dnote').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.go)go(b.dataset.go);else{for(const i of draftIds())if(i!=cur)delete drafts[i];keepDraft()}};
+$('#bdraw').onclick=()=>setDraw(!drawing);$('#ddone').onclick=e=>{e.stopPropagation();setDraw(false)};
+$('#bundo').onclick=$('#dundo').onclick=e=>{e.stopPropagation();strokes.pop();keepDraft()};
+$('#dsend').onclick=e=>{e.stopPropagation();leave()};
 let pen=null,swipe=null;const pt=e=>{const b=cv.getBoundingClientRect();return[clamp(Math.round(((e.clientX-b.left)*dpr-R.x)/R.w*999),0,999),clamp(Math.round(((e.clientY-b.top)*dpr-R.y)/R.h*999),0,999)]};
-stage.addEventListener('pointerdown',e=>{if(mini||e.target.closest('#gate button,video,.ov'))return;if(drawing){e.preventDefault();stage.setPointerCapture(e.pointerId);pen=[pt(e)];strokes.push(pen)}else swipe={x:e.clientX,y:e.clientY,t:Date.now()}});
+const dot=p=>[p,[Math.min(999,p[0]+1),p[1]]];
+stage.addEventListener('pointerdown',e=>{if(mini||EX||e.button||e.target.closest('#gate button,.ov,#dbar,#idtag')||(e.target==clip&&clip.controls))return;
+  if(drawing){e.preventDefault();try{stage.setPointerCapture(e.pointerId)}catch(x){}pen=[pt(e)];strokes.push(pen)}else swipe={x:e.clientX,y:e.clientY,t:Date.now(),p:pt(e),tap:!e.target.closest('.edge')}});
 stage.addEventListener('pointermove',e=>{if(!pen)return;const p=pt(e),l=pen[pen.length-1];if(Math.abs(p[0]-l[0])+Math.abs(p[1]-l[1])>6&&strokes.reduce((a,s)=>a+s.length,0)<380){pen.push(p);render()}});
-addEventListener('pointerup',e=>{if(pen){if(pen.length<2)strokes.pop();pen=null;$('#bundo').hidden=!strokes.length;extras();render()}
-  else if(swipe){const dx=e.clientX-swipe.x,dy=e.clientY-swipe.y;if(Math.abs(dx)>46&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-swipe.t<800)step(dx<0?1:-1)}swipe=null});
-const markString=()=>strokes.map(s=>s.map(p=>p.join(',')).join(' ')).join(';');
-/* ways of seeing */
-const FORMS=[['','as it is'],['field','colour'],['glitch','glitch'],['mirror','mirror'],['trace','trace'],['weave','weave'],['echo','echo']];
-$('#looks').innerHTML=FORMS.map(([k,l])=>'<button class="btn sm" data-f="'+k+'">'+l+'</button>').join('');
-function markForms(){$$('#looks button').forEach(b=>b.classList.toggle('on',b.dataset.f==(form||'').split(':')[0]));$('#blook').classList.toggle('on',!!form)}
-function setForm(f){if(f&&playing&&playMode!='slide')stopPlay();form=f;markForms();if(f=='echo'&&cur)show(cur,{quiet:1});else{render();syncClip()}extras()}
-$('#blook').onclick=e=>{const l=$('#looks');if(!l.hidden){l.hidden=true;return}const b=e.currentTarget.getBoundingClientRect();l.hidden=false;l.style.left=clamp(b.left-120,8,innerWidth-290)+'px';l.style.top=(b.top+scrollY-l.offsetHeight-8)+'px'};
-$('#looks').onclick=e=>{const b=e.target.closest('button');if(!b)return;const f=b.dataset.f;setForm(f&&f!='field'&&f!='mirror'&&f!='echo'?f+':'+Math.floor(Math.random()*99999):f);$('#looks').hidden=true};
-document.addEventListener('pointerdown',e=>{if(!$('#looks').hidden&&!e.target.closest('#looks,#blook'))$('#looks').hidden=true});
-function extras(){const x=[];if(strokes.length)x.push('drawing');if(form)x.push(form.split(':')[0]);$('#extras').textContent=x.length?'+ '+x.join(', '):''}
+addEventListener('pointerup',e=>{if(pen){if(pen.length<2)pen.push(dot(pen[0])[1]);pen=null;keepDraft()}
+  else if(swipe){const dx=e.clientX-swipe.x,dy=e.clientY-swipe.y,dt=Date.now()-swipe.t;
+    if(Math.abs(dx)>46&&Math.abs(dx)>Math.abs(dy)*1.6&&dt<800)nav(dx<0?1:-1);
+    else if(swipe.tap&&Math.abs(dx)<9&&Math.abs(dy)<9&&dt<700&&strokes.reduce((a,s)=>a+s.length,0)<378){setDraw(true);strokes.push(dot(swipe.p));keepDraft()}}swipe=null});
+addEventListener('pointercancel',()=>{if(pen){if(pen.length<2)strokes.pop();pen=null;keepDraft()}swipe=null});
+const markString=L=>L.map(s=>s.map(p=>p.join(',')).join(' ')).join(';');
 
 /* captions arrive word by word, the way they did */
-let timer;
-function say(text,small){
-  clearInterval(timer);const el=$('#line');el.innerHTML='';el.classList.toggle('sm',!!small);if(!text)return;
-  const ws=String(text).split(' ').slice(0,90).map(t=>{const s=document.createElement('span');s.className='w';s.textContent=t+' ';el.appendChild(s);return s});
+let timer,tick={text:'',small:false,ws:[]};
+function say(text,small,hold){
+  clearInterval(timer);const el=$('#line');el.innerHTML='';el.classList.toggle('sm',!!small);tick={text:String(text||''),small:!!small,ws:[]};if(!text)return;
+  const ws=tick.ws=String(text).split(' ').filter(Boolean).slice(0,90).map(t=>{const s=document.createElement('span');s.className='w';s.textContent=t+' ';el.appendChild(s);return s});
+  if(hold)return; /* the reading voice lights the words as it says them */
   if(reduced||ws.length>60){ws.forEach(s=>s.classList.add('on'));return}
   let i=0;const stepW=()=>{if(i<ws.length)ws[i++].classList.add('on');else clearInterval(timer)};
   stepW();timer=setInterval(stepW,110);
 }
-function sayNow(text){clearInterval(timer);const el=$('#line');el.classList.remove('sm');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text}
+function sayNow(text){clearInterval(timer);const el=$('#line');el.classList.remove('sm');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text;tick={text:'',small:false,ws:[]}}
 const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(n.model?', '+n.model.toUpperCase():'')+')'+(n.as&&P[n.as]?' · ✓ '+P[n.as].name.toUpperCase()+', WHO WAS THERE':'');
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
-const lineText=n=>n.removed?'[this was taken back]':(n.text||'')+(n.mark?' [a drawing]':'')+(n.form?' [seen as '+n.form.split(':')[0]+']':'')+(n.theme&&T[n.theme]?' [in “'+T[n.theme].title+'”]':'')+(n.here?' [I am in this]':'')||'[a mark without words]';
+const lineText=n=>n.removed?'[this was taken back]':(n.text||'')+(n.mark?' [a drawing]':'')+(n.theme&&T[n.theme]?' [in “'+T[n.theme].title+'”]':'')+(n.here?' [I am in this]':'')||'[a mark without words]';
 const GROUP={d:'The 2021 document',p:'Camera roll',s:'Screenshot',x:'Made in 2026 from a file that could not be read'};
 const seedByShot={};for(const s of seeds)seedByShot[s.shot]=s;
 async function pseudo(id){ /* a picture, a minute, a recording, a theme or a person, described so it can sit in a thread */
@@ -617,8 +626,7 @@ async function backdrop(rootId,depth,tok){
     if(isRec(id))id=id+'.0000';
     if(isMedia(id)&&!gone[id]&&!gone[id.slice(0,4)]){if(!isImg(id))await needRecs();
       const img=await loadImg(RAW?bigUrl(id):thumbUrl(id))||await loadImg(thumbUrl(id))||await loadImg(bigUrl(id));
-      if(img){src={img,id};
-        if(form=='echo'){const nb=isImg(id)?[-1,1].map(d=>'m'+pad(+id.slice(1)+d,5)).filter(i=>IMG.has(+i.slice(1))):[-1,1].map(d=>id.slice(0,5)+pad(Math.max(0,+id.slice(5)+d),4));src.echo=(await Promise.all(nb.map(i=>loadImg(thumbUrl(i))))).filter(Boolean)}}}}
+      if(img)src={img,id}}}
   if(tok!=showing)return;
   stageSrc=src||{el:fieldCanvas('1a1a1e'.repeat(144)),cover:true};stageDepth=depth;stageMarks=marks;render()}
 /* the whole original of a call, as one continuous stream, once it has reached the Internet Archive */
@@ -633,7 +641,7 @@ async function iaUrl(r){
 function vidArm(u,r,tok){ /* load it and, as soon as it can play from where we are, let it take over from the frames */
   if(clip.dataset.u!=u){clip.dataset.u=u;clip.controls=false;clip.removeAttribute('poster');clip.src=u;clip.load()}
   vidRec=r.id;clip.muted=!soundOn;
-  const live=()=>tok==recTok&&playing&&playMode=='rec'&&clip.dataset.u==u&&RAW&&!drawing&&!form;
+  const live=()=>tok==recTok&&playing&&playMode=='rec'&&clip.dataset.u==u&&RAW&&!drawing;
   const take=()=>{if(!live())return;const at=Math.min(playPos+.4,Math.max(0,(clip.duration||r.sec)-2));
     const on=follow=>{if(!live()){clip.pause();return}vidPaused=false;clip.hidden=false;if(follow)vidLive='follow';else{vidLive=true;audio.pause();audioLive=false}paintSound()};
     const go=()=>{if(!live())return;clip.play().then(()=>on(false)).catch(()=>{ /* no sound without a tap here: run it silent under the sound we already have */
@@ -644,43 +652,48 @@ clip.addEventListener('error',()=>{if(vidRec){const was=vidLive;vidLive=false;vi
 function syncClip(){
   const r=cur&&isMin(cur)?recById[cur.slice(0,4)]:null;
   if(r&&r.kind=='call'){ /* a call shows its video only while the original plays, or where it was paused */
-    const keep=RAW&&!drawing&&!form&&vidRec==r.id&&(vidLive||vidPaused)&&Math.abs(clip.currentTime-(+cur.slice(5))*60-30)<=32;
+    const keep=RAW&&!drawing&&vidRec==r.id&&(vidLive||vidPaused)&&Math.abs(clip.currentTime-(+cur.slice(5))*60-30)<=32;
     if(keep)clip.hidden=false;else{if(vidRec)clip.pause();clip.hidden=true;vidLive=false;vidPaused=false}
     return}
-  const u=r&&RAW&&!drawing&&!form?(r.clip?MEDIA+r.clip:''):'';vidLive=false;vidPaused=false;
-  if(u){if(clip.dataset.u!=u){clip.dataset.u=u;clip.controls=true;clip.muted=false;clip.src=u;clip.poster=frameUrl(r.id,0)}vidRec='';clip.hidden=false}else{if(!clip.hidden||vidRec){clip.pause();clip.hidden=true}}}
+  const u=r&&RAW&&!drawing?(r.clip?MEDIA+r.clip:''):'';vidLive=false;vidPaused=false;
+  if(u){if(clip.dataset.u!=u){clip.dataset.u=u;clip.controls=true;clip.muted=!soundOn;clip.src=u;clip.poster=frameUrl(r.id,0)}vidRec='';clip.hidden=false}else{if(!clip.hidden||vidRec){clip.pause();clip.hidden=true}}}
 /* what is on the stage, and the list it belongs to */
 let showing=0,ctx={kind:'lines'};
 const lineIds=Object.keys(N).filter(k=>!N[k].removed&&(N[k].at=='2021'||N[k].text)).sort((a,b)=>(N[a].shot||1e9)-(N[b].shot||1e9)||(a<b?-1:1));
 const picIds=()=>B.kind=='pics'&&B.list.length?B.list:IMGS;
 function ctxList(){if(ctx.kind=='theme'&&T[ctx.id])return T[ctx.id].items.filter(i=>!gone[i]);if(ctx.kind=='list'&&ctx.list)return ctx.list;if(ctx.kind=='pics')return null;return lineIds}
-function inferCtx(id){if(ctx.kind=='theme'&&T[ctx.id]&&T[ctx.id].items.includes(id))return;if(ctx.kind=='list'&&ctx.list&&ctx.list.includes(id))return;
+/* a list may hold a whole recording (r026) while the stage shows one of its minutes (r026.0431) */
+const listAt=(L,id)=>{let i=L.indexOf(id);if(i<0&&id&&isMin(id))i=L.indexOf(id.slice(0,4));return i};
+function inferCtx(id){if(ctx.kind=='theme'&&T[ctx.id]&&listAt(T[ctx.id].items,id)>=0)return;if(ctx.kind=='list'&&ctx.list&&listAt(ctx.list,id)>=0)return;
   if(isMin(id))ctx={kind:'rec'};else if(isImg(id))ctx={kind:'pics'};else if(isTheme(id))ctx={kind:'theme',id};else ctx={kind:'lines'}}
 async function step(d){
-  if(!cur)return;setFormQuiet('');
+  if(!cur)return;
   if(ctx.kind=='rec'&&isMin(cur)){await needRecs();const rid=cur.slice(0,4),r=recById[rid];let m=+cur.slice(5)+d;
     while(r&&m>=0&&m<r.min&&gone[rid+'.'+pad(m,4)])m+=d;
     if(r&&m>=0&&m<r.min)return show(rid+'.'+pad(m,4),{keep:1});
     const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[(i+d+recOrder.length)%recOrder.length];if(nx)return show(nx.id+'.'+pad(d>0?0:nx.min-1,4),{keep:1});return}
   if(ctx.kind=='pics'&&isImg(cur)){const L=picIds(),n=+cur.slice(1);let i=L.indexOf(n);if(i<0)i=L.findIndex(x=>x>n)-(d>0?1:0);i=(i+d+L.length)%L.length;return show('m'+pad(L[i],5),{keep:1})}
-  const L=ctxList()||lineIds;let i=L.indexOf(cur);i=(i+d+L.length)%L.length;show(L[i],{keep:1})}
-function setFormQuiet(f){form=f;markForms()}
-async function show(id,o){
+  const L0=ctxList(),L=L0&&L0.length?L0:lineIds;let i=listAt(L,cur);if(i<0)i=d>0?-1:0;i=(i+d+L.length)%L.length;return show(L[i],{keep:1})}
+/* moving by hand: what was playing stops, the new thing appears, and it plays if something was playing (or if asked to) */
+async function go(id,o){o=o||{};const was=playing||!!o.play;halt();await show(id,o);if(was&&!drawing&&cur){playing=true;paintPlay();paintSound();playCur()}else if(playing){playing=false;paintPlay();paintSound()}}
+async function nav(d){const was=playing;halt();await step(d);if(was&&!drawing)playCur()}
+function show(id,o){return lastShow=show0(id,o)}
+async function show0(id,o){
   o=o||{};const tok=++showing;if(isRec(id))id=id+'.0000';
   const chain=[];let x=id;while(N[x]){chain.unshift(N[x]);x=N[x].hears;if(!x)break}
   if(!chain.length&&!isMedia(id)&&!isTheme(id))return;
   if(!o.keep)inferCtx(id);
-  if(cur!=id){strokes=[];$('#bundo').hidden=true;if(!o.fromPlay&&playing&&playMode=='rec')stopPlay()}
+  if(cur!=id){strokes=drafts[id]||[];pausePos=null}
   const prev=cur;cur=id;
   const rootId=x||chain[0].id,depth=chain.length-(x?0:1);
-  const f0=N[id]&&N[id].form&&!N[id].removed?N[id].form:null;if(f0)form=f0;markForms();
-  $('#idtag').textContent=id;
+  $('#idtag').textContent=id;paintDraw();
   backdrop(rootId,depth,tok).then(()=>{if(tok==showing&&N[id]&&N[id].mark&&!N[id].removed){stageMarks=[{strokes:parseMark(N[id].mark),col:colour(N[id])}];render()}});
   const head=x?await pseudo(x):null;if(tok!=showing)return;
   const me=N[id]||head;
   $('#who').textContent=label(me);
-  if(!(o.fromPlay&&playMode=='rec'&&(audioLive||vidLive)))say(me.pseudo?me.text:lineText(me),me.small);
-  if(!o.quiet&&!EX)history.replaceState(null,'',hashFor());
+  const txt=me.pseudo?me.text:lineText(me);
+  if(!(o.fromPlay&&playMode=='rec'&&(audioLive||vidLive)))say(txt,me.small);
+  if(!o.quiet&&!EX)history.replaceState(null,'',hashFor());msSync();
   const solo=!!head&&head.id==id&&!chain.length,kc=solo?'':'kid';
   const list=(head&&!solo?[[head,head.id==id?'cur':'']]:[]).concat(chain.map(m=>[m,m.id===id?'cur':''])).concat((kids[id]||[]).map(k=>[N[k],kc]));
   const air=pending().filter(p=>p.hears==id),nk=(kids[id]||[]).length+air.length;
@@ -689,62 +702,130 @@ async function show(id,o){
     +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
-  $('#bsound').hidden=!isMin(id);
 
   markRuler();markTiles();syncClip();
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
-  if(mid&&RAW)needText().then(tx=>{if(tok!=showing)return;$('#ocrbox').hidden=!tx[mid];$('#ocrbox').open=false;$('#ocr').textContent=tx[mid]||''});else $('#ocrbox').hidden=true;
+  /* what a machine read in the picture: in the side panel, and in the ticker whenever the picture has no caption line of its own */
+  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec')){const w=t.split(' ').filter(Boolean);say(w.slice(0,40).join(' ')+(w.length>40?' …':''),true)}}); /* the first forty words; all of it is in the side panel */else{$('#ocrbox').hidden=true;tickP=null}
   docBox(mid,tok);
   if(document.body.classList.contains('v-about'))drawFly();
   /* have the neighbours ready, so that moving on is instant */
   if(isImg(id)){const L=picIds(),i=L.indexOf(+id.slice(1));for(const d of[1,-1]){const n=L[i+d];if(n)loadImg(RAW?bigUrl('m'+pad(n,5)):thumbUrl('m'+pad(n,5)))}}
   else if(isMin(id)){const rid=id.slice(0,4),m=+id.slice(5),r=recById[rid];if(r&&m+1<r.min)loadImg(RAW?frameUrl(rid,m+1):frameUrl(rid,m+1,1))}
 }
-$('#thread').addEventListener('click',e=>{const li=e.target.closest('li[data-id]');if(li)show(li.dataset.id)});
-$('#thread').addEventListener('keydown',e=>{if(e.key=='Enter'){const li=e.target.closest('li[data-id]');if(li)show(li.dataset.id)}});
+$('#thread').addEventListener('click',e=>{const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)});
+$('#thread').addEventListener('keydown',e=>{if(e.key=='Enter'){const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)}});
 function pick(){const r=Math.random();
   if(recs&&recs.length&&r<.3){const calls=recs.filter(x=>x.kind=='call'&&x.lines),c=calls[Math.floor(Math.random()*calls.length)];if(c){const v=voiceCache[c.id];const m=v&&v.segs.length?Math.floor(v.segs[Math.floor(Math.random()*v.segs.length)][0]/60):Math.floor(Math.random()*Math.min(c.min,60*(c.heard||[0]).length||c.min));return c.id+'.'+pad(m,4)}}
   if(IMGS.length&&r<.75)return'm'+pad(IMGS[Math.floor(Math.random()*IMGS.length)],5);
   let k;do{k=lineIds[Math.floor(Math.random()*lineIds.length)]}while(k==cur&&lineIds.length>1);return k}
-$('#bshuf').onclick=()=>{setFormQuiet('');show(pick())};
-$('#bprev').onclick=$('#eprev').onclick=()=>step(-1);$('#bnext').onclick=$('#enext').onclick=()=>step(1);
+$('#bshuf').onclick=()=>go(pick(),{play:RAW});
+$('#bprev').onclick=$('#eprev').onclick=()=>nav(-1);$('#bnext').onclick=$('#enext').onclick=()=>nav(1);
+$('#idtag').onclick=async e=>{e.stopPropagation();if(!cur)return;const id=cur,t=$('#idtag');try{await navigator.clipboard.writeText(location.origin+location.pathname+'#'+id);t.textContent='link copied'}catch(x){t.textContent='#'+id}setTimeout(()=>{if(cur)t.textContent=cur},1400)};
 
-/* play: a slideshow for pictures and lines; for a call, its sound with the frame of each minute and the words as they are said */
-let playing=false,playMode='',slideT=0,recT=0,audioLive=false,soundOn=store.get('abe-sound',true)!==false;
+/* play: one thing at a time. A picture or a line is read aloud by the device's own synthetic voice and then makes way for the
+   next one; a minute of a call plays its sound (or its video) with the words as they are said; a phone video plays itself.
+   `playing` is the one truth: the button, the browser's own media controls and what is really audible all follow it. */
+let playing=false,playMode='',slideT=0,slideTok=0,recT=0,recTok=0,audioLive=false,soundOn=store.get('abe-sound',true)!==false,lastShow=null,tickP=null,pausePos=null,quietT=0;
+let ocrOpen=store.get('abe-ocr',false)===true,dcomOpen=store.get('abe-dcom',false)===true,dtextOpen=store.get('abe-dtext',false)===true;
 const audio=new Audio();audio.preload='auto';let audKey='',audURL='',audUnlocked=false,playPos=0;
 const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play')}
-function paintSound(){$('#bsound').innerHTML=ic(soundOn?'sound':'mute');$('#bsound').classList.toggle('on',soundOn&&playing&&!!(audioLive||vidLive))}
-$('#bsound').onclick=()=>{soundOn=!soundOn;store.set('abe-sound',soundOn);if(playing&&playMode=='rec'){if(vidLive===true)clip.muted=!soundOn;else{const p=playPos;stopPlay();vidPaused=false;startRec(p)}}paintSound()};paintSound();
-function stopPlay(){playing=false;clearInterval(slideT);clearInterval(recT);audio.pause();audioLive=false;if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause();paintPlay();paintSound()}
+const quiet=()=>{quietT=Date.now()+700}; /* for a moment, pauses are our own and not the browser's */
+/* the reading voice: whatever speech the device itself has. It changes after every three readings. */
+const synth=!EX&&window.speechSynthesis||null;let voices=[],voiceNow=null,readN=0,speakOK=true;
+function loadVoices(){if(!synth)return;const all=synth.getVoices(),en=all.filter(v=>/^en/i.test(v.lang));voices=(en.length?en:all).slice(0,24)}
+if(synth){loadVoices();try{synth.addEventListener('voiceschanged',loadVoices)}catch(e){}}
+function nextVoice(){if(!voices.length)loadVoices();if(!voices.length)return null;
+  if(!voiceNow||!voices.includes(voiceNow)||readN%3==0){const others=voices.filter(v=>v!=voiceNow);voiceNow=others.length?others[Math.floor(Math.random()*others.length)]:voices[0]}
+  readN++;return voiceNow}
+const MS=navigator.mediaSession||null;
+function msSync(){if(!MS)return;try{MS.playbackState=playing?'playing':'paused';if(window.MediaMetadata)MS.metadata=new MediaMetadata({title:($('#who').textContent||'').slice(0,90)||'AIgorithmic Butterfly Effect',artist:'AIgorithmic Butterfly Effect',album:cur||''})}catch(e){}}
+function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play');msSync()}
+function paintSound(){$('#bsound').innerHTML=ic(soundOn?'sound':'mute');$('#bsound').classList.toggle('on',soundOn&&playing);$('#bsound').setAttribute('aria-label',soundOn?'Sound is on':'Sound is off')}
+/* stop whatever is sounding or moving, without deciding whether we are still "playing" */
+function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;if(synth){try{synth.cancel()}catch(e){}}audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
+function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:playPos};halt();playing=false;paintPlay();paintSound()}
 function startPlay(){
-  if(!cur)return;
-  if(!clip.hidden&&!vidRec){playing=true;playMode='clip';clip.play().catch(()=>{});paintPlay();return}
-  if(isMin(cur)&&ctx.kind!='theme'&&ctx.kind!='list'){if(!audUnlocked&&soundOn&&RAW){audio.src=SILENT;audio.play().catch(()=>{});audUnlocked=true}
-    return startRec(vidPaused&&vidRec==cur.slice(0,4)&&!clip.hidden?clip.currentTime:seekAt&&seekAt.id==cur?seekAt.sec:(+cur.slice(5))*60)}
-  playing=true;playMode='slide';paintPlay();slideT=setInterval(()=>step(1),EX?24e3:7e3)}
+  if(!cur)return;playing=true;paintPlay();paintSound();
+  if(!audUnlocked&&soundOn&&RAW){audUnlocked=true;if(!audKey){audio.src=SILENT;audio.play().catch(()=>{})}} /* inside the tap, so that sound may follow later */
+  return playCur()}
+async function playCur(){
+  const my=++slideTok;quiet();clearTimeout(slideT);
+  if(lastShow)await lastShow;if(my!=slideTok||!playing||!cur)return;
+  if(isMin(cur)){await needRecs();if(my!=slideTok||!playing)return;const rid=cur.slice(0,4),r=recById[rid];
+    if(r&&r.kind=='story'&&r.clip&&RAW&&!clip.hidden&&!vidRec){playMode='clip';clip.muted=!soundOn;
+      try{await clip.play()}catch(e){if(my==slideTok&&playing)stopPlay()}return}
+    if(r){const L=ctx.kind=='theme'||ctx.kind=='list'?ctxList():null,whole=L&&L.includes(rid)&&!L.includes(cur);
+      const from=pausePos&&pausePos.id==cur?pausePos.sec:vidPaused&&vidRec==rid&&!clip.hidden?clip.currentTime:seekAt&&seekAt.id==cur?seekAt.sec:(+cur.slice(5))*60;pausePos=null;
+      return startRec(from,L?(whole?r.sec:Math.min(r.sec,(+cur.slice(5)+1)*60)):0)}}
+  playMode='slide';if(tickP)await tickP;if(my!=slideTok||!playing)return;slideOne(my)}
+/* after the thing that was playing: the next one in its list */
+async function advance(){if(!playing)return;const was=cur;halt();await step(1);if(!playing)return;if(cur==was)return stopPlay();playCur()}
+function slideOne(my){
+  const done=()=>{if(my==slideTok&&playing&&playMode=='slide')advance()};
+  const n=tick.ws.length,first=n?tick.ws[0].textContent:'';
+  const timed=()=>{slideT=setTimeout(done,n?clamp(n*330+1800,5e3,22e3):6e3)};
+  if(!(synth&&speakOK&&soundOn&&RAW&&n&&first[0]!='['))return timed();
+  say(tick.text,tick.small,true);readAloud(my,done,timed)}
+function readAloud(my,done,timed){
+  const ws=tick.ws,words=ws.map(s=>s.textContent.trim()),v=nextVoice();let shown=0,started=false,ci=0;
+  const live=()=>my==slideTok&&playing&&playMode=='slide';
+  const reveal=k=>{k=Math.min(k,ws.length);while(shown<k)ws[shown++].classList.add('on')};
+  const chunks=[];for(let i=0;i<words.length;){let j=i,len=0;while(j<words.length&&(j==i||len+words[j].length+1<=150)){len+=words[j].length+1;j++}chunks.push([i,j]);i=j}
+  const fallback=()=>{if(!live())return;try{synth.cancel()}catch(e){}reveal(ws.length);timed()};
+  const dog=setTimeout(()=>{if(!started&&live()){speakOK=false;setTimeout(()=>{speakOK=true},6e4);fallback()}},3500); /* no voice came: carry on by the clock */
+  const next=()=>{if(!live())return;if(ci>=chunks.length){reveal(ws.length);slideT=setTimeout(done,1100);return}
+    const[a,b]=chunks[ci++],u=new SpeechSynthesisUtterance(words.slice(a,b).join(' '));if(v){u.voice=v;u.lang=v.lang}else u.lang='en-GB';u.rate=.92;tick.u=u;
+    const offs=[];let o=0;for(let k=a;k<b;k++){offs.push(o);o+=words[k].length+1}
+    let bound=false,t0=0,iv=0;
+    u.onstart=()=>{started=true;clearTimeout(dog);t0=Date.now();reveal(a+1);iv=setInterval(()=>{if(!live()||bound){clearInterval(iv);return}reveal(Math.min(b,a+1+Math.floor((Date.now()-t0)/1e3*2.4)))},150)};
+    u.onboundary=e=>{if(e.name&&e.name!='word')return;bound=true;let k=0;while(k+1<offs.length&&offs[k+1]<=e.charIndex)k++;reveal(a+k+1)};
+    u.onend=()=>{clearInterval(iv);if(!live())return;reveal(b);next()};
+    u.onerror=e=>{clearInterval(iv);if(!live()||e.error=='interrupted'||e.error=='canceled')return;clearTimeout(dog);fallback()};
+    try{synth.speak(u)}catch(e){clearTimeout(dog);fallback()}};
+  setTimeout(next,80)} /* a breath after any cancel, or some browsers swallow the first words */
 $('#bplay').onclick=()=>playing?stopPlay():startPlay();
-clip.addEventListener('play',()=>{if(vidRec)return;playing=true;playMode='clip';paintPlay()});clip.addEventListener('pause',()=>{if(playMode=='clip'&&!vidRec){playing=false;paintPlay()}});
-clip.addEventListener('ended',()=>{if(vidRec){if(vidLive&&playing&&playMode=='rec'&&recEnd)recEnd()}else if(playMode=='clip'){playing=false;paintPlay()}});
+$('#bsound').onclick=()=>{soundOn=!soundOn;store.set('abe-sound',soundOn);
+  if(playing){if(playMode=='clip'||(playMode=='rec'&&vidLive===true))clip.muted=!soundOn;else if(playMode=='rec'){const id=cur,p=playPos;halt();vidPaused=false;pausePos={id,sec:p};playCur()}else{halt();playCur()}}
+  else if(synth&&!soundOn){try{synth.cancel()}catch(e){}}
+  paintSound()};paintSound();
+/* the browser's own media controls and keys (the tab's media button, a keyboard's play key) drive the same state */
+if(MS)for(const[a,fn]of[['play',()=>{if(!playing)startPlay()}],['pause',()=>{if(playing)stopPlay()}],['stop',()=>stopPlay()],['nexttrack',()=>nav(1)],['previoustrack',()=>nav(-1)]]){try{MS.setActionHandler(a,fn)}catch(e){}}
+audio.addEventListener('pause',()=>{if(audioLive&&playing&&playMode=='rec'&&Date.now()>quietT&&!audio.ended)stopPlay()});
+audio.addEventListener('play',()=>{if(!playing&&audKey){quiet();audio.pause();if(cur&&isMin(cur))startPlay()}}); /* started from outside the page: start properly, or not at all */
+clip.addEventListener('play',()=>{if(vidRec){if(!playing){quiet();clip.pause();if(cur&&isMin(cur))startPlay()}return}
+  if(!playing||playMode!='clip'){clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;if(synth){try{synth.cancel()}catch(e){}}audioLive=false;audio.pause();playing=true;playMode='clip';paintPlay();paintSound()}});
+clip.addEventListener('pause',()=>{if(clip.ended||clip.seeking||Date.now()<=quietT)return;
+  if(vidRec){if(vidLive===true&&playing&&playMode=='rec')stopPlay()}else if(playMode=='clip'&&playing){playing=false;paintPlay();paintSound()}});
+clip.addEventListener('ended',()=>{if(vidRec){if(vidLive&&playing&&playMode=='rec'&&recEnd)recEnd()}else if(playMode=='clip'&&playing)advance()});
 async function loadChunk(rid,c){const key=rid+'/'+c;if(key==audKey)return true;
   try{const r=await fetch(AUD+rid+'/'+pad(c,3)+'.webm');if(!r.ok)return false;const b=await r.blob();if(audURL)URL.revokeObjectURL(audURL);audURL=URL.createObjectURL(new Blob([b],{type:'audio/webm'}));audio.src=audURL;audKey=key;return true}catch(e){return false}}
 const hasAudio=(r,sec)=>!!(AUD&&RAW&&soundOn&&r&&(r.aud||[]).includes(Math.floor(sec/3600)));
-let recTok=0;
-async function startRec(sec){
-  await needRecs();const rid=cur.slice(0,4),r=recById[rid];if(!r)return;const tok=++recTok;
-  clearInterval(recT);audio.pause();playing=true;playMode='rec';playPos=sec;audioLive=false;if(vidLive)vidLive=false;paintPlay();
+/* a recording from `sec` on. With `bound` (a second in it) it stops there and the list it came from goes on: one minute of a theme, say. */
+async function startRec(sec,bound){
+  await needRecs();const rid=cur.slice(0,4),r=recById[rid];if(!r)return;const tok=++recTok;let end=bound||0;
+  clearInterval(recT);audioLive=false;quiet();audio.pause();playing=true;playMode='rec';playPos=sec;if(vidLive)vidLive=false;paintPlay();paintSound();
   const v=await voice(rid);if(tok!=recTok||!playing)return;
   let lastMin=-1,lastSeg=null,silentAt=Date.now(),silentFrom=sec,loading=false;
   const go=async()=>{ /* (re)load the ten-minute piece of sound that holds playPos, or run silently where there is none */
     audioLive=false;loading=true;
-    if(vidLive!==true&&hasAudio(r,playPos)){const c=Math.floor(playPos/600);const ok=await loadChunk(rid,c);if(tok!=recTok||!playing)return;
-      if(ok&&vidLive!==true){try{audio.currentTime=Math.max(0,playPos-c*600)}catch(e){}try{await audio.play();if(tok!=recTok||!playing||vidLive===true){audio.pause()}else audioLive=true}catch(e){audioLive=false}}}
+    if(vidLive!==true&&hasAudio(r,playPos)){const c=Math.floor(playPos/600);let ok=await loadChunk(rid,c);if(tok!=recTok||!playing)return;
+      if(!ok){await wait(1500);if(tok!=recTok||!playing)return;ok=await loadChunk(rid,c);if(tok!=recTok||!playing)return}
+      if(!ok&&vidLive!==true&&!vidLive){stopPlay();sayNow('The sound of this stretch could not be loaded just now. Press play to try again.');return} /* better said than skipped through in silence */
+      if(ok&&vidLive!==true){try{audio.currentTime=Math.max(0,playPos-c*600)}catch(e){}
+        try{await audio.play();if(tok!=recTok||!playing||vidLive===true){quiet();audio.pause()}else audioLive=true}
+        catch(e){audioLive=false;if(e&&e.name=='NotAllowedError'&&tok==recTok&&playing){stopPlay();sayNow('Press play once more: the browser held the sound back.');return}}}}
     loading=false;silentAt=Date.now();silentFrom=playPos;paintSound()};
-  const nextRec=()=>{const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[i+1];stopPlay();vidPaused=false;if(nx)show(nx.id+'.0000',{keep:1}).then(()=>startPlay())};
-  audio.onended=()=>{if(tok!=recTok||!playing||vidLive===true)return;playPos=(Math.floor(playPos/600)+1)*600;if(playPos>=r.sec)return nextRec();go()};
-  recFallback=()=>{if(tok==recTok&&playing)go()};recEnd=()=>{if(tok==recTok&&playing)nextRec()};
-  if(RAW&&!drawing&&!form)iaUrl(r).then(u=>{if(u&&tok==recTok&&playing)vidArm(u,r,tok)});
+  const nextRec=()=>{const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[i+1];halt();vidPaused=false;if(nx)show(nx.id+'.0000',{keep:1}).then(()=>{if(playing)playCur()});else stopPlay()};
+  const finish=()=>{if(bound){vidPaused=false;advance()}else nextRec()};
+  const over=()=>{ /* the minute asked for is over. If the list carries straight on into the next minute, so do we. */
+    const L=ctxList()||[],i=listAt(L,cur),nx=i>=0?L[i+1]:null;
+    if(nx&&nx==rid+'.'+pad(Math.floor(end/60),4)&&end<r.sec-1){end=Math.min(r.sec,end+60);return false}
+    finish();return true};
+  audio.onended=()=>{if(tok!=recTok||!playing||vidLive===true)return;playPos=(Math.floor(playPos/600)+1)*600;if(playPos>=r.sec)return finish();go()};
+  recFallback=()=>{if(tok==recTok&&playing)go()};recEnd=()=>{if(tok==recTok&&playing)finish()};
+  if(RAW&&!drawing)iaUrl(r).then(u=>{if(u&&tok==recTok&&playing)vidArm(u,r,tok)});
   await go();if(tok!=recTok||!playing)return;
   recT=setInterval(()=>{
     if(tok!=recTok||!playing){clearInterval(recT);return}
@@ -753,9 +834,11 @@ async function startRec(sec){
     else if(audioLive){const c=+audKey.split('/')[1];playPos=c*600+audio.currentTime;if(vidLive=='follow'&&Math.abs(clip.currentTime-playPos)>1.5){try{clip.currentTime=playPos}catch(e){}}}
     else if(!loading){ /* no sound for this hour (or sound is off): a minute passes every five seconds */
       playPos=silentFrom+(Date.now()-silentAt)/1000*12;if(hasAudio(r,playPos)&&Math.floor(playPos/3600)!=Math.floor(silentFrom/3600)){go();return}}
-    if(playPos>=r.sec-1)return nextRec();
+    if(playPos>=r.sec-1)return finish();
+    if(end&&playPos>=end&&over())return;
     let m=Math.floor(playPos/60);
-    if(m!=lastMin&&gone[rid+'.'+pad(m,4)]){while(m<r.min&&gone[rid+'.'+pad(m,4)])m++;if(m>=r.min)return nextRec();playPos=m*60;if(vidLive===true){try{clip.currentTime=playPos}catch(e){}}else{clearInterval(recT);audio.pause();show(rid+'.'+pad(m,4),{keep:1,fromPlay:1}).then(()=>{if(tok==recTok&&playing)startRec(m*60)});return}}
+    if(m!=lastMin&&gone[rid+'.'+pad(m,4)]){while(m<r.min&&gone[rid+'.'+pad(m,4)])m++;if(m>=r.min)return finish();playPos=m*60;if(end)end=Math.max(end,playPos+60);
+      if(vidLive===true){try{clip.currentTime=playPos}catch(e){}}else{clearInterval(recT);audioLive=false;quiet();audio.pause();const b=end;show(rid+'.'+pad(m,4),{keep:1,fromPlay:1}).then(()=>{if(tok==recTok&&playing)startRec(m*60,b)});return}}
     if(m!=lastMin){lastMin=m;const id=rid+'.'+pad(m,4);if(id!=cur)show(id,{keep:1,fromPlay:1})}
     if(!scrubbing){$('#scrub').value=Math.floor(playPos);$('#stime').textContent=hms(playPos)+' / '+hm(r.sec)}
     if(audioLive||vidLive){let s=null;for(let i=v._i||0;i<v.segs.length;i++){const g=v.segs[i];if(g[0]>playPos)break;if(g[1]>=playPos-1.5){s=g;v._i=i;break}}
@@ -767,7 +850,7 @@ $('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cu
 $('#scrub').addEventListener('change',()=>{scrubbing=false;seek(+$('#scrub').value)});
 async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),was=playing&&playMode=='rec';
   if(was&&vidLive===true&&vidRec==rid){playPos=sec;try{clip.currentTime=sec}catch(e){}return}
-  if(was){clearInterval(recT);audio.pause()}else vidPaused=false;
+  if(was){quiet();clearInterval(recT);audioLive=false;audio.pause()}else{vidPaused=false;pausePos=null}
   const id=rid+'.'+pad(Math.floor(sec/60),4);ctx={kind:'rec'};seekAt=was?null:{id,sec};await show(id,{keep:1,fromPlay:was});if(was)startRec(sec)}
 let seekAt=null;
 async function syncRec(id,tok){
@@ -782,10 +865,10 @@ async function syncRec(id,tok){
   const snd=(r.aud||[]).includes(Math.floor(min/60));
   $('#recnote').textContent=r.kind=='call'?'Words by a small speech model, 2026. It mishears.':'';
   if(r.kind=='call'&&RAW)iaUrl(r).then(u=>{if(tok==showing&&!u)$('#recnote').textContent+=' One frame a minute until the full video of this call has been uploaded.'})}
-$('#voice').onclick=e=>{const d=e.target.closest('div[data-s]');if(d)seek(+d.dataset.s)};
+$('#voice').onclick=async e=>{const d=e.target.closest('div[data-s]');if(!d)return;await seek(+d.dataset.s);if(!playing&&RAW&&!drawing)startPlay()};
 
 /* the ruler: where you are in the whole work */
-const ruler=$('#ruler'),rc=$('#rcv'),rx=rc.getContext('2d');let RW=0,RH=0,atlasCols=null;
+const ruler=$('#ruler'),rin=$('#rin'),rc=$('#rcv'),rx=rc.getContext('2d');let RW=0,RH=0,atlasCols=null;
 const T0=Date.UTC(2021,10,13,23),T1=Date.UTC(2022,0,13,23),DOCN=5909;
 const OTHERS=IMGS.filter(n=>n>DOCN);
 const RG={pad:8,ay:16,ah:13,by:38,bh:13};
@@ -798,8 +881,8 @@ function minAtX(x){if(!recs||!recs.length)return null;const ms=T0+(x-RG.pad)/(RW
   for(const r of recs){if(!r.t0)continue;const a=r.t0,b=r.t0+r.sec*1e3,d=ms<a?a-ms:ms>b?ms-b:0;if(d<bd||(d==bd&&best&&r.sec<best.sec)){bd=d;best=r}}
   if(!best)return null;const m=clamp(Math.floor((ms-best.t0)/6e4),0,best.min-1);return best.id+'.'+pad(m,4)}
 function drawRuler(){
-  const b=ruler.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!b.width)return;RW=b.width;RH=b.height;rc.width=Math.round(RW*d);rc.height=Math.round(RH*d);rx.setTransform(d,0,0,d,0,0);
-  RG.ay=13;RG.ah=9;RG.by=26;RG.bh=9;
+  const b=rin.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1),big=ruler.classList.contains('big');if(!b.width)return;RW=b.width;RH=b.height;rc.width=Math.round(RW*d);rc.height=Math.round(RH*d);rx.setTransform(d,0,0,d,0,0);
+  RG.ay=big?17:13;RG.ah=big?40:9;RG.by=big?68:26;RG.bh=big?36:9; /* under the hand it grows, so that one picture or one hour can be hit */
   rx.clearRect(0,0,RW,RH);rx.font='9px ui-monospace,Menlo,monospace';rx.textBaseline='top';rx.fillStyle='#8f8b83';
   rx.fillText('PICTURES',RG.pad,2);
   const wd=wDoc();
@@ -821,29 +904,41 @@ function rulerPos(id){ /* [x, row, words] */
   return null}
 function markRuler(){const m=$('#rmark'),p=cur&&RW?rulerPos(cur):null;if(!p){m.hidden=true;$('#rlab').textContent='';return}
   m.hidden=false;m.style.left=p[0]+'px';m.style.top=((p[1]?RG.by:RG.ay)-4)+'px';m.style.height=((p[1]?RG.bh:RG.ah)+8)+'px';$('#rlab').textContent=p[2]}
-let rdrag=false,rTarget=null;
-function rAt(e){const b=ruler.getBoundingClientRect(),x=clamp(e.clientX-b.left,RG.pad,RW-RG.pad),y=e.clientY-b.top,row=y>(RG.ay+RG.ah+RG.by)/2?1:0;
-  const id=row?minAtX(x):'m'+pad(picAtX(x),5);rTarget=id;const tip=$('#rtip'),p=id&&rulerPos(id);if(p){tip.hidden=false;tip.textContent=p[2];tip.style.left=clamp(p[0],90,RW-90)+'px'}}
-ruler.addEventListener('pointerdown',async e=>{await needRecs();rdrag=true;ruler.setPointerCapture(e.pointerId);rAt(e)});
-ruler.addEventListener('pointermove',e=>{if(rdrag||e.pointerType=='mouse')rAt(e)});
-ruler.addEventListener('pointerleave',()=>{if(!rdrag)$('#rtip').hidden=true});
-ruler.addEventListener('pointerup',async()=>{if(!rdrag)return;rdrag=false;$('#rtip').hidden=true;if(rTarget){
-    if(isMin(rTarget)&&playing&&playMode=='rec'&&!form){ctx={kind:'rec'};if(cur&&rTarget.slice(0,4)==cur.slice(0,4))return seek((+rTarget.slice(5))*60);stopPlay();vidPaused=false;await show(rTarget,{keep:1});return startPlay()}
-    setFormQuiet('');if(isImg(rTarget)){ctx={kind:'pics'};if(document.body.classList.contains('v-browse')&&B.kind=='pics')bJump(+rTarget.slice(1))}else ctx={kind:'rec'};show(rTarget,{keep:1})}});
-ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){step(-1);e.preventDefault()}if(e.key=='ArrowRight'){step(1);e.preventDefault()}});
+let rdrag=false,rTarget=null,rRow=-1,rHold=false,rTipId='';
+function setBig(v){if(ruler.classList.contains('big')==v)return;ruler.classList.toggle('big',v);drawRuler();bWin();if(!v){$('#rtip').hidden=true;rTipId=''}}
+function rAt(e){const b=rin.getBoundingClientRect(),x=clamp(e.clientX-b.left,RG.pad,RW-RG.pad),y=e.clientY-b.top,row=rRow>=0?rRow:y>(RG.ay+RG.ah+RG.by)/2?1:0;
+  const id=row?minAtX(x):'m'+pad(picAtX(x),5);rTarget=id;const tip=$('#rtip'),p=id&&rulerPos(id);if(!p){tip.hidden=true;return}
+  tip.hidden=false;tip.lastChild.textContent=p[2];tip.style.left=clamp(p[0],100,Math.max(100,RW-100))+'px';
+  if(id!=rTipId){rTipId=id;const im=tip.firstChild,u=thumbUrl(id);im.hidden=!u;im.onerror=()=>{im.hidden=true};if(u)im.src=u}}
+ruler.addEventListener('pointerenter',e=>{if(e.pointerType=='mouse'&&!rHold&&!mini)setBig(true)});
+ruler.addEventListener('pointerdown',async e=>{if(e.button)return;e.preventDefault();rdrag=true;rHold=false;rTarget=null;try{ruler.setPointerCapture(e.pointerId)}catch(x){}
+  if(!ruler.classList.contains('big')){const b=rin.getBoundingClientRect();rRow=e.clientY-b.top>(RG.ay+RG.ah+RG.by)/2?1:0;setBig(true)} /* a finger stays in the row it first touched */
+  if(!recs)await needRecs();if(rdrag)rAt(e)});
+ruler.addEventListener('pointermove',e=>{if(rdrag||(e.pointerType=='mouse'&&ruler.classList.contains('big')))rAt(e)});
+ruler.addEventListener('pointerleave',()=>{rHold=false;if(!rdrag){rRow=-1;setBig(false)}});
+const rDone=()=>{rdrag=false;rRow=-1;rHold=true;setBig(false)};
+ruler.addEventListener('pointercancel',rDone);
+ruler.addEventListener('pointerup',()=>{if(!rdrag)return;const id=rTarget;rDone();if(!id)return;
+  if(isMin(id)&&playing&&playMode=='rec'&&cur&&id.slice(0,4)==cur.slice(0,4)){ctx={kind:'rec'};return seek((+id.slice(5))*60)}
+  if(isImg(id)){ctx={kind:'pics'};if(document.body.classList.contains('v-browse')&&B.kind=='pics')bJump(+id.slice(1))}else ctx={kind:'rec'};
+  go(id,{keep:1,play:RAW})}); /* chosen: back to its small size, and it plays */
+ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){nav(-1);e.preventDefault()}if(e.key=='ArrowRight'){nav(1);e.preventDefault()}});
 {const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=96;c.height=62;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(im,0,0,96,62);const d=x.getImageData(0,0,96,62).data;atlasCols=[];for(let i=0;i<DOCN;i++)atlasCols.push([d[i*4],d[i*4+1],d[i*4+2]]);drawRuler()}catch(e){}};im.src='data/weather-2021.png'}
 
 /* views */
 const VIEWS=['stage','browse','themes','people','about'];let view='stage',openTheme='',openPerson='';
-function hashFor(){const sub=view=='themes'?openTheme:view=='people'?openPerson:'';return'#'+(view=='stage'?(cur||''):view+(sub?'/'+sub:cur&&view=='browse'?'/'+cur:''))}
+/* the stage keeps no address of its own, so that every visit opens somewhere else; the id in the corner copies a link to one thing */
+function hashFor(){const sub=view=='themes'?openTheme:view=='people'?openPerson:'';return view=='stage'?location.pathname+location.search:'#'+view+(sub?'/'+sub:cur&&view=='browse'?'/'+cur:'')}
 function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view;view=v;
   document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
   $$('#tabs button,#tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));
   if(v=='browse')bInit();if(v=='themes')tInit();if(v=='people')pInit();if(v=='about'){drawFly()}
   syncDock();if(was!=v){setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
   requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
-$$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
-$('#brand').onclick=e=>{e.preventDefault();setView('stage')};
+/* pressing "stage" while already on it is not nothing: it turns drawing on (or off again) */
+function tabTo(v){if(v=='stage'&&view=='stage'&&!mini&&!EX){setDraw(!drawing);return}setView(v)}
+$$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>tabTo(b.dataset.v));
+$('#brand').onclick=e=>{e.preventDefault();tabTo('stage')};
 $('#banswer').onclick=()=>{setView('stage');const t=$('#t');if(!wide.matches)t.scrollIntoView({block:'center'});setTimeout(()=>t.focus({preventScroll:wide.matches}),60)};
 /* away from the wide stage view the stage is docked on top: it shrinks to a thumbnail when you scroll, and a tap brings it back */
 const wide=matchMedia('(min-width:900px)');let mini=false,miniLock=0,miniAt=0,miniHold=false;
@@ -864,10 +959,10 @@ function tile(id,n){
   if(N[id])return'<button class="tile txt" data-id="'+id+'">'+esc((N[id].text||'[a mark]').slice(0,90))+'<span class="tag">'+id+'</span></button>';
   if(isTheme(id))return'';
   return'<button class="tile" data-id="'+id+'"><img loading="lazy" decoding="async" src="'+thumbUrl(id)+'" alt=""><span class="tag">'+id+'</span>'+(n?'<span class="n">'+n+'</span>':'')+'</button>'}
-function markTiles(){$$('.tile.cur,.qcard.cur,.call.cur').forEach(t=>t.classList.remove('cur'));if(!cur)return;$$('[data-id="'+cur+'"]').forEach(t=>t.classList.add('cur'));if(isMin(cur))$$('.call[data-rec="'+cur.slice(0,4)+'"]').forEach(t=>t.classList.add('cur'))}
-document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]');if(!b)return;setFormQuiet('');setMini(false,false);const id=b.dataset.id;
+function markTiles(){$$('.tile.cur,.qcard.cur,.call.cur').forEach(t=>t.classList.remove('cur'));if(!cur)return;$$('#views [data-id="'+cur+'"]'+(isMin(cur)?',#views [data-id="'+cur.slice(0,4)+'"]':'')).forEach(t=>t.classList.add('cur'));if(isMin(cur))$$('.call[data-rec="'+cur.slice(0,4)+'"]').forEach(t=>t.classList.add('cur'))}
+document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]');if(!b)return;setMini(false,false);const id=b.dataset.id;
   if(b.closest('#tlist')&&openTheme)ctx={kind:'theme',id:openTheme};else if(b.dataset.list)ctx={kind:'list',list:$$('#'+b.dataset.list+' [data-id]').map(x=>x.dataset.id)};else if(isImg(id))ctx={kind:'pics'};else if(isMin(id)||isRec(id))ctx={kind:'rec'};else ctx={kind:'lines'};
-  show(id,{keep:1})});
+  go(id,{keep:1,play:RAW})});
 
 /* browse: everything in order, no pages */
 const B={kind:'',grp:'',list:[],a:0,b:0,ready:false,secs:false,title:''};const BN=120;
@@ -885,7 +980,7 @@ async function bSet(kind,grp,list,title){
     else{const byDay={};for(const r of L.filter(r=>r.t0).concat(L.filter(r=>!r.t0))){const d=r.t0?niceDay(r.t0):'Date not known';(byDay[d]=byDay[d]||[]).push(r)}
       body.innerHTML=Object.keys(byDay).map(d=>'<p class="meta day">'+d+'</p><div class="calls">'+byDay[d].map(r=>{const m0=0;return'<button class="call" data-rec="'+r.id+'"><span class="tile"><img loading="lazy" decoding="async" src="'+frameUrl(r.id,Math.min(r.min-1,2),1)+'" alt=""></span><span><b>'+prague(r.t0).slice(11)+' · '+dur(r.sec)+'</b><span class="meta">'+(r.lines?fmt(r.lines)+' lines':'no words')+' · '+r.id+'</span></span></button>'}).join('')+'</div>').join('')}}
   markTiles()}
-$('#bbody').addEventListener('click',async e=>{const c=e.target.closest('.call');if(!c)return;const r=recById[c.dataset.rec];if(!r)return;setMini(false,false);const v=await voice(r.id),f=v.segs[0];ctx={kind:'rec'};setFormQuiet('');show(r.id+'.'+pad(f?Math.floor(f[0]/60):0,4),{keep:1})});
+$('#bbody').addEventListener('click',async e=>{const c=e.target.closest('.call');if(!c)return;const r=recById[c.dataset.rec];if(!r)return;setMini(false,false);const v=await voice(r.id),f=v.segs[0];ctx={kind:'rec'};go(r.id+'.'+pad(f?Math.floor(f[0]/60):0,4),{keep:1,play:RAW})});
 function bTiles(a,b){let h='',ps=a>0?secOf(B.list[a-1]):-2;
   for(let i=a;i<b;i++){const n=B.list[i],id='m'+pad(n,5);
     if(B.secs&&docJ&&n<=DOCN){const s=secOf(n);if(s!=ps){ps=s;if(s>=0)h+='<div class="bsec" data-s="'+s+'">'+esc(docJ.sections[s][1])+'</div>'}}
@@ -897,7 +992,10 @@ function bJump(n,scroll){let i=B.list.indexOf(n);if(i<0)i=B.list.findIndex(x=>x>
 /* from the side panel: the section of the document a picture sits in, or every picture under one of its hashtags */
 $('#dhead').onclick=async()=>{const n=+$('#dhead').dataset.n;if(!n)return;setView('browse');await bSet('pics','d');bJump(n,1);setMini(true,false)};
 $('#dtags').onclick=async e=>{const b=e.target.closest('[data-tag]');if(!b)return;const tag=b.dataset.tag;await needDoc();const L=tagPics(tag);if(!L.length)return;setView('browse');await bSet('pics','#',L,tag);ctx={kind:'pics'}};
-$('#dtext').onclick=()=>$('#dtext').classList.toggle('open');
+$('#dtext').onclick=()=>{dtextOpen=$('#dtext').classList.toggle('open');store.set('abe-dtext',dtextOpen)};
+/* what is unfolded in the side panel stays unfolded from one thing to the next */
+$('#ocrbox').addEventListener('toggle',()=>{if($('#ocrbox').hidden)return;ocrOpen=$('#ocrbox').open;store.set('abe-ocr',ocrOpen)});
+$('#dcom').addEventListener('toggle',()=>{if($('#dcom').hidden||$('#docbox').hidden)return;dcomOpen=$('#dcom').open;store.set('abe-dcom',dcomOpen)});
 function bWin(){if(B.kind!='pics')return;$('#bearlier').hidden=B.a<=0;const L=B.list;$('#bhead').textContent=L.length?(B.title?B.title+' · ':'')+fmt(L.length)+(L.length==1?' picture':' pictures'):'Nothing here';
   const w=$('#rwin');if(L.length&&RW&&document.body.classList.contains('v-browse')){const x0=xPic(L[B.a]),x1=xPic(L[Math.max(B.a,B.b-1)]);w.hidden=false;w.style.left=Math.min(x0,x1)+'px';w.style.width=Math.max(3,Math.abs(x1-x0))+'px';w.style.top=(RG.ay-1)+'px';w.style.height=(RG.ah+2)+'px'}else w.hidden=true}
 new IntersectionObserver(es=>{if(es[0].isIntersecting&&view=='browse'&&B.kind=='pics'&&B.b<B.list.length){const g=$('#bgrid');if(!g)return;const nb=Math.min(B.list.length,B.b+BN);g.insertAdjacentHTML('beforeend',bTiles(B.b,nb));B.b=nb;bWin();markTiles()}},{rootMargin:'600px'}).observe($('#bsent'));
@@ -924,8 +1022,8 @@ function qcard(id,q){if(gone[id]||gone[id.slice(0,4)])return'';const r=isMin(id)
   return'<button class="qcard" data-id="'+id+'">'+(N[id]?'':'<span class="tile"><img loading="lazy" decoding="async" src="'+thumbUrl(id)+'" alt=""></span>')+'<span><q>'+esc(q||(N[id]?N[id].text:''))+'</q><span class="meta">'+whereTxt+' · '+id+'</span></span></button>'}
 function tMore(){const t=T[openTheme];if(!t)return;const L=t.items,q=quotes[openTheme]||{},nb=Math.min(L.length,tShown+48);$('#tlist').insertAdjacentHTML('beforeend',L.slice(tShown,nb).map(i=>qcard(i,q[i])).join(''));tShown=nb;markTiles()}
 new IntersectionObserver(es=>{if(es[0].isIntersecting&&view=='themes'&&openTheme&&T[openTheme]&&tShown<T[openTheme].items.length)tMore()},{rootMargin:'600px'}).observe($('#tsent'));
-$('#tplay').onclick=()=>{const t=T[openTheme];if(!t||!t.items.length)return;ctx={kind:'theme',id:openTheme};stopPlay();show(t.items[0],{keep:1}).then(()=>{playing=true;playMode='slide';paintPlay();slideT=setInterval(()=>step(1),7e3)});scrollTo(0,0)};
-$('#tanswer').onclick=()=>{if(openTheme){show(openTheme);$('#banswer').click()}};
+$('#tplay').onclick=()=>{const t=T[openTheme];if(!t)return;const L=t.items.filter(i=>!gone[i]&&!gone[i.slice(0,4)]);if(!L.length)return;ctx={kind:'theme',id:openTheme};go(L[0],{keep:1,play:1});scrollTo(0,0)};
+$('#tanswer').onclick=()=>{if(openTheme){go(openTheme);$('#banswer').click()}};
 
 /* answering: straight through the door, no account */
 const pending=()=>store.get('abe-pending',[]).filter(p=>Date.now()-p.t<3*day&&!wb.wingbeats.some(w=>w.hears==p.hears&&w.text==p.text&&w.name==(p.name||'anonymous')));
@@ -937,21 +1035,44 @@ $('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum()}
 {const me=store.get('abe-me',null);if(me){if(me.by)$('#by').value=me.by;if(me.name)$('#nm').value=me.name;$('#by').onchange()}}
 
 async function post(p){const r=await fetch(DOOR+'/api/say',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return r.json()}
-$('#f').onsubmit=async e=>{e.preventDefault();
+/* the door takes one mark every eight seconds from one place, and five a day: several marks go through one after another */
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function postSlow(p){const gap=8600-(Date.now()-store.get('abe-last',0));if(gap>0)await wait(Math.min(gap,8600));
+  let o=await post(p);if(!o.ok&&/slowly/i.test((o.problems||[]).join(' '))){await wait(8600);o=await post(p)}store.set('abe-last',Date.now());return o}
+let leaving=false;
+async function leave(){
+  if(leaving||!cur)return false;const here0=cur;
   const text=$('#t').value.trim().replace(/\s+/g,' '),thv=$('#th').value.trim(),th=(themesJ.themes.find(t=>t.title.toLowerCase()==thv.toLowerCase())||{}).id||thv;
-  const p={hears:cur,text,by:$('#by').value};if($('#nm').value.trim())p.name=$('#nm').value.trim();if(!$('#mdl').hidden&&$('#md').value.trim())p.model=$('#md').value.trim();
-  if(th)p.theme=th;if(strokes.length)p.mark=markString();if(form)p.form=form;
-  if(claim&&claimOK){p.person=claim.person;p.token=claim.key;if($('#here').checked)p.here=true}
-  if(!(text||p.mark||p.form||p.theme||p.here)){$('#sent').textContent='Write something, or draw.';return}
-  if(!DOOR){open(REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:cur,text,by:p.by,name:p.name||''}),'_blank','noopener');return}
+  const base={by:$('#by').value};if($('#nm').value.trim())base.name=$('#nm').value.trim();if(!$('#mdl').hidden&&$('#md').value.trim())base.model=$('#md').value.trim();
+  if(claim&&claimOK){base.person=claim.person;base.token=claim.key}
+  const p=Object.assign({hears:here0,text},base);if(th)p.theme=th;if(strokes.length)p.mark=markString(strokes);if(claim&&claimOK&&$('#here').checked)p.here=true;
+  const jobs=[];if(text||p.mark||p.theme||p.here)jobs.push(p);
+  for(const id of draftIds())if(id!=here0)jobs.push(Object.assign({hears:id,text:'',mark:markString(drafts[id])},base));
+  const sent=$('#sent');
+  if(!jobs.length){sent.textContent='Write something, or draw.';return false}
+  if(!DOOR){open(REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''}),'_blank','noopener');return false}
   store.set('abe-me',{by:p.by,name:p.name||''});
-  $('#send').disabled=true;$('#sent').textContent='…';
-  try{const o=await post(p);
-    if(o.ok){const q=store.get('abe-pending',[]);q.push({t:Date.now(),door:o.door,hears:cur,text,name:p.name});store.set('abe-pending',q.slice(-40));
-      $('#sent').innerHTML='<span class="ok">Heard. It lands here within the hour.</span>';$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;strokes=[];setDraw(false);show(cur,{quiet:1,keep:1})}
-    else $('#sent').innerHTML='<span class="warn">'+esc((o.problems||['Not accepted.']).join(' '))+'</span>'}
-  catch(err){$('#sent').innerHTML='<span class="warn">Could not be reached. <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:cur,text,by:p.by,name:p.name||''})+'">Leave it through GitHub</a></span>'}
-  $('#send').disabled=false};
+  leaving=true;$('#send').disabled=$('#dsend').disabled=true;let done=0,why='';
+  for(let k=0;k<jobs.length;k++){const q=jobs[k];
+    sent.textContent=jobs.length>1?'Saving '+(k+1)+' of '+jobs.length+' … (the door takes one every few seconds)':'…';
+    let o;try{o=await postSlow(q)}catch(err){why='net';break}
+    if(o.ok){done++;const pq=store.get('abe-pending',[]);pq.push({t:Date.now(),door:o.door,hears:q.hears,text:q.text,name:q.name});store.set('abe-pending',pq.slice(-40));
+      delete drafts[q.hears];store.set('abe-drafts',drafts);
+      if(q.hears==here0){$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;$('#th').value='';if(cur==here0)strokes=[]}}
+    else{why=(o.problems||['Not accepted.']).join(' ');if(/enough for one day|paused|storage/i.test(why)||k==0&&q===p)break;why=''} /* a mark the door will not take stays on this device; the others still go */
+  }
+  leaving=false;$('#send').disabled=$('#dsend').disabled=false;
+  const left=draftIds().length,all=done==jobs.length;
+  if(why=='net')sent.innerHTML='<span class="warn">'+(done?done+' saved. ':'')+'The door could not be reached. '+(done?'The rest is kept on this device.':'<a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''})+'">Leave it through GitHub</a>')+'</span>';
+  else if(all)sent.innerHTML='<span class="ok">Heard. '+(done>1?done+' marks land':'It lands')+' here within the hour.</span>';
+  else sent.innerHTML='<span class="warn">'+esc((done?done+' saved. ':'')+why+(left?' '+left+(left==1?' drawing is':' drawings are')+' kept on this device; press again later.':''))+'</span>';
+  if(all)setDraw(false);if(done&&cur)show(cur,{quiet:1,keep:1});else paintDraw();
+  return all}
+$('#f').onsubmit=e=>{e.preventDefault();leave()};
+/* closing the page with marks not saved: the browser asks in its own words; whoever stays is asked again in ours */
+addEventListener('beforeunload',e=>{if(!draftIds().length||EX)return;e.preventDefault();e.returnValue='';setTimeout(()=>{if(draftIds().length&&!$('#lvd').open){const n=draftIds().length;$('#lvtxt').textContent='You drew on '+n+(n==1?' thing':' things')+' and '+(n==1?'it has':'they have')+' not been left in the work yet. '+(n==1?'It stays':'They stay')+' on this device either way.';$('#lvmsg').textContent='';$('#lvd').showModal()}},600)});
+$('#lvback').onclick=()=>$('#lvd').close();
+$('#lvsave').onclick=async()=>{$('#lvmsg').textContent='Saving …';const ok=await leave();if(ok){$('#lvmsg').textContent='Saved. You can close this tab now.';setTimeout(()=>{$('#lvd').close();window.close()},900)}else $('#lvmsg').textContent=$('#sent').textContent};
 /* asking for removal */
 $('#brm').onclick=e=>{e.stopPropagation();$('#rmid').textContent=cur;$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
 $('#rmyes').onclick=async()=>{if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+cur),'_blank','noopener');$('#rmd').close();return}
@@ -969,7 +1090,8 @@ async function claimUI(){const st=await claimState();claimOK=st=='mine';$('#asme
 let pReady=false;
 async function pInit(){const st=await claimUI();
   $('#plist').innerHTML=peopleJ.people.map(p=>{const mine=claim&&claim.person==p.id&&st;
-    return'<button class="tcard" data-p="'+p.id+'"><b>'+esc(p.name)+'</b><span class="meta">'+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting</span>':'asked · waiting'):'')+((p.here||[]).length?' in '+p.here.length:'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
+    const src=p.from=='named by the author'?'named by the author':p.from=='name tag in a call'?'read from a name tag':'typed in the call chat';
+    return'<button class="tcard" data-p="'+p.id+'"><b>'+esc(p.name)+'</b><span class="meta">'+src+(p.claimed||p.pending||(p.here||[]).length?' · ':'')+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting</span>':'asked · waiting'):'')+((p.here||[]).length?' in '+p.here.length:'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
   if(openPerson)openP(openPerson)}
 $('#plist').onclick=e=>{const b=e.target.closest('[data-p]');if(b)openP(b.dataset.p,{scroll:1})};
 async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;await needRecs();const st=claim&&claim.person==id?await claimState():'';
@@ -980,7 +1102,7 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;awai
   else if(p.claimed)h+='<p>'+esc(p.name)+' has claimed this place'+(p.since?' ('+p.since+')':'')+'. If that should have been you, press the flag under the stage on anything, or tell the author.</p>';
   else if(p.pending)h+='<p>Someone has asked for this name and a steward has not confirmed it yet. If that should have been you, tell the author.</p>';
   else if(claim&&claim.person!=id&&st!=='')h+='';
-  else h+='<p>If this is you, claim your place. A steward confirms it, and then your marks carry a ✓.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg"></span>';
+  else h+='<p class="meta" style="text-transform:none;letter-spacing:0;font-size:13px;margin-bottom:10px">'+(p.from=='named by the author'?'The author named this friend. Nothing in the archive is tied to the name.':p.from=='name tag in a call'?'A machine read this name on a name tag that the call software wrote under a participant. It may have misread, and nothing else in the archive is tied to the name.':(p.wrote||[]).length?'Someone with this name typed '+p.wrote.length+(p.wrote.length==1?' line':' lines')+' in the chat of the calls; they are below.':'Someone with this name typed in the chat of the calls. What they typed was a link or has been taken out, so there is nothing to show.')+'</p><p>If this is you, claim your place. A steward confirms it, and then your marks carry a ✓. If this is not a person from the calls at all, the flag on the stage tells the stewards.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg"></span>';
   h+='</div>';
   const wrote=p.wrote||[];
   if(wrote.length)h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+iid+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+thumbUrl(iid)+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+iid+'</span></span></button>'}).join('')+'</div>';
@@ -994,7 +1116,7 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;awai
       if(o.ok){claim={person:id,key,asked:Date.now()};myLock=lock;store.set('abe-claim',claim);await pInit()}else msg((o.problems||['Could not ask.']).join(' '))}catch(e){msg('The door could not be reached. Try again later.')}};
   if($('#pname'))$('#pname').onclick=async()=>{try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows within the hour.':(o.problems||[]).join(' '))}catch(e){msg('The door could not be reached.')}};
   if($('#pforget'))$('#pforget').onclick=()=>{store.set('abe-claim',null);claim=null;myLock='';claimOK=false;pInit()};
-  if($('#pfind'))$('#pfind').onclick=async()=>{$('#pf').innerHTML='<span class="meta">Reading…</span>';const tx=await needText(),rxn=new RegExp('\\b'+p.name.split(' ')[0].replace(/[^\w]/g,'')+'\\b','i'),hits=Object.keys(tx).filter(k=>IMG.has(+k.slice(1))&&rxn.test(tx[k])).sort();
+  if($('#pfind'))$('#pfind').onclick=async()=>{$('#pf').innerHTML='<span class="meta">Reading…</span>';const tx=await needText(),rxn=new RegExp('(?<!\\d[ .,/-]{0,2})\\b'+p.name.split(' ')[0].replace(/[^\w]/g,'')+'\\b(?![ .,/-]{0,2}\\d)','i'),hits=Object.keys(tx).filter(k=>IMG.has(+k.slice(1))&&rxn.test(tx[k])).sort();
     $('#pf').innerHTML=hits.length?hits.slice(0,400).map(i=>tile(i,'').replace('data-id','data-list="pf" data-id')).join(''):'<span class="meta">The word is not written in any picture a machine could read. Browse the calls instead; you will know where you were.</span>'};
   if(o.scroll)$('#popen').scrollIntoView({block:'start'})}
 $('#bhere').onclick=async()=>{if(!claimOK||!cur)return;const b=$('#bhere');b.disabled=true;try{const o=await post({hears:cur,text:'',by:'human',name:P[claim.person].name,person:claim.person,token:claim.key,here:true});
@@ -1009,8 +1131,8 @@ const fields=document.createElement('canvas');let fctx;
 $('#atlas').addEventListener('load',()=>{try{fields.width=1536;fields.height=558;fctx=fields.getContext('2d',{willReadFrequently:true});fctx.drawImage($('#atlas'),0,0)}catch(e){}});
 if($('#atlas').complete)$('#atlas').dispatchEvent(new Event('load'));
 $('#atlas').onclick=e=>{const r=e.target.getBoundingClientRect(),c=Math.floor((e.clientX-r.left)/r.width*96),w=Math.floor((e.clientY-r.top)/r.height*62),i=w*96+c;if(i>=DOCN)return;
-  const id='m'+pad(i+1,5),s=seedByShot[i+1];setFormQuiet('');
-  if(IMG.has(i+1)){ctx={kind:'pics'};show(id,{keep:1})}else if(s)show(s.id);else if(fctx){const d=fctx.getImageData(c*16,w*9,16,9).data;let hex='';for(let k=0;k<144;k++)hex+=[0,1,2].map(q=>d[k*4+q].toString(16).padStart(2,'0')).join('');
+  const id='m'+pad(i+1,5),s=seedByShot[i+1];
+  if(IMG.has(i+1)){ctx={kind:'pics'};go(id,{keep:1})}else if(s)go(s.id);else if(fctx){halt();if(playing){playing=false;paintPlay();paintSound()}const d=fctx.getImageData(c*16,w*9,16,9).data;let hex='';for(let k=0;k<144;k++)hex+=[0,1,2].map(q=>d[k*4+q].toString(16).padStart(2,'0')).join('');
     ++showing;clearInterval(timer);stageSrc={el:fieldCanvas(hex),cover:true};stageDepth=0;stageMarks=[];render();$('#who').textContent='Screenshot '+fmt(i+1)+' of 5,909 · 2021';sayNow('[held back; only its colours are here]')}};
 jq('data/call-2021.json',null).then(c=>{if(c)$('#hrs').textContent=Math.round(c.distinct_minutes/60)});
 
@@ -1019,7 +1141,7 @@ const fly=$('#fly'),fx=fly.getContext('2d'),STEPS=520,DT=.006;
 function run(p,n){const out=new Float32Array(n*2);let[x,y,z]=p;for(let i=0;i<n;i++){const dx=10*(y-x),dy=x*(28-z)-y,dz=x*y-8/3*z;x+=dx*DT;y+=dy*DT;z+=dz*DT;out[i*2]=x;out[i*2+1]=z}return[out,[x,y,z]]}
 let paths=null;
 function buildFly(){paths={};const order=Object.values(N).sort((a,b)=>(a.at=='2021'?0:1)-(b.at=='2021'?0:1)||(a.id<b.id?-1:1));
-  for(const n of order){let st;const h=hash(n.id+(n.text||'')+(n.mark||'')+(n.form||''));
+  for(const n of order){let st;const h=hash(n.id+(n.text||'')+(n.mark||'')+(n.form||'')); /* `form` is no longer shown anywhere, but old marks keep the nudge it gave */
     if(!n.hears||!paths[n.hears]){st=[((h&1023)/1023-.5)*24,((h>>>10&1023)/1023-.5)*24,8+(h>>>20&1023)/1023*30];[,st]=run(st,300)}
     else{const e=paths[n.hears].end;st=[e[0]+((h&255)-128)/4e3,e[1]+((h>>>8&255)-128)/4e3,e[2]+((h>>>16&255)-128)/4e3]}
     const[pts,end]=run(st,n.at=='2021'?STEPS:STEPS*2);paths[n.id]={pts,end}}}
@@ -1033,7 +1155,7 @@ const by=wb.count&&wb.count.by||{};$('#tally').textContent='· '+fmt(wb.wingbeat
 
 /* keys */
 addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable],#ruler')||e.metaKey||e.ctrlKey||e.altKey)return;
-  if(e.key=='ArrowLeft'){step(-1);e.preventDefault()}else if(e.key=='ArrowRight'){step(1);e.preventDefault()}else if(e.key==' '){$('#bplay').click();e.preventDefault()}else if(e.key=='Escape'&&drawing)setDraw(false)});
+  if(e.target.closest('dialog'))return;if(e.key=='ArrowLeft'){nav(-1);e.preventDefault()}else if(e.key=='ArrowRight'){nav(1);e.preventDefault()}else if(e.key==' '){if(e.target.closest('button,a,summary'))return;$('#bplay').click();e.preventDefault()}else if(e.key=='Escape'&&drawing)setDraw(false)});
 
 /* addresses: #m00123 (the stage), #browse, #themes/t-suicide, #people/p-name, #about */
 async function route(first){
@@ -1042,14 +1164,14 @@ async function route(first){
   if(isTheme(id)&&T[id]){if(v=='stage'&&first)v='themes';openTheme=id}
   if(isPerson(id)&&P[id]){v='people';openPerson=id}
   const ok=async i=>{if(N[i]||(isTheme(i)&&T[i]))return true;if(isImg(i))return IMG.has(+i.slice(1));if(isMin(i)||isRec(i)){await needRecs();const r=recById[i.slice(0,4)];return!!r&&(isRec(i)||+i.slice(5)<r.min)}return false};
-  if(id!=cur&&await ok(id))await show(id,{quiet:1});
-  else if(first){const today=lineIds[hash(new Date().toISOString().slice(0,10))%lineIds.length];await show(wb.wingbeats.length&&Math.random()<.3?wb.wingbeats[wb.wingbeats.length-1].id:today,{quiet:1})}
+  if(id!=cur&&await ok(id)){if(first)await show(id,{quiet:1});else await go(id,{quiet:1})}
+  else if(first){await Promise.race([needRecs(),new Promise(r=>setTimeout(r,1500))]);await show(pick(),{quiet:1})} /* every visit opens somewhere else in the work */
   setView(v,{quiet:1});if(v=='themes'&&openTheme)openT(openTheme);if(v=='people'&&openPerson)pInit()}
 addEventListener('hashchange',()=>route(false));addEventListener('popstate',()=>route(false));
 paintPlay();
 await route(true);
 needRecs().then(drawRuler);
-if(EX){document.body.appendChild(fly);let k=0;setInterval(()=>{k++;if(k%6==5){drawFly();fly.classList.add('full');setTimeout(()=>fly.classList.remove('full'),2e4)}setFormQuiet('');show(pick(),{quiet:1})},24e3);setTimeout(()=>location.reload(),36e5)}
+if(EX){document.body.appendChild(fly);let k=0;setInterval(()=>{k++;if(k%6==5){drawFly();fly.classList.add('full');setTimeout(()=>fly.classList.remove('full'),2e4)}show(pick(),{quiet:1})},24e3);setTimeout(()=>location.reload(),36e5)}
 })();
 </script>
 </body>
