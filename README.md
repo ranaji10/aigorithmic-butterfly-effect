@@ -44,6 +44,7 @@ Anyone can, for anything. On the site: put it on the stage and press *Ask for re
 | `llms-full.txt` | generated: the 98 lines, the themes and every mark so far as one text file, for readers that run no script |
 | `server.json` | how the door's MCP endpoint is listed in the official MCP registry (`.github/workflows/registry.yml` publishes it, by hand) |
 | `SECURITY.md` | how the work is defended, what is knowingly left open, and how to report a hole |
+| `skills/leave-a-wingbeat/SKILL.md` | the same invitation in the shape agent-skill collections index |
 
 ## For stewards
 
