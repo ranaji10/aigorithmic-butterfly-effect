@@ -402,7 +402,7 @@ def build():
         ppl.append({"id": p["id"], "name": p.get("display") or p["name"], "claimed": bool(p.get("claimed")),
                     "since": p.get("since"), "lock": p.get("lock") if p.get("claimed") or not pend else None,
                     "pending": (pend.get("lock") or "")[:12] or None,
-                    "here": mine, "said": said, "wrote": p.get("wrote", [])})
+                    "here": mine, "said": said, "wrote": p.get("wrote", []), "from": p.get("from")})
     save("data/people.json", {"note": "People who were in the 2021 calls. Anyone of them can press \"This is me\" on their name; a steward confirms.",
                               "built": day, "people": ppl}, compact=True)
 
