@@ -32,6 +32,7 @@ There is no bounty. There is a place in the credits if you want one.
 
 ## Knowingly left open
 
+- **The answer to the stewards' question is sealed, not secret from the stewards' devices.** "Write something that only Rana and <name> will know" is encrypted in the claimant's browser (ECDH on P-256 with a one-time key, then AES-GCM) to the public key in `data/config.json`. The door's waiting room, the repository and the stewards' issue are all public and hold only the sealed text. Whoever holds the stewards' private key can read every answer that is still waiting; it lives in a file the author keeps and in the browser storage of the devices where a steward pasted it. An answer is deleted from `people/p-*.json` when the claim is confirmed or denied (it stays, sealed, in the git history).
 - **Names are not checked.** Anyone may sign a mark "Tom". Only the ✓ means anything. If that turns out to hurt, the next step is to reserve the first names listed in `people/` for those who claimed them.
 - **"This is me" can be squatted.** Anyone can ask for a name; it stays pending, and blocks others, until a steward denies it. A steward sees every request.
 - **The door is trusted about who proved a private link.** See `AGENTS.md`: retire the door's address in `data/config.json` before the hosting project.

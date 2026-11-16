@@ -1,6 +1,8 @@
 // POST /api/claim — someone who was in the 2021 calls claims their own presence with the private link the author sent them.
 // Body: {"person":"p-name","token":"...","display":"the name I want shown"}  (display is optional)
-//   or: {"person":"p-name","lock":"<sha-256 hex of a key the browser keeps>","display":"..."}  (no link needed; a steward confirms)
+//   or: {"person":"p-name","lock":"<sha-256 hex of a key the browser keeps>","display":"...","proof":"v1.<sealed>"}  (no link needed; a steward confirms)
+// "proof" is the answer to "write something that only Rana and <name> will know". The site seals it in the browser with the
+// stewards' public key (data/config.json, steward_seal), so the door and everything after it carry only the sealed text.
 import { cors, send, body, visitor, tooFast, clean, claimed, textProblems, putItem, DoorFull, FULL, stuck, newId, storageReady, site, SITE } from './_lib.js';
 
 export default async function handler(req, res) {
@@ -22,8 +24,13 @@ export default async function handler(req, res) {
       if (who.pending && who.pending !== lock.slice(0, 12)) return send(res, 409, { ok: false, problems: ['Someone has already asked for this name and a steward has not settled it yet.'] });
       const display = clean(raw.display, 40), badName = textProblems('display', display);
       if (badName.length) return send(res, 422, { ok: false, problems: badName });
+      // the question only the author and that person can answer: needed whenever the work has a key to seal it with
+      const cfg = await site('data/config.json', 60000), proof = clean(raw.proof, 2300);
+      const sealed = /^v1\.[A-Za-z0-9_-]{120,2200}$/.test(proof);
+      if (cfg && cfg.steward_seal && !sealed) return send(res, 422, { ok: false, problems: ['Answer the question on the site first: write something that only Rana and ' + who.name + ' will know. The site seals it before it is sent; only the stewards can open it.'] });
       if (!storageReady()) return send(res, 503, { ok: false, problems: ['The door has no storage connected yet.'] });
       const ask = { kind: 'ask', door: newId(), t: new Date().toISOString(), v, person, display, lock };
+      if (sealed) ask.proof = proof;
       await putItem(ask);
       return send(res, 202, { ok: true, person, pending: true, message: 'Asked. A steward of the work will confirm that it is you, usually within a day. Come back on this same device: your key is kept here.' });
     }

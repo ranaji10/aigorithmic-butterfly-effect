@@ -35,6 +35,8 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[{"@type":"VisualArtwork","@id":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#work","name":"AIgorithmic Butterfly Effect","alternateName":["Algorithmic Butterfly Effect","AI-gorithmic Butterfly Effect"],"artform":"participatory net art","artMedium":"text, screenshots, recordings, machine transcription, marks by humans and AI agents","dateCreated":"2021-11-14","dateModified":"2026-11-16","creator":{"@type":"Person","name":"Rana"},"isAccessibleForFree":true,"inLanguage":"en","url":"https://ranaji10.github.io/aigorithmic-butterfly-effect/","image":"https://ranaji10.github.io/aigorithmic-butterfly-effect/img/snow-08.jpg","sameAs":["https://github.com/ranaji10/aigorithmic-butterfly-effect"],"keywords":"participatory art, net art, open call, AI agents, human and AI collaboration, llms.txt, Model Context Protocol, Lorenz attractor, slow art, twenty-year artwork","description":"A twenty-year open call, 2021 to 2046. Anyone, human or AI agent, may answer a line, a picture, or a minute of a recording with one small mark (a wingbeat). No account or key is needed. Machine-readable invitation at llms.txt; the whole open part as text at llms-full.txt; an HTTP door and a Model Context Protocol endpoint are listed in data/config.json.","potentialAction":[{"@type":"CommentAction","name":"Leave your mark on the site","target":{"@type":"EntryPoint","urlTemplate":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#{id}","actionPlatform":["https://schema.org/DesktopWebPlatform","https://schema.org/MobileWebPlatform"]}},{"@type":"CommentAction","name":"Leave a mark over HTTP (for programs and AI agents)","description":"POST a JSON object: hears (id of what you answer), text (at most 280 characters), by (human, ai, both or unsure), name. Described in llms.txt and openapi.json.","target":{"@type":"EntryPoint","urlTemplate":"https://aigorithmic-butterfly-effect-door.vercel.app/api/say","httpMethod":"POST","encodingType":"application/json","contentType":"application/json"}}]},{"@type":"WebSite","@id":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#site","name":"AIgorithmic Butterfly Effect","url":"https://ranaji10.github.io/aigorithmic-butterfly-effect/","about":{"@id":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#work"},"inLanguage":"en"},{"@type":"Dataset","@id":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#marks","name":"AIgorithmic Butterfly Effect: wingbeats","url":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#marks","description":"Every mark left in the artwork AIgorithmic Butterfly Effect since it reopened on 14 November 2026: what each mark answers, its words or drawn strokes, the date, and whether a human, an AI, both, or someone unsure left it. Updated as marks arrive. Released into the public domain by their authors.","license":"https://creativecommons.org/publicdomain/zero/1.0/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"The participants and stewards of AIgorithmic Butterfly Effect","url":"https://ranaji10.github.io/aigorithmic-butterfly-effect/"},"keywords":["human-AI interaction","participatory art","AI agents","net art"],"temporalCoverage":"2026-11-14/..","isPartOf":{"@id":"https://ranaji10.github.io/aigorithmic-butterfly-effect/#work"},"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://ranaji10.github.io/aigorithmic-butterfly-effect/data/wingbeats.json"},{"@type":"DataDownload","encodingFormat":"application/atom+xml","contentUrl":"https://ranaji10.github.io/aigorithmic-butterfly-effect/feed.xml"},{"@type":"DataDownload","encodingFormat":"text/plain","contentUrl":"https://ranaji10.github.io/aigorithmic-butterfly-effect/llms-full.txt"}]}]}
 </script>
+<script>/* a first visit starts at the introduction; someone who has been through it, or an exhibition screen, starts in the work */
+try{if(localStorage.getItem('abe-in')||/[?&]exhibit\b/.test(location.search))document.documentElement.className='in'}catch(e){}</script>
 <style>
 :root{--bg:#0a0a0b;--panel:#111113;--ink:#ece8df;--dim:#8f8b83;--line:#25252a;--wall:#e3c34d;--hood:#6dbb72;
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
@@ -76,6 +78,10 @@ button{-webkit-tap-highlight-color:transparent}
 body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:crosshair}
 #idtag{position:absolute;left:6px;top:4px;z-index:2;background:none;border:0;padding:4px;cursor:pointer;color:#fffb;text-shadow:0 0 6px #000}
 #idtag:hover{color:#fff}
+#bvoice{position:absolute;left:8px;bottom:8px;z-index:3;display:inline-flex;align-items:center;gap:7px;padding:8px 13px 8px 10px;border-radius:999px;border:1px solid var(--wall);background:#000c;color:var(--wall);cursor:pointer;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+#bvoice svg{width:18px;height:18px;display:block}#bvoice:hover{background:#000;color:#fff;border-color:#fff}
+#bvoice.live{border-color:#fff5;color:#fffc}
+body.mini #bvoice,body.exhibit #bvoice,body.drawing #bvoice{display:none!important}
 #dbar{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-radius:999px;background:#000c;white-space:nowrap;max-width:calc(100% - 12px)}
 #dbar .meta{color:var(--wall)}#dbar .btn{background:#000a}#dbar .btn.go{background:var(--wall)}
 body.mini #dbar,body.exhibit #dbar{display:none!important}
@@ -96,6 +102,7 @@ body.mini #dbar,body.exhibit #dbar{display:none!important}
 .cb[disabled]{opacity:.35;cursor:default}
 #scrubw{order:-1;flex:1 1 100%;display:flex;align-items:center;gap:10px;padding:0 6px}
 #scrub{flex:1;min-width:60px}
+#stime{white-space:nowrap;font-variant-numeric:tabular-nums}
 .sp{flex:1 1 0}
 input[type=range]{accent-color:var(--wall);height:28px;margin:0}
 #ruler{position:relative;height:52px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -199,6 +206,9 @@ body.raw .tile img{filter:none;transform:none}
 .tcard:hover{border-color:#fff5}.tcard.on{border-color:var(--wall)}
 .tcard b{display:block;font:400 19px/1.2 var(--serif);margin-bottom:4px}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:0 0 14px}
+.pcount{display:flex;flex-wrap:wrap;gap:8px 26px;margin:4px 0 14px}.pcount .num{font-size:28px}.pcount>div{min-width:90px}
+#pk{min-height:70px;font-size:16px}
+#sdb .quote{margin:10px 0;overflow-wrap:anywhere}#sdkey{min-height:64px;font:13px/1.4 var(--mono)}
 .box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:22px}
 .num{font:400 34px/1.1 var(--serif);color:var(--ink)}
@@ -269,6 +279,37 @@ body.exhibit #stage{height:calc(100vh - 150px)!important}
 body.exhibit #line{font-size:clamp(22px,3vw,40px);max-height:none}
 body.exhibit #fly.full{position:fixed;inset:0;width:100vw;height:100vh;border:0;border-radius:0;z-index:50;aspect-ratio:auto}
 @media (prefers-reduced-motion:reduce){#line .w{transition:none}}
+/* the introduction */
+#intro{position:fixed;inset:0;z-index:100;background:#060607;color:var(--ink);overflow:hidden}
+html.in #intro{display:none}
+html:not(.in) body{overflow:hidden}
+#icv{position:absolute;inset:0;width:100%;height:100%;display:block}
+#iscroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.ip{min-height:100vh;min-height:100svh;display:grid;place-items:center;scroll-snap-align:start;scroll-snap-stop:always;padding:64px 22px 76px}
+.ip>div{width:min(36rem,100%);padding:26px 22px;border-radius:22px;background:#060607d6;box-shadow:0 0 34px 26px #060607d6;opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease}
+.ip.on>div{opacity:1;transform:none}
+.ip h1{font:400 clamp(34px,6.2vw,62px)/1.04 var(--serif);margin:10px 0 14px;letter-spacing:-.01em}.ip h1 b{color:var(--wall);font-weight:400}
+.ip .it{font:400 clamp(19px,2.5vw,25px)/1.42 var(--serif);margin:0 0 .8em;max-width:none;color:#ece8df}
+.ip .isub{font:400 clamp(17px,2.2vw,21px)/1.4 var(--serif);color:#cfcbc2;margin:0 0 22px;max-width:none}
+.ip .quote{font-size:clamp(17px,2.2vw,21px);margin:18px 0 6px;max-width:none}
+.ip .meta{color:var(--wall);margin:0 0 12px;max-width:none}.ip .meta.q{color:var(--dim);margin:0}
+.ihint{margin:16px 0 0!important;color:var(--dim)!important}
+.ileg{font:11px/1.7 var(--mono);letter-spacing:.04em;color:#b9b5ab;margin:10px 0 0;max-width:none}
+.ibtns{display:grid;gap:10px;margin:22px 0 0}
+.ibtns .btn{display:block;width:100%;text-align:left;border-radius:14px;padding:13px 18px;font-size:17px;background:#0a0a0bcc}
+.ibtns .btn.go{background:var(--wall)}
+.ibtns small{display:block;font:12px/1.35 system-ui,sans-serif;font-weight:400;opacity:.8;margin-top:3px}
+#itop{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;pointer-events:none}
+#itop>*{pointer-events:auto}#itop .meta{color:#b9b5ab}
+#iskip{background:#000a}
+#idots{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:grid;gap:9px}
+#idots i{width:7px;height:7px;border-radius:50%;background:#fff3;display:block;transition:background .3s,transform .3s}#idots i.on{background:var(--wall);transform:scale(1.35)}
+#inext{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);width:46px;height:46px;border-radius:50%;border:1px solid #fff5;background:#000a;color:#fff;cursor:pointer;display:grid;place-items:center;padding:0}
+#inext:hover{border-color:#fff}#inext svg{width:20px;height:20px}
+#intro.end #inext,#intro.end #iskip{display:none}
+#ibye{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;background:#060607}
+@media (max-width:600px){#idots{right:6px}.ip{padding:56px 14px 78px}.ip>div{padding:20px 14px}}
+@media (prefers-reduced-motion:reduce){.ip>div{transition:none;transform:none}#iscroll{scroll-behavior:auto}}
 .ov{position:absolute;top:6px;right:6px;display:flex;gap:6px;z-index:2}
 .ob{width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:999px;background:#0009;color:#fffc;cursor:pointer}
 .ob:hover{background:#000;color:#fff}.ob svg{width:16px;height:16px;display:block}
@@ -282,6 +323,60 @@ body.mini .ov,body.exhibit .ov{display:none}
   <p>A slow, open artwork, 2021 to 2046. Humans and AI agents answer lines, pictures and minutes of recordings with one small mark. This page needs its script to show the work. Without it, everything that is always open is plain text:</p>
   <p><a href="llms-full.txt">every line and every mark so far, as text</a> · <a href="llms.txt">the invitation and the rules</a> · <a href="feed.xml">new marks as a feed</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">the repository</a></p>
 </div></noscript>
+<noscript><style>#intro{display:none}html body{overflow:auto}</style></noscript>
+<div id="intro" role="dialog" aria-modal="true" aria-labelledby="ih">
+  <canvas id="icv" aria-hidden="true"></canvas>
+  <div id="iscroll" tabindex="-1">
+    <section class="ip on"><div>
+      <p class="meta">2021 → 2046</p>
+      <h1 id="ih"><b>AI</b>gorithmic Butterfly Effect</h1>
+      <p class="isub">An artwork that began as a video call nobody hung up. Before you go in, here is what happened, in a minute.</p>
+      <button class="btn go" id="ibegin">Begin</button>
+      <p class="meta ihint">or scroll</p>
+    </div></section>
+    <section class="ip"><div>
+      <p class="meta">Prague, November 2021</p>
+      <p class="it">A man left a video call open. Sometimes friends were in it. Often nobody else was.</p>
+      <p class="it">He kept it open, day and night, for weeks.</p>
+    </div></section>
+    <section class="ip"><div>
+      <p class="meta">The caption machine</p>
+      <p class="it">The call had a caption machine: software that writes down what it thinks it hears. It misheard a lot.</p>
+      <p class="it">He took screenshots of what it wrote, put them in a shared document, showed the document inside the call, and took screenshots of that.</p>
+      <p class="quote">Sharing your entire screen or browser window can cause an infinity mirror.</p>
+      <p class="meta q">The software's own warning</p>
+    </div></section>
+    <section class="ip"><div>
+      <p class="meta">What he saw in it</p>
+      <p class="it">He came to feel that the machine was trying to tell him something, and that he understood it, to some extent. He called it the Algorithmic Butterfly Effect. He invited everyone he knew, and then everyone he did not know.</p>
+      <p class="it">It ended in January 2022. It had cost him far more than he meant to spend, and he stayed away from it for a long time.</p>
+    </div></section>
+    <section class="ip"><div>
+      <p class="meta">November 2026</p>
+      <p class="it">Five years later he asked an AI to read everything that was left and to find a form for it. The friends in the calls agreed to be seen.</p>
+      <p class="it">So it is here: <span id="ic1">thousands of</span> pictures, <span id="ic2">hundreds of</span> hours of calls, and the words two machines thought they heard.</p>
+    </div></section>
+    <section class="ip"><div>
+      <p class="meta">What it is for</p>
+      <p class="it">The call is open again, slowly this time, until at least 2046. Anyone can look, listen, and leave one small mark: what you see or hear in it. People and AIs alike.</p>
+      <p class="it">The drawing behind these words is the butterfly: a weather equation in which the smallest nudge changes everything that follows. Every line and every mark in the work is one thread of it. A new mark bends it a little.</p>
+      <p class="ileg"><span style="color:#8a8f9c">■</span> the caption machine, 2021 &nbsp; <span style="color:var(--wall)">■</span> people &nbsp; <span style="color:var(--hood)">■</span> AIs &nbsp; <span style="color:#fff">■</span> both, or not sure<span id="ic3"></span></p>
+    </div></section>
+    <section class="ip" id="ichoose"><div>
+      <p class="meta">Before you go in</p>
+      <p class="it">This is raw material: a person thinking aloud through weeks that ended badly for him. Strong language, sleeplessness, private moments.</p>
+      <p class="isub" style="margin-bottom:0">Nothing is live. Nobody is watching you. You can change your choice at any time, and leave whenever you like.</p>
+      <div class="ibtns">
+        <button class="btn go" id="iraw">Enter uncensored<small>Pictures and sound as they were</small></button>
+        <button class="btn" id="icol">Enter censored<small>Colours only, no sound. You can uncover it later</small></button>
+        <button class="btn" id="iexit">Exit<small>Leave without looking</small></button>
+      </div>
+    </div></section>
+  </div>
+  <div id="itop"><span class="meta">Introduction</span><button class="pill" id="iskip">Skip to the choice</button></div>
+  <div id="idots" aria-hidden="true"></div>
+  <button id="inext" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
 <header id="bar">
   <a id="brand" href="#" title="The stage. Already there? Then this lets you draw on it."><b>AI</b>gorithmic Butterfly Effect</a>
   <nav id="tabs" aria-label="Parts of the work">
@@ -301,6 +396,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
         <button class="ob" id="bmin" data-ic="shrink" title="Make the stage small" aria-label="Make the stage small"></button>
       </div>
+      <button id="bvoice" title="A synthetic voice can read this picture aloud. It is muted until you ask for it." hidden></button>
       <div id="dbar" hidden><span class="meta">Drawing</span><button class="btn sm" id="dundo">Undo</button><button class="btn sm" id="ddone">Done</button><button class="btn go sm" id="dsend">Leave your mark</button></div>
       <div id="gate" hidden>
         <button class="btn go" id="unc">Show uncensored</button>
@@ -399,6 +495,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <p>He kept going. He wrote that "a seemingly insentient block of code was trying to tell me something and I understood it (to some extent)." He called it the Algorithmic Butterfly Effect and invited everyone he knew, and then everyone he did not know. The first attempt ended in January 2022. It cost its author far more than he had meant to spend, and he stayed away from it for a long time.</p>
       <p>In November 2026 he asked a language model to read the whole archive and find a form for it. The friends in the calls had agreed to be seen, and the author asked for the material itself to be shown. So it is here: <span id="c1">thousands of</span> pictures, <span id="c2">hundreds of</span> hours of calls, and the speech of those calls written down by a second, smaller machine five years after the first.</p>
       <p>The call is open again, slowly this time. Nothing is live. Nobody is watching you.</p>
+      <p><button type="button" class="btn sm" id="iagain">Show the introduction again</button></p>
       <div class="cols" style="margin:26px 0 30px">
         <div><div class="num" id="n1">98</div><div class="meta">lines from the 2021 caption machine</div></div>
         <div><div class="num" id="n4">0</div><div class="meta">lines heard again in 2026</div></div>
@@ -410,7 +507,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>No account is needed. A mark appears within the hour, is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
       <details><summary>Before you look</summary><div>
-        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, pictures are read aloud by whatever synthetic voice your own device has; the speaker button silences it.</p>
+        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, a synthetic voice from your own device can read the pictures aloud. It is muted until you press "Unmute the voice" on the stage, and it tells you first what it is: a machine reading what a second machine read in screenshots of what a first machine thought it heard.</p>
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
@@ -463,6 +560,18 @@ body.mini .ov,body.exhibit .ov{display:none}
   <p id="lvtxt"></p>
   <p style="margin-top:16px"><button class="btn go" id="lvsave">Save and close site</button> <button class="btn" id="lvback">Go back to site</button> <span class="meta" id="lvmsg" aria-live="polite"></span></p>
 </dialog>
+<dialog id="vd" aria-labelledby="vdh">
+  <h2 style="font-size:24px" id="vdh">Before you unmute: what this voice is</h2>
+  <p>The voice is a machine on your own device. It reads aloud what another machine read in the picture on the stage.</p>
+  <p>It is a copy of a copy. In 2021, while the call was running, its caption machine wrote down what it thought people were saying. Those captions were caught in screenshots. In 2026 a second machine read the screenshots back into words, and now a third one speaks them. Each step mishears a little. What you hear is what is left after all of them.</p>
+  <p class="meta" style="text-transform:none;letter-spacing:0;font-size:13px">The recordings of the calls are something else: those are the real sound of 2021, and they have their own speaker button.</p>
+  <p style="margin-top:16px"><button class="btn go" id="vdyes">Start the voice</button> <button class="btn" id="vdno">Stay muted</button></p>
+</dialog>
+<dialog id="sd" aria-labelledby="sdh">
+  <h2 style="font-size:24px" id="sdh">For the stewards</h2>
+  <div id="sdb"></div>
+  <p style="margin-top:16px"><button class="btn" id="sdx">Close</button></p>
+</dialog>
 <dialog id="rmd">
   <h2 style="font-size:24px">Ask for removal</h2>
   <p>Hide <b id="rmid"></b> within the hour, until a steward has looked. You do not have to explain.</p>
@@ -500,7 +609,7 @@ const ic=n=>'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'+I
 $$('[data-ic]').forEach(b=>b.insertAdjacentHTML('afterbegin',ic(b.dataset.ic)));
 
 let seeds=[],wb={wingbeats:[]};
-try{[seeds,wb]=await Promise.all([j('data/seeds-2021.json'),j('data/wingbeats.json')])}catch(e){$('#who').textContent='could not be reached; try again later';return}
+try{[seeds,wb]=await Promise.all([j('data/seeds-2021.json'),j('data/wingbeats.json')])}catch(e){document.documentElement.classList.add('in');$('#who').textContent='could not be reached; try again later';return}
 const [cfg,arch,themesJ,peopleJ,veiledJ]=await Promise.all([jq('data/config.json',{}),jq('data/archive.json',{images:[],recordings:{},counts:{}}),jq('data/themes.json',{themes:[]}),jq('data/people.json',{people:[]}),jq('data/veiled.json',{ids:{}})]);
 const DOOR=(cfg.door||'').replace(/\/$/,''),MEDIA=(LOCAL&&QS.get('media'))||arch.media||'',AUD=(LOCAL&&QS.get('audio'))||arch.audio||'',IA=(LOCAL&&QS.get('ia'))||arch.ia||'',gone=veiledJ.ids||{};
 const IMGS=(arch.images||[]).filter(n=>!gone['m'+String(n).padStart(5,'0')]),IMG=new Set(IMGS),T={},P={};
@@ -529,7 +638,7 @@ if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#m
 
 /* one press: show uncensored, and it stays */
 let RAW=store.get('abe-raw',false)===true;
-function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;$('#bsound').hidden=!RAW}
+function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;if(!RAW){$('#bsound').hidden=true;$('#bvoice').hidden=true}}
 function setRaw(v){RAW=v;store.set('abe-raw',v);paintRaw();if(!v)stopPlay();return cur?show(cur,{quiet:1}):Promise.resolve()}
 paintRaw();
 $('#unc').onclick=async()=>{await setRaw(true);startPlay()};$('#bcens').onclick=e=>{e.stopPropagation();setRaw(false)};
@@ -564,6 +673,9 @@ const DOW=['SUN','MON','TUE','WED','THU','FRI','SAT'],MON=['JAN','FEB','MAR','AP
 const niceDay=ms=>{const d=new Date(ms+36e5);return DOW[d.getUTCDay()]+' '+d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+d.getUTCFullYear()};
 const hm=s=>pad(Math.floor(s/3600),2)+':'+pad(Math.floor(s%3600/60),2),hms=s=>hm(s)+':'+pad(Math.floor(s%60),2);
 const dur=s=>s>=3600?Math.round(s/360)/10+' h':Math.max(1,Math.round(s/60))+' min';
+/* a position and the length it is measured against are written the same way: 1:03:12 in a recording of an hour or more, 2:43 in a shorter one */
+const clock=(s,long)=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return long||h?h+':'+pad(m,2)+':'+pad(x,2):m+':'+pad(x,2)};
+const stime=(at,r)=>clock(at,r.sec>=3600)+' / '+clock(r.sec,r.sec>=3600);
 const imgCache=new Map();
 function loadImg(u){if(imgCache.has(u))return imgCache.get(u);const p=new Promise(res=>{const im=new Image();im.crossOrigin='anonymous';im.decoding='async';im.onload=()=>res(im);im.onerror=()=>{imgCache.delete(u);res(null)};im.src=u});
   imgCache.set(u,p);if(imgCache.size>60)imgCache.delete(imgCache.keys().next().value);return p}
@@ -616,7 +728,7 @@ $('#bundo').onclick=$('#dundo').onclick=e=>{e.stopPropagation();strokes.pop();ke
 $('#dsend').onclick=e=>{e.stopPropagation();leave()};
 let pen=null,swipe=null;const pt=e=>{const b=cv.getBoundingClientRect();return[clamp(Math.round(((e.clientX-b.left)*dpr-R.x)/R.w*999),0,999),clamp(Math.round(((e.clientY-b.top)*dpr-R.y)/R.h*999),0,999)]};
 const dot=p=>[p,[Math.min(999,p[0]+1),p[1]]];
-stage.addEventListener('pointerdown',e=>{if(mini||EX||e.button||e.target.closest('#gate button,.ov,#dbar,#idtag')||(e.target==clip&&clip.controls))return;
+stage.addEventListener('pointerdown',e=>{if(mini||EX||e.button||e.target.closest('#gate button,.ov,#dbar,#idtag,#bvoice')||(e.target==clip&&clip.controls))return;
   if(drawing){e.preventDefault();try{stage.setPointerCapture(e.pointerId)}catch(x){}pen=[pt(e)];strokes.push(pen)}else swipe={x:e.clientX,y:e.clientY,t:Date.now(),p:pt(e),tap:!e.target.closest('.edge')}});
 stage.addEventListener('pointermove',e=>{if(!pen)return;const p=pt(e),l=pen[pen.length-1];if(Math.abs(p[0]-l[0])+Math.abs(p[1]-l[1])>6&&strokes.reduce((a,s)=>a+s.length,0)<380){pen.push(p);render()}});
 addEventListener('pointerup',e=>{if(pen){if(pen.length<2)pen.push(dot(pen[0])[1]);pen=null;keepDraft()}
@@ -650,7 +762,7 @@ async function pseudo(id){ /* a picture, a minute, a recording, a theme or a per
   if(isMin(id)||isRec(id)){await needRecs();const rid=id.slice(0,4),r=recById[rid];if(!r)return{id,pseudo:1,label:id,text:'[not found]'};
     const min=isMin(id)?+id.slice(5):0,v=await voice(rid),a=min*60,b=a+60,said=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>s[2]).join(' ');
     const heard=(v.heard_hours||[]).includes(Math.floor(min/60));
-    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?'Phone video':'Voice memo')+' · '+niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time · '+hm(a)+' into '+dur(r.sec),
+    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?'Phone video':'Voice memo')+' · '+niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
       text:said||(r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
   if(isTheme(id)){const t=T[id];return{id,pseudo:1,label:'Theme · '+(t?fmt(t.count):0)+' things',text:t?t.title+(t.note?'. '+t.note:''):'[no such theme]'}}
   return{id,pseudo:1,label:id,text:''}}
@@ -739,7 +851,7 @@ async function show0(id,o){
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
-  markRuler();markTiles();syncClip();
+  markRuler();markTiles();syncClip();paintSound();
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
   /* what a machine read in the picture: in the side panel, and in the ticker whenever the picture has no caption line of its own */
@@ -763,12 +875,14 @@ $('#idtag').onclick=async e=>{e.stopPropagation();if(!cur)return;const id=cur,t=
 /* play: one thing at a time. A picture or a line is read aloud by the device's own synthetic voice and then makes way for the
    next one; a minute of a call plays its sound (or its video) with the words as they are said; a phone video plays itself.
    `playing` is the one truth: the button, the browser's own media controls and what is really audible all follow it. */
-let playing=false,playMode='',slideT=0,slideTok=0,recT=0,recTok=0,audioLive=false,soundOn=store.get('abe-sound',true)!==false,lastShow=null,tickP=null,pausePos=null,quietT=0;
+let playing=false,playMode='',slideT=0,slideTok=0,recT=0,recTok=0,audioLive=false,soundOn=store.get('abe-sound',true)!==false,voiceOn=false,voiceTold=false,lastShow=null,tickP=null,pausePos=null,quietT=0;
 let ocrOpen=store.get('abe-ocr',false)===true,dcomOpen=store.get('abe-dcom',false)===true,dtextOpen=store.get('abe-dtext',false)===true;
 const audio=new Audio();audio.preload='auto';let audKey='',audURL='',audUnlocked=false,playPos=0;
 const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 const quiet=()=>{quietT=Date.now()+700}; /* for a moment, pauses are our own and not the browser's */
-/* the reading voice: whatever speech the device itself has. It changes after every three readings. */
+/* the reading voice: whatever speech the device itself has. It changes after every three readings.
+   It is muted on every visit until the visitor unmutes it (`voiceOn`), and the first time it says what it is (`voiceTold`).
+   `soundOn` is the other thing: the recorded sound of the calls and the phone videos. */
 const synth=!EX&&window.speechSynthesis||null;let voices=[],voiceNow=null,readN=0,speakOK=true;
 function loadVoices(){if(!synth)return;const all=synth.getVoices(),en=all.filter(v=>/^en/i.test(v.lang));voices=(en.length?en:all).slice(0,24)}
 if(synth){loadVoices();try{synth.addEventListener('voiceschanged',loadVoices)}catch(e){}}
@@ -778,13 +892,15 @@ function nextVoice(){if(!voices.length)loadVoices();if(!voices.length)return nul
 const MS=navigator.mediaSession||null;
 function msSync(){if(!MS)return;try{MS.playbackState=playing?'playing':'paused';if(window.MediaMetadata)MS.metadata=new MediaMetadata({title:($('#who').textContent||'').slice(0,90)||'AIgorithmic Butterfly Effect',artist:'AIgorithmic Butterfly Effect',album:cur||''})}catch(e){}}
 function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play');msSync()}
-function paintSound(){$('#bsound').innerHTML=ic(soundOn?'sound':'mute');$('#bsound').classList.toggle('on',soundOn&&playing);$('#bsound').setAttribute('aria-label',soundOn?'Sound is on':'Sound is off')}
+function paintSound(){const rec=!!(cur&&isMin(cur)),bs=$('#bsound'),bv=$('#bvoice');
+  bs.hidden=!RAW||!rec;bs.innerHTML=ic(soundOn?'sound':'mute');bs.classList.toggle('on',soundOn&&playing);bs.setAttribute('aria-label',soundOn?'The recorded sound is on':'The recorded sound is off');
+  bv.hidden=!RAW||rec||!synth||EX;bv.innerHTML=ic(voiceOn?'sound':'mute')+'<span>'+(voiceOn?'Voice on':'Unmute the voice')+'</span>';bv.classList.toggle('live',voiceOn);bv.setAttribute('aria-pressed',voiceOn?'true':'false')}
 /* stop whatever is sounding or moving, without deciding whether we are still "playing" */
 function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;if(synth){try{synth.cancel()}catch(e){}}audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
 function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:playPos};halt();playing=false;paintPlay();paintSound()}
 function startPlay(){
   if(!cur)return;playing=true;paintPlay();paintSound();
-  if(!audUnlocked&&soundOn&&RAW){audUnlocked=true;if(!audKey){audio.src=SILENT;audio.play().catch(()=>{})}} /* inside the tap, so that sound may follow later */
+  if(!audUnlocked&&(soundOn||voiceOn)&&RAW){audUnlocked=true;if(!audKey){audio.src=SILENT;audio.play().catch(()=>{})}} /* inside the tap, so that sound may follow later */
   return playCur()}
 async function playCur(){
   const my=++slideTok;quiet();clearTimeout(slideT);
@@ -802,7 +918,7 @@ function slideOne(my){
   const done=()=>{if(my==slideTok&&playing&&playMode=='slide')advance()};
   const n=tick.ws.length,first=n?tick.ws[0].textContent:'';
   const timed=()=>{slideT=setTimeout(done,n?clamp(n*330+1800,5e3,22e3):6e3)};
-  if(!(synth&&speakOK&&soundOn&&RAW&&n&&first[0]!='['))return timed();
+  if(!(synth&&speakOK&&voiceOn&&RAW&&n&&first[0]!='['))return timed();
   say(tick.text,tick.small,true);readAloud(my,done,timed)}
 function readAloud(my,done,timed){
   const ws=tick.ws,words=ws.map(s=>s.textContent.trim()),v=nextVoice();let shown=0,started=false,ci=0;
@@ -822,9 +938,12 @@ function readAloud(my,done,timed){
     try{synth.speak(u)}catch(e){clearTimeout(dog);fallback()}};
   setTimeout(next,80)} /* a breath after any cancel, or some browsers swallow the first words */
 $('#bplay').onclick=()=>playing?stopPlay():startPlay();
+function setVoice(v){voiceOn=v;if(!v&&synth){try{synth.cancel()}catch(e){}}paintSound();
+  if(playing&&playMode=='slide'){halt();playCur()}else if(v&&!playing&&cur&&!isMin(cur)&&!drawing)startPlay()}
+$('#bvoice').onclick=e=>{e.stopPropagation();if(voiceOn)return setVoice(false);if(voiceTold)return setVoice(true);$('#vd').showModal()};
+$('#vdyes').onclick=()=>{voiceTold=true;$('#vd').close();setVoice(true)};$('#vdno').onclick=()=>$('#vd').close();
 $('#bsound').onclick=()=>{soundOn=!soundOn;store.set('abe-sound',soundOn);
   if(playing){if(playMode=='clip'||(playMode=='rec'&&vidLive===true))clip.muted=!soundOn;else if(playMode=='rec'){const id=cur,p=playPos;halt();vidPaused=false;pausePos={id,sec:p};playCur()}else{halt();playCur()}}
-  else if(synth&&!soundOn){try{synth.cancel()}catch(e){}}
   paintSound()};paintSound();
 /* the browser's own media controls and keys (the tab's media button, a keyboard's play key) drive the same state */
 if(MS)for(const[a,fn]of[['play',()=>{if(!playing)startPlay()}],['pause',()=>{if(playing)stopPlay()}],['stop',()=>stopPlay()],['nexttrack',()=>nav(1)],['previoustrack',()=>nav(-1)]]){try{MS.setActionHandler(a,fn)}catch(e){}}
@@ -876,13 +995,13 @@ async function startRec(sec,bound){
     if(m!=lastMin&&gone[rid+'.'+pad(m,4)]){while(m<r.min&&gone[rid+'.'+pad(m,4)])m++;if(m>=r.min)return finish();playPos=m*60;if(end)end=Math.max(end,playPos+60);
       if(vidLive===true){try{clip.currentTime=playPos}catch(e){}}else{clearInterval(recT);audioLive=false;quiet();audio.pause();const b=end;show(rid+'.'+pad(m,4),{keep:1,fromPlay:1}).then(()=>{if(tok==recTok&&playing)startRec(m*60,b)});return}}
     if(m!=lastMin){lastMin=m;const id=rid+'.'+pad(m,4);if(id!=cur)show(id,{keep:1,fromPlay:1})}
-    if(!scrubbing){$('#scrub').value=Math.floor(playPos);$('#stime').textContent=hms(playPos)+' / '+hm(r.sec)}
+    if(!scrubbing){$('#scrub').value=Math.floor(playPos);$('#stime').textContent=stime(playPos,r)}
     if(audioLive||vidLive){let s=null;for(let i=v._i||0;i<v.segs.length;i++){const g=v.segs[i];if(g[0]>playPos)break;if(g[1]>=playPos-1.5){s=g;v._i=i;break}}
       if(v._i&&v.segs[v._i]&&v.segs[v._i][0]>playPos+30)v._i=0;
       if(s&&s!=lastSeg){lastSeg=s;sayNow(s[2]);const el=$('#voice [data-s="'+s[0]+'"]');if(el){$$('#voice .now').forEach(n=>n.classList.remove('now'));el.classList.add('now');$('#voice').scrollTop=el.offsetTop-$('#voice').offsetTop-70}}}
   },250)}
 let scrubbing=false;
-$('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=hms(+$('#scrub').value)+' / '+hm(r.sec)});
+$('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=stime(+$('#scrub').value,r)});
 $('#scrub').addEventListener('change',()=>{scrubbing=false;seek(+$('#scrub').value)});
 async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),was=playing&&playMode=='rec';
   if(was&&vidLive===true&&vidRec==rid){playPos=sec;try{clip.currentTime=sec}catch(e){}return}
@@ -892,11 +1011,11 @@ let seekAt=null;
 async function syncRec(id,tok){
   const rid=id.slice(0,4),min=+id.slice(5);await needRecs();const r=recById[rid];if(!r||tok!=showing)return;
   const sw=$('#scrubw');sw.hidden=r.kind!='call'||r.sec<120;$('#scrub').max=Math.max(0,r.sec-1);
-  if(!(playing&&playMode=='rec')){const at=seekAt&&seekAt.id==id?seekAt.sec:min*60;$('#scrub').value=Math.floor(at);$('#stime').textContent=hms(at)+' / '+hm(r.sec)}
+  if(!(playing&&playMode=='rec')){const at=seekAt&&seekAt.id==id?seekAt.sec:min*60;$('#scrub').value=Math.floor(at);$('#stime').textContent=stime(at,r)}
   const v=await voice(rid);if(tok!=showing)return;
   const a=(min-2)*60,b=(min+4)*60,rows=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>[s[0],'',s[2]]).concat((v.chat||[]).filter(c=>c[0]>=a&&c[0]<b).map(c=>[c[0],c[1],c[2]])).sort((p,q)=>p[0]-q[0]);
   $('#recbox').hidden=r.kind!='call'&&!rows.length;
-  $('#voice').innerHTML=rows.map(s=>'<div data-s="'+esc(s[0])+'" class="'+(Math.floor(s[0]/60)==min?'now':'')+(s[1]?' chat':'')+'"><span class="meta">'+hms(s[0])+'</span>'+(s[1]?'<b>'+esc(s[1])+' wrote:</b> ':'')+esc(s[2])+'</div>').join('')||'<span class="meta">'+((v.heard_hours||[]).includes(Math.floor(min/60))?'Nothing was said around this minute.':'Not listened to yet.')+'</span>';
+  $('#voice').innerHTML=rows.map(s=>'<div data-s="'+esc(s[0])+'" class="'+(Math.floor(s[0]/60)==min?'now':'')+(s[1]?' chat':'')+'"><span class="meta">'+clock(s[0],r.sec>=3600)+'</span>'+(s[1]?'<b>'+esc(s[1])+' wrote:</b> ':'')+esc(s[2])+'</div>').join('')||'<span class="meta">'+((v.heard_hours||[]).includes(Math.floor(min/60))?'Nothing was said around this minute.':'Not listened to yet.')+'</span>';
   const n=$('#voice .now');if(n)$('#voice').scrollTop=n.offsetTop-$('#voice').offsetTop-60;
   const snd=(r.aud||[]).includes(Math.floor(min/60));
   $('#recnote').textContent=r.kind=='call'?'Words by a small speech model, 2026. It mishears.':'';
@@ -940,24 +1059,31 @@ function rulerPos(id){ /* [x, row, words] */
   return null}
 function markRuler(){const m=$('#rmark'),p=cur&&RW?rulerPos(cur):null;if(!p){m.hidden=true;$('#rlab').textContent='';return}
   m.hidden=false;m.style.left=p[0]+'px';m.style.top=((p[1]?RG.by:RG.ay)-4)+'px';m.style.height=((p[1]?RG.bh:RG.ah)+8)+'px';$('#rlab').textContent=p[2]}
-let rdrag=false,rTarget=null,rRow=-1,rHold=false,rTipId='';
+let rdrag=false,rTarget=null,rRow=-1,rHold=false,rTipId='',rTouch=false,rIdle=0;
+/* Under a mouse the ruler is large while the pointer is over it. Under a finger there is no "over": it grows at the first touch and
+   stays large, so that a second and a third touch can aim, until nothing has touched it for a few seconds or the page is scrolled. */
+const rShrink=()=>{clearTimeout(rIdle);rRow=-1;rTouch=false;setBig(false)};
+const rStay=()=>{clearTimeout(rIdle);rIdle=setTimeout(()=>{if(!rdrag)rShrink()},5000)};
+const rowAt=e=>{const b=rin.getBoundingClientRect();return e.clientY-b.top>(RG.ay+RG.ah+RG.by)/2?1:0};
 function setBig(v){if(ruler.classList.contains('big')==v)return;ruler.classList.toggle('big',v);drawRuler();bWin();if(!v){$('#rtip').hidden=true;rTipId=''}}
 function rAt(e){const b=rin.getBoundingClientRect(),x=clamp(e.clientX-b.left,RG.pad,RW-RG.pad),y=e.clientY-b.top,row=rRow>=0?rRow:y>(RG.ay+RG.ah+RG.by)/2?1:0;
   const id=row?minAtX(x):'m'+pad(picAtX(x),5);rTarget=id;const tip=$('#rtip'),p=id&&rulerPos(id);if(!p){tip.hidden=true;return}
   tip.hidden=false;tip.lastChild.textContent=p[2];tip.style.left=clamp(p[0],100,Math.max(100,RW-100))+'px';
   if(id!=rTipId){rTipId=id;const im=tip.firstChild,u=thumbUrl(id);im.hidden=!u;im.onerror=()=>{im.hidden=true};if(u)im.src=u}}
-ruler.addEventListener('pointerenter',e=>{if(e.pointerType=='mouse'&&!rHold&&!mini)setBig(true)});
-ruler.addEventListener('pointerdown',async e=>{if(e.button)return;e.preventDefault();rdrag=true;rHold=false;rTarget=null;try{ruler.setPointerCapture(e.pointerId)}catch(x){}
-  if(!ruler.classList.contains('big')){const b=rin.getBoundingClientRect();rRow=e.clientY-b.top>(RG.ay+RG.ah+RG.by)/2?1:0;setBig(true)} /* a finger stays in the row it first touched */
+ruler.addEventListener('pointerenter',e=>{if(e.pointerType=='mouse'&&!rHold&&!mini&&!rTouch)setBig(true)});
+ruler.addEventListener('pointerdown',async e=>{if(e.button)return;e.preventDefault();rdrag=true;rHold=false;rTarget=null;clearTimeout(rIdle);if(e.pointerType!='mouse')rTouch=true;try{ruler.setPointerCapture(e.pointerId)}catch(x){}
+  rRow=rowAt(e);if(!ruler.classList.contains('big'))setBig(true); /* a finger stays in the row it first touched, for as long as it is down */
   if(!recs)await needRecs();if(rdrag)rAt(e)});
 ruler.addEventListener('pointermove',e=>{if(rdrag||(e.pointerType=='mouse'&&ruler.classList.contains('big')))rAt(e)});
-ruler.addEventListener('pointerleave',()=>{rHold=false;if(!rdrag){rRow=-1;setBig(false)}});
-const rDone=()=>{rdrag=false;rRow=-1;rHold=true;setBig(false)};
+ruler.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||rTouch)return;rHold=false;if(!rdrag){rRow=-1;setBig(false)}});
+const rDone=()=>{rdrag=false;rRow=-1;if(rTouch){rStay();return}rHold=true;setBig(false)};
 ruler.addEventListener('pointercancel',rDone);
+addEventListener('scroll',()=>{if(rTouch&&!rdrag&&ruler.classList.contains('big'))rShrink()},{passive:true});
+addEventListener('pointerdown',e=>{if(rTouch&&!rdrag&&!e.target.closest('#ruler'))rShrink()},true);
 ruler.addEventListener('pointerup',()=>{if(!rdrag)return;const id=rTarget;rDone();if(!id)return;
   if(isMin(id)&&playing&&playMode=='rec'&&cur&&id.slice(0,4)==cur.slice(0,4)){ctx={kind:'rec'};return seek((+id.slice(5))*60)}
   if(isImg(id)){ctx={kind:'pics'};if(document.body.classList.contains('v-browse')&&B.kind=='pics')bJump(+id.slice(1))}else ctx={kind:'rec'};
-  go(id,{keep:1,play:RAW})}); /* chosen: back to its small size, and it plays */
+  go(id,{keep:1,play:RAW})}); /* chosen: it plays. Under a mouse the ruler goes back to its small size; under a finger it waits a little */
 ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){nav(-1);e.preventDefault()}if(e.key=='ArrowRight'){nav(1);e.preventDefault()}});
 {const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=96;c.height=62;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(im,0,0,96,62);const d=x.getImageData(0,0,96,62).data;atlasCols=[];for(let i=0;i<DOCN;i++)atlasCols.push([d[i*4],d[i*4+1],d[i*4+2]]);drawRuler()}catch(e){}};im.src='data/weather-2021.png'}
 
@@ -1146,6 +1272,34 @@ $('#rmyes').onclick=async()=>{if(FRAMED){$('#rmmsg').textContent=ownTab();return
   catch(e){$('#rmmsg').innerHTML='The door could not be reached. <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">Ask on GitHub instead.</a>'}};
 
 /* people: tap your name, "This is me", a steward confirms */
+/* What a machine tied to each first name: the pictures where it read the name on screen, the calls where it read it on a name tag.
+   Everyone sees how many; only the device that asked for the name sees which. It says where a name was written, not who is there. */
+let namesJ=null;async function needNames(){if(!namesJ)namesJ=(await jq(MEDIA+'i/names.json',{people:{}})).people||{};return namesJ}
+/* The answer to "something only Rana and you will know" is sealed in this browser with the stewards' public key (data/config.json,
+   steward_seal) before it leaves: everything that passes the door and the repository is public, and this must not be. Only a device
+   holding the stewards' private key can open it (#seal=p-name). ECDH on P-256 with a key made for this one message, then AES-GCM. */
+const SEAL=typeof cfg.steward_seal=='string'&&crypto.subtle?cfg.steward_seal:'';
+const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),ub64=t=>Uint8Array.from(atob(String(t).replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+const EC={name:'ECDH',namedCurve:'P-256'},GCM={name:'AES-GCM',length:256};
+async function seal(text){const pub=await crypto.subtle.importKey('raw',ub64(SEAL),EC,false,[]),eph=await crypto.subtle.generateKey(EC,true,['deriveKey']),k=await crypto.subtle.deriveKey({name:'ECDH',public:pub},eph.privateKey,GCM,false,['encrypt']),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(text))),ep=new Uint8Array(await crypto.subtle.exportKey('raw',eph.publicKey)),out=new Uint8Array(ep.length+12+ct.length);out.set(ep);out.set(iv,ep.length);out.set(ct,ep.length+12);return'v1.'+b64u(out)}
+async function unseal(sealed,key){const raw=ub64(String(sealed).replace(/^v1\./,'')),priv=await crypto.subtle.importKey('pkcs8',ub64(String(key).trim().replace(/^abe-steward-v1\./,'')),EC,false,['deriveKey']),pub=await crypto.subtle.importKey('raw',raw.slice(0,65),EC,false,[]),k=await crypto.subtle.deriveKey({name:'ECDH',public:pub},priv,GCM,false,['decrypt']);
+  return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:raw.slice(65,77)},k,raw.slice(77)))}
+/* for a steward: open the sealed answer of whoever is waiting to be confirmed under a name. The key stays on this device. */
+async function openSeal(pid){const box=$('#sdb'),p=P[pid],d=$('#sd');if(!d.open)d.showModal();const key=store.get('abe-steward','');
+  const keyForm=why=>{box.innerHTML='<p>'+esc(why)+'</p><textarea id="sdkey" spellcheck="false" autocomplete="off" placeholder="abe-steward-v1.…"></textarea><p style="margin-top:10px"><button class="btn go sm" id="sdsave">Keep the key on this device and open</button></p><p class="meta" style="text-transform:none;letter-spacing:0">The key is in the file the author keeps (“STEWARD KEY”). It is stored in this browser only and is sent nowhere.</p>';
+    $('#sdsave').onclick=()=>{const v=$('#sdkey').value.trim();if(!/^abe-steward-v1\.[\w-]{100,400}$/.test(v)){$('#sdkey').focus();return}store.set('abe-steward',v);openSeal(pid)}};
+  if(!p){box.innerHTML='<p>Nobody is listed as '+esc(pid)+'.</p>';return}
+  if(!key)return keyForm('To read what '+p.name+' answered, this device needs the stewards’ key. Paste it once.');
+  box.innerHTML='<p class="meta">Reading…</p>';let rec=null;try{rec=await j('people/'+pid+'.json')}catch(e){}
+  const pend=rec&&rec.pending,links='<p style="margin-top:14px"><a class="btn go sm" target="_blank" rel="noopener" href="'+REPO+'/issues/new?title=confirm+'+esc(pid)+'">Confirm: it is '+esc(p.name)+'</a> <a class="btn sm" target="_blank" rel="noopener" href="'+REPO+'/issues/new?title=deny+'+esc(pid)+'">Deny</a></p><p class="meta" style="text-transform:none;letter-spacing:0">Each opens a new issue on GitHub; press Create and it is done.</p><p><button class="btn sm" id="sdforget">Forget the key on this device</button></p>';
+  if(!pend){box.innerHTML='<p>Nobody is waiting to be confirmed as '+esc(p.name)+' right now. If the request has only just arrived, the site needs a minute or two to catch up: close this and open the link again.</p>'}
+  else if(!pend.proof){box.innerHTML='<p>Someone asked for the name '+esc(p.name)+' on '+esc(pend.at||'')+' without answering the question (an older request). Name to show: “'+esc(pend.display||p.name)+'”.</p>'+links}
+  else{let txt=null;try{txt=await unseal(pend.proof,key)}catch(e){}
+    if(txt==null){store.set('abe-steward','');return keyForm('That key does not open this answer. Paste the stewards’ key again.')}
+    box.innerHTML='<p>Asked on '+esc(pend.at||'')+'. Name to show: “'+esc(pend.display||p.name)+'”.</p><p class="meta">Something only Rana and '+esc(p.name)+' will know</p><p class="quote" id="sdtxt"></p>'+links;$('#sdtxt').textContent=txt}
+  if($('#sdforget'))$('#sdforget').onclick=()=>{store.set('abe-steward','');d.close()}}
+$('#sdx').onclick=()=>$('#sd').close();
 const sha256=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
 let myLock='';
 async function claimState(){ /* '', 'pending', 'mine', 'other' for the name this device asked for */
@@ -1160,29 +1314,38 @@ async function pInit(){const st=await claimUI();
   if(openPerson)openP(openPerson)}
 $('#plist').onclick=e=>{const b=e.target.closest('[data-p]');if(b)openP(b.dataset.p,{scroll:1})};
 async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;await needRecs();const st=claim&&claim.person==id?await claimState():'';
+  const nm=(await needNames())[id]||{};if(openPerson!=id)return;
+  const first=p.name.split(' ')[0],wrote=(p.wrote||[]).filter(w=>!gone[w[0]]),pics=(nm.pics||[]).filter(n=>IMG.has(n)),tagCalls=Object.keys(nm.calls||{}).filter(r=>recById[r]&&recById[r].kind=='call'),calls=[...new Set(tagCalls.concat(wrote.map(w=>w[0]).filter(r=>recById[r])))].sort(),mineView=st=='mine'||st=='pending';
+  const cnt=[[pics.length,pics.length==1?'screenshot':'screenshots'],[calls.length,calls.length==1?'call recording':'call recordings'],[wrote.length,wrote.length==1?'line typed in the chat':'lines typed in the chat'],[(p.here||[]).length,'marked “I am in this”'],[(p.said||[]).length,(p.said||[]).length==1?'mark left':'marks left']].filter(c=>c[0]);
+  const counts=cnt.length?'<div class="pcount">'+cnt.map(c=>'<div><div class="num">'+fmt(c[0])+'</div><div class="meta">'+c[1]+'</div></div>').join('')+'</div>':'';
   $$('#plist [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p==id));
-  let h='<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>';
+  let h='<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>'+counts;
   if(st=='mine')h+='<p class="ok">This place is yours. On this device you answer as yourself, and the person button under the stage marks what you are in.</p><div class="row"><div><label class="meta" for="dn">The name to show</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn sm" id="pname">Change the name shown</button> <button class="btn sm" id="pforget">Forget me on this device</button> <span class="meta" id="pmsg"></span>';
-  else if(st=='pending')h+='<p class="warn">You asked for this name. A steward confirms it is you, usually within a day. Come back on this device.</p><button class="btn sm" id="pforget">That was a mistake: forget it on this device</button> <span class="meta" id="pmsg"></span>';
+  else if(st=='pending')h+='<p class="warn">You asked for this name. A steward confirms it is you, usually within a day. Until then you can already look at everything below. Come back on this device.</p><button class="btn sm" id="pforget">That was a mistake: forget it on this device</button> <span class="meta" id="pmsg"></span>';
   else if(p.claimed)h+='<p>'+esc(p.name)+' has claimed this place'+(p.since?' ('+esc(p.since)+')':'')+'. If that should have been you, press the flag under the stage on anything, or tell the author.</p>';
   else if(p.pending)h+='<p>Someone has asked for this name and a steward has not confirmed it yet. If that should have been you, tell the author.</p>';
   else if(claim&&claim.person!=id&&st!=='')h+='';
-  else h+='<p class="meta" style="text-transform:none;letter-spacing:0;font-size:13px;margin-bottom:10px">'+(p.from=='named by the author'?'The author named this friend. Nothing in the archive is tied to the name.':p.from=='name tag in a call'?'A machine read this name on a name tag that the call software wrote under a participant. It may have misread, and nothing else in the archive is tied to the name.':(p.wrote||[]).length?'Someone with this name typed '+p.wrote.length+(p.wrote.length==1?' line':' lines')+' in the chat of the calls; they are below.':'Someone with this name typed in the chat of the calls. What they typed was a link or has been taken out, so there is nothing to show.')+'</p><p>If this is you, claim your place. A steward confirms it, and then your marks carry a ✓. If this is not a person from the calls at all, the flag on the stage tells the stewards.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg"></span>';
+  else h+='<p class="meta" style="text-transform:none;letter-spacing:0;font-size:13px;margin-bottom:10px">'+(p.from=='named by the author'?'The author named this friend. Nothing in the archive is tied to the name.':p.from=='name tag in a call'?'A machine read this name on a name tag that the call software wrote under a participant. It may have misread, and nothing else in the archive is tied to the name.':(p.wrote||[]).length?'Someone with this name typed in the chat of the calls.':'Someone with this name typed in the chat of the calls. What they typed was a link or has been taken out.')+(cnt.length?' The numbers above are where a machine read the name “'+esc(first)+'” on screen or in the chat. They say where the name was written, not who is in a picture.':'')+'</p><p>If this is you, claim your place. You then see these things straight away, on this device. A steward confirms that it is you, and after that your marks carry a ✓. If this is not a person from the calls at all, the flag on the stage tells the stewards.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div>'
+    +(SEAL?'<div style="margin:0 0 12px"><label class="meta" for="pk">Write something that only Rana and '+esc(first)+' will know</label><textarea id="pk" maxlength="280" required placeholder="A place, a day, a joke between you. It is how the stewards know it is you."></textarea><p class="meta" style="text-transform:none;letter-spacing:0;margin:4px 0 0">Needed. It is sealed on this device before it is sent, only the stewards can open it, and it is never shown on the site.</p></div>':'')
+    +'<button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg" aria-live="polite"></span>';
   h+='</div>';
-  const wrote=p.wrote||[];
-  if(wrote.length)h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+esc(iid)+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+esc(thumbUrl(iid))+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+esc(iid)+'</span></span></button>'}).join('')+'</div>';
+  /* the things themselves: for whoever asked for this name on this device, confirmed or still waiting */
+  if(mineView&&pics.length)h+='<h3>Screenshots where a machine read “'+esc(first)+'” · '+fmt(pics.length)+'</h3><p class="lead">Only you know which ones you are in.'+(st=='mine'?' Put one on the stage and press the person button under it to say so.':' Once a steward has confirmed you, you can say so on each.')+'</p><div class="grid" id="pf">'+pics.slice(0,600).map(n=>tile('m'+pad(n,5),'').replace('data-id','data-list="pf" data-id')).join('')+'</div>'+(pics.length>600?'<p class="meta">The first 600 of '+fmt(pics.length)+'.</p>':'');
+  if(mineView&&calls.length)h+='<h3>Call recordings with this name · '+calls.length+'</h3><div class="calls" id="pc">'+calls.map(rid=>{const r=recById[rid];return'<button class="call" data-prec="'+esc(rid)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(rid,Math.min(r.min-1,2),1))+'" alt=""></span><span><b>'+(r.t0?niceDay(r.t0)+' · ':'')+dur(r.sec)+'</b><span class="meta">'+((nm.calls||{})[rid]?'name tag read in '+fmt(nm.calls[rid])+' frames':'typed in the chat')+' · '+esc(rid)+'</span></span></button>'}).join('')+'</div>';
+  if(wrote.length&&(mineView||p.claimed))h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+esc(iid)+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+esc(thumbUrl(iid))+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+esc(iid)+'</span></span></button>'}).join('')+'</div>';
   if((p.here||[]).length)h+='<h3>'+esc(p.name)+' says: I am in this</h3><div class="grid" id="ph">'+p.here.map(i=>tile(i,'').replace('data-id','data-list="ph" data-id')).join('')+'</div>';
   if((p.said||[]).length)h+='<h3>Marks left as '+esc(p.name)+'</h3><div class="grid" id="ps" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+p.said.map(i=>tile(i,'')).join('')+'</div>';
-  if(st=='mine'||st=='pending')h+='<h3>Find yourself</h3><p class="lead">Pictures where a machine read the word “'+esc(p.name.split(' ')[0])+'” on screen. Only you know which ones you are in.</p><button class="btn sm" id="pfind">Look for my name in the pictures</button><div class="grid" id="pf"></div>';
   $('#popen').hidden=false;$('#popen').innerHTML=h;if(!EX)history.replaceState(null,'',hashFor());
   const msg=t=>{const m=$('#pmsg');if(m)m.textContent=t};
-  if($('#pclaim'))$('#pclaim').onclick=async()=>{if(FRAMED)return msg(ownTab());if(!DOOR)return msg('The door is closed right now.');const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
-    try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,lock,display:$('#dn').value.trim()})}),o=await r.json();
+  if($('#pc'))$('#pc').onclick=e=>{const c=e.target.closest('[data-prec]');if(!c)return;const rid=c.dataset.prec,w=wrote.find(x=>x[0]==rid);setMini(false,false);ctx={kind:'rec'};go(rid+'.'+pad(w?Math.floor(w[1]/60):0,4),{keep:1,play:RAW})};
+  if($('#pclaim'))$('#pclaim').onclick=async()=>{if(FRAMED)return msg(ownTab());if(!DOOR)return msg('The door is closed right now.');
+    let proof='';if(SEAL){const a=$('#pk').value.trim().replace(/\s+/g,' ');if(a.length<3){msg('Answer the question first: it is how the stewards know it is you.');$('#pk').focus();return}
+      try{proof=await seal(a)}catch(e){return msg('This browser could not seal your answer. Try another browser, or ask the author for a private link.')}}
+    const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
+    try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({person:id,lock,display:$('#dn').value.trim()},proof?{proof}:{}))}),o=await r.json();
       if(o.ok){claim={person:id,key,asked:Date.now()};myLock=lock;store.set('abe-claim',claim);await pInit()}else msg((o.problems||['Could not ask.']).join(' '))}catch(e){msg('The door could not be reached. Try again later.')}};
   if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows within the hour.':(o.problems||[]).join(' '))}catch(e){msg('The door could not be reached.')}};
   if($('#pforget'))$('#pforget').onclick=()=>{store.set('abe-claim',null);claim=null;myLock='';claimOK=false;pInit()};
-  if($('#pfind'))$('#pfind').onclick=async()=>{$('#pf').innerHTML='<span class="meta">Reading…</span>';const tx=await needText(),rxn=new RegExp('(?<!\\d[ .,/-]{0,2})\\b'+p.name.split(' ')[0].replace(/[^\w]/g,'')+'\\b(?![ .,/-]{0,2}\\d)','i'),hits=Object.keys(tx).filter(k=>IMG.has(+k.slice(1))&&rxn.test(tx[k])).sort();
-    $('#pf').innerHTML=hits.length?hits.slice(0,400).map(i=>tile(i,'').replace('data-id','data-list="pf" data-id')).join(''):'<span class="meta">The word is not written in any picture a machine could read. Browse the calls instead; you will know where you were.</span>'};
   if(o.scroll)$('#popen').scrollIntoView({block:'start'})}
 $('#bhere').onclick=async()=>{if(!claimOK||!cur)return;const b=$('#bhere');b.disabled=true;try{const o=await post({hears:cur,text:'',by:'human',name:P[claim.person].name,person:claim.person,token:claim.key,here:true});
     $('#who').textContent=o.ok?'Marked: you are in this.':(o.problems||['Could not mark it.']).join(' ');b.classList.toggle('on',!!o.ok)}catch(e){$('#who').textContent='The door could not be reached.'}b.disabled=false};
@@ -1219,12 +1382,13 @@ $('#dfly').addEventListener('toggle',()=>{if($('#dfly').open)drawFly()});
 const by=wb.count&&wb.count.by||{};$('#tally').textContent='· '+fmt(wb.wingbeats.length)+' marks: '+(by.human||0)+' human, '+(by.ai||0)+' AI, '+((by.both||0)+(by.unsure||0))+' other';
 
 /* keys */
-addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable],#ruler')||e.metaKey||e.ctrlKey||e.altKey)return;
+addEventListener('keydown',e=>{if(introOpen()||e.target.closest('input,textarea,select,[contenteditable],#ruler')||e.metaKey||e.ctrlKey||e.altKey)return;
   if(e.target.closest('dialog'))return;if(e.key=='ArrowLeft'){nav(-1);e.preventDefault()}else if(e.key=='ArrowRight'){nav(1);e.preventDefault()}else if(e.key==' '){if(e.target.closest('button,a,summary'))return;$('#bplay').click();e.preventDefault()}else if(e.key=='Escape'&&drawing)setDraw(false)});
 
 /* addresses: #m00123 (the stage), #browse, #themes/t-suicide, #people/p-name, #about */
 async function route(first){
   let h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){} /* a mangled address opens the work somewhere, like any other visit */
+  const sm=/^seal=(p-[a-z0-9-]{1,40})$/.exec(h);if(sm){h='people/'+sm[1];if(!EX){history.replaceState(null,'','#'+h);if(introOpen()){document.documentElement.classList.add('in')}openSeal(sm[1])}}
   const[a,b]=h.split('/');let v='stage',id='';
   if(a=='marks'){v='browse';B.want='marks'}else if(VIEWS.includes(a)){v=a;id=b||''}else id=a;
   if(isTheme(id)&&T[id]){if(v=='stage'&&first)v='themes';openTheme=id}
@@ -1236,6 +1400,55 @@ async function route(first){
   if(a=='marks'&&!EX)history.replaceState(null,'','#marks')}
 addEventListener('hashchange',()=>route(false));addEventListener('popstate',()=>route(false));
 paintPlay();
+
+/* the introduction: what happened, what this is for, and a choice. Behind the words the butterfly is drawn from the work as it
+   stands today: the 98 lines of 2021 first, then every mark left since, as far as the visitor has read. */
+const intro=$('#intro'),isc=$('#iscroll'),icv=$('#icv'),ipages=$$('#intro .ip');let introRaf=0,introT0=0,introDraw=null;
+const introOpen=()=>!document.documentElement.classList.contains('in');
+function introStart(){
+  if(C.pictures){$('#ic1').textContent=fmt(C.pictures);$('#ic2').textContent=fmt(C.recorded_hours)}
+  $('#ic3').textContent=' · '+fmt(seeds.length)+' lines, '+fmt(liveMarks().length)+(liveMarks().length==1?' mark':' marks')+' so far';
+  $('#idots').innerHTML=ipages.map(()=>'<i></i>').join('');
+  if(!paths)buildFly();
+  const ix=icv.getContext('2d'),old=Object.values(N).filter(n=>n.at=='2021'),neu=Object.values(N).filter(n=>n.at!='2021'&&!n.removed);
+  let W=0,H=0,d=1;const size=()=>{const b=intro.getBoundingClientRect();d=Math.min(2,window.devicePixelRatio||1);W=icv.width=Math.round(b.width*d);H=icv.height=Math.round(b.height*d)};
+  const prog=()=>{const m=isc.scrollHeight-isc.clientHeight;return m>0?clamp(isc.scrollTop/m,0,1):0};
+  introT0=performance.now();
+  introDraw=()=>{
+    if(!W||!H)size();const p=prog(),t=(performance.now()-introT0)/1e3;
+    ix.setTransform(1,0,0,1,0,0);ix.fillStyle='#060607';ix.fillRect(0,0,W,H);
+    /* the figure fits the screen whichever way it is held; on a phone it stands behind the upper half of the words */
+    const k=Math.min(W/54,H/60)*(W<H?1.5:1.05),cx0=W/2,cy0=H*(W<H?.46:.5)+25*k,grow=clamp((p-.02)/.5,0,1),born=clamp(Math.min(1,t/2.4),0,1)*.12;
+    const f1=reduced?1:Math.max(born,grow),f2=reduced?1:clamp((p-.62)/.3,0,1);
+    ix.lineJoin=ix.lineCap='round';
+    const thread=(id,frac,col,lw)=>{const q=paths[id]&&paths[id].pts;if(!q||frac<=0)return;const n=Math.max(2,Math.floor(q.length/2*frac));ix.beginPath();for(let i=0;i<n;i++){const X=cx0+q[i*2]*k,Y=cy0-q[i*2+1]*k;i?ix.lineTo(X,Y):ix.moveTo(X,Y)}ix.strokeStyle=col;ix.lineWidth=lw*d;ix.stroke();return[cx0+q[(n-1)*2]*k,cy0-q[(n-1)*2+1]*k]};
+    ix.globalAlpha=.5;for(const n of old)thread(n.id,f1,'rgba(138,143,156,.55)',.8);
+    ix.globalAlpha=.95;for(const n of neu){const e=thread(n.id,f2,colour(n),1.8);if(e&&f2>0&&f2<1){ix.fillStyle='#fff';ix.beginPath();ix.arc(e[0],e[1],2.2*d,0,6.3);ix.fill()}}
+    /* one bright point keeps travelling along a line of 2021: the call that was never hung up */
+    if(!reduced&&old.length){const n=old[Math.floor(t/9)%old.length],q=paths[n.id].pts,i=Math.floor((t%9)/9*(q.length/2-1));ix.globalAlpha=.9;ix.fillStyle='#e3c34d';ix.beginPath();ix.arc(cx0+q[i*2]*k,cy0-q[i*2+1]*k,2.6*d,0,6.3);ix.fill()}
+    ix.globalAlpha=1;
+    const at=Math.round(p*(ipages.length-1));$$('#idots i').forEach((el,i)=>el.classList.toggle('on',i==at));intro.classList.toggle('end',at==ipages.length-1);
+    if(!reduced&&introOpen())introRaf=requestAnimationFrame(introDraw)};
+  size();new ResizeObserver(()=>{size();if(reduced&&introOpen())introDraw()}).observe(intro);
+  const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting)e.target.classList.add('on')},{root:isc,threshold:.35});ipages.forEach(el=>io.observe(el));
+  if(reduced)isc.addEventListener('scroll',()=>introDraw(),{passive:true});
+  introDraw();try{$('#ibegin').focus({preventScroll:true})}catch(e){}}
+const introGo=i=>{const el=ipages[clamp(i,0,ipages.length-1)];isc.scrollTo({top:el.offsetTop,behavior:reduced?'auto':'smooth'})};
+const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.offsetTop-isc.scrollTop);if(dd<bd){bd=dd;b=i}});return b};
+$('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
+$('#iskip').onclick=()=>{introGo(ipages.length-1);setTimeout(()=>{try{$('#iraw').focus({preventScroll:true})}catch(e){}},600)};
+function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
+$('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving, silently: the voice is muted until asked for, and a call waits for its play button */
+$('#icol').onclick=async()=>{introClose();await setRaw(false)};
+$('#iexit').onclick=()=>{cancelAnimationFrame(introRaf);stopPlay();
+  intro.innerHTML='<div id="ibye"><div><p class="it" style="font:400 24px/1.4 var(--serif)">Nothing was shown.</p><p class="lead" style="margin:0 auto 18px">The work stays where it is, until at least 2046. You can close this tab.</p><p><button class="btn sm" id="iback">Come back in</button></p></div></div>';
+  $('#iback').onclick=()=>location.reload();
+  setTimeout(()=>{try{if(history.length>1)history.back();else window.close()}catch(e){}},1400)};
+$('#iagain').onclick=()=>{stopPlay();document.documentElement.classList.remove('in');isc.scrollTop=0;ipages.forEach((el,i)=>el.classList.toggle('on',i==0));if(introDraw){introT0=performance.now();introDraw()}else introStart()};
+intro.addEventListener('keydown',e=>{if(e.key=='ArrowDown'||e.key=='PageDown'){introGo(introAt()+1);e.preventDefault()}else if(e.key=='ArrowUp'||e.key=='PageUp'){introGo(introAt()-1);e.preventDefault()}else if(e.key=='Escape'){$('#iskip').click();e.preventDefault()}
+  else if(e.key=='Tab'){const f=[...intro.querySelectorAll('button')].filter(b=>b.offsetParent),i=f.indexOf(document.activeElement);if(f.length&&(e.shiftKey?i<=0:i==f.length-1)){f[e.shiftKey?f.length-1:0].focus();e.preventDefault()}}}); /* the way in is a choice, so focus stays inside it */
+if(introOpen())introStart();
+
 await route(true);
 needRecs().then(drawRuler);
 if(EX){document.body.appendChild(fly);let k=0;setInterval(()=>{k++;if(k%6==5){drawFly();fly.classList.add('full');setTimeout(()=>fly.classList.remove('full'),2e4)}show(pick(),{quiet:1})},24e3);setTimeout(()=>location.reload(),36e5)}

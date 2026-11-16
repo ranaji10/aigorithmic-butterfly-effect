@@ -776,11 +776,22 @@ def door_item(it, did, known, cfg, state, notes, day):
         display = clean(it.get("display"), MAX_NAME)
         if not display or text_problems("name", display):
             display = p["name"]
+        # What they wrote when asked for "something that only Rana and <name> will know". It was sealed in their browser with the
+        # stewards' public key (steward_seal in data/config.json); here it is only ever a string of letters that this script cannot read.
+        proof = clean(it.get("proof"), 2300)
+        if not re.match(r"^v1\.[A-Za-z0-9_-]{120,2200}$", proof):
+            proof = ""
+        if cfg.get("steward_seal") and not proof and not pend:
+            return "refused: the question for the stewards was not answered"
         p["pending"] = {"lock": lock, "display": display, "at": day}
+        if proof or pend.get("proof"):
+            p["pending"]["proof"] = proof or pend.get("proof")
         save("people/%s.json" % pid, p)
         state["claims"] += 1
         repo = SITE_REPO + "/issues/new?title="
-        notes.append(f"**{plain(p['name'])}** was claimed on the site (`{pid}`, name to show: “{plain(display)}”). "
+        answer = (f"Their answer to “something only Rana and {plain(p['name'])} will know” is sealed: [open it]({SITE}#seal={pid}) "
+                  "(on a device that holds the stewards' key; the first time it asks for the key). ") if p["pending"].get("proof") else ""
+        notes.append(f"**{plain(p['name'])}** was claimed on the site (`{pid}`, name to show: “{plain(display)}”). " + answer +
                      f"If that really is {plain(p['name'])}: [confirm]({repo}confirm+{pid}). If not: [deny]({repo}deny+{pid}). "
                      "Each link opens a new issue; press Create and it is done.")
         return "pending"
