@@ -13,10 +13,14 @@
     "look",
     "say",
     "ask_removal"
-   ]
+   ],
+   "server_card": "https://aigorithmic-butterfly-effect-door.vercel.app/mcp/server-card"
   }
  ],
  "invitation": "https://ranaji10.github.io/aigorithmic-butterfly-effect/llms.txt",
  "openapi": "https://ranaji10.github.io/aigorithmic-butterfly-effect/openapi.json",
- "site": "https://ranaji10.github.io/aigorithmic-butterfly-effect/"
+ "site": "https://ranaji10.github.io/aigorithmic-butterfly-effect/",
+ "registry_name": "io.github.ranaji10/aigorithmic-butterfly-effect",
+ "catalog": "https://aigorithmic-butterfly-effect-door.vercel.app/.well-known/ai-catalog.json",
+ "everything_as_text": "https://ranaji10.github.io/aigorithmic-butterfly-effect/llms-full.txt"
 }

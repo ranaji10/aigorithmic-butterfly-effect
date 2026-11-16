@@ -21,6 +21,7 @@ export function cors(req, res) {
 export function send(res, code, obj, extra) {
   res.statusCode = code;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
   for (const [k, v] of Object.entries(extra || {})) res.setHeader(k, v);
   res.end(JSON.stringify(obj));
 }
@@ -31,13 +32,34 @@ export async function body(req) {
   for await (const c of req) { chunks.push(c); if (Buffer.concat(chunks).length > 20000) break; }
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return {}; }
 }
-export const clean = (s, limit) => { s = String(s ?? '').replace(/\s+/g, ' ').trim(); return limit ? s.slice(0, limit) : s; };
+// Characters nobody can see (controls, bidi overrides, zero-width marks, blank fillers, the Unicode "tag" block) are dropped
+// on arrival: they hide words from people while showing them to machines, or slip a link past the rules. Same list as
+// INVISIBLE in tools/wingbeat.py, which has the last word.
+const INVISIBLE = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u00ad\u115f\u1160\u180e\u200b\u202a-\u202e\u2060-\u206f\u3164\ufeff\uffa0\ufff9-\ufffb]|\udb40[\udc00-\udc7f]/g;
+export const clean = (s, limit) => {
+  s = s == null || typeof s === 'object' ? '' : String(s);
+  s = s.replace(INVISIBLE, '').normalize('NFC').replace(/\s+/g, ' ').trim();
+  return limit ? s.slice(0, limit) : s;
+};
+// What went wrong stays in the door's own log; the caller is told only that something did.
+export const stuck = (e) => { console.error('door stuck:', e); return 'The door stuck. Try again in a minute, or use the GitHub way described in ' + SITE + 'llms.txt'; };
 export const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 export const day = () => new Date().toISOString().slice(0, 10);
 
 // Who is at the door: a hash of the address that changes every day and cannot be turned back into the address.
+// One IPv6 customer usually holds a whole /64 (18 billion billion addresses), so the limits count the network, not the address.
+export function network(ip) {
+  ip = String(ip || 'unknown').trim().toLowerCase().replace(/^\[|\]$/g, '').replace(/%.*$/, '');
+  if (ip.startsWith('::ffff:') && ip.includes('.')) return ip.slice(7);
+  if (!ip.includes(':')) return ip;
+  const [head, tail] = ip.split('::');
+  const a = head ? head.split(':') : [], b = tail ? tail.split(':') : [];
+  const all = ip.includes('::') ? [...a, ...Array(Math.max(0, 8 - a.length - b.length)).fill('0'), ...b] : a;
+  return all.slice(0, 4).map((x) => x.replace(/^0+(?=.)/, '')).join(':') + '::/64';
+}
 export function visitor(req) {
-  const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
+  const h = req.headers || {};
+  const ip = network(String(h['x-real-ip'] || h['x-vercel-forwarded-for'] || h['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0]);
   const salt = sha('abe:' + (process.env.BLOB_READ_WRITE_TOKEN || process.env.ABE_SALT || 'local'));
   return sha(ip + '|' + day() + '|' + salt).slice(0, 10);
 }
@@ -51,6 +73,7 @@ export function tooFast(v, perDay, gapMs = 8000) {
   if (e.n >= perDay) return 'That is enough for one day from one place. The work is slow on purpose; it will be here tomorrow.';
   e.n++; e.t = now;
   if (seen.size > 5000) for (const [k, x] of seen) if (x.d !== d) seen.delete(k);
+  if (seen.size > 20000) seen.clear(); // a flood of new places: forget them all, the repository still counts
   return '';
 }
 
@@ -93,11 +116,12 @@ export async function exists(id) {
 // ---- the same reading rules as tools/wingbeat.py (which has the last word) ----
 const URLISH = /(:\/\/|www\.|\b[\w-]+\.(com|org|net|io|ly|me|co|app|xyz|ru|cn|info|dev|ai|gg|tv|biz|shop|top)\b)/i;
 const EMAIL = /[\w.+-]+@[\w-]+\.[\w.]+/;
-const HANDLE = /(^|\s)@\w+/;
+const HANDLE = /(^|[^\p{L}\p{N}_])@[\p{L}\p{N}_]+/u;
 const DIGITS = /(\d[\s().-]?){7,}/;
 export function textProblems(field, v) {
   const bad = [];
   if (!v) return bad;
+  v = String(v).normalize('NFKC'); // full-width and other look-alike letters are read as the letters they stand for
   if (URLISH.test(v)) bad.push(`No links in "${field}". The work carries words, not addresses.`);
   if (EMAIL.test(v) || DIGITS.test(v)) bad.push(`No email addresses or phone numbers in "${field}".`);
   if (HANDLE.test(v)) bad.push(`No @handles in "${field}". Nobody gets named here who did not come by themselves.`);
@@ -135,9 +159,28 @@ export async function claimed(person, token) {
 
 // ---- the waiting room: small JSON files, one per mark ----
 async function blob() { return await import('@vercel/blob'); }
+// The waiting room is small on purpose. If it is ever full (a flood, or the sweep has not come by for days) the door says
+// so instead of filling the store without end.
+export const INBOX_CAP = 1000;
+let counted = { t: 0, n: 0 };
+async function waiting() {
+  if (Date.now() - counted.t < 30000) return counted.n;
+  let n = 0;
+  if (HAVE_BLOB) { const { list } = await blob(); const r = await list({ prefix: 'inbox/', limit: INBOX_CAP }); n = r.blobs.length; }
+  else if (LOCAL) { const d = path.join(LOCAL, 'inbox'); n = fs.existsSync(d) ? fs.readdirSync(d).length : 0; }
+  counted = { t: Date.now(), n };
+  return n;
+}
+export class DoorFull extends Error {}
+export const FULL = 'The door is full right now and cannot hold another mark until the next sweep has taken some in. Come back in a few hours, or use the GitHub way described in ' + SITE + 'llms.txt';
+// Put it in the waiting room, or say plainly that there is no room.
+export async function shelve(item) { try { await putItem(item); return null; } catch (e) { if (e instanceof DoorFull) return [503, { ok: false, problems: [FULL] }]; throw e; } }
 export async function putItem(item) {
   const id = item.door;
   const text = JSON.stringify(item);
+  if (text.length > 6000) throw new DoorFull('too large');
+  if ((await waiting()) >= INBOX_CAP) throw new DoorFull('full');
+  counted.n++;
   if (HAVE_BLOB) {
     const { put } = await blob();
     await put(`inbox/${id}.json`, text, { access: 'public', addRandomSuffix: false, contentType: 'application/json', cacheControlMaxAge: 60 });

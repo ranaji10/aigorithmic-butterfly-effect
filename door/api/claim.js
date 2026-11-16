@@ -1,7 +1,7 @@
 // POST /api/claim — someone who was in the 2021 calls claims their own presence with the private link the author sent them.
 // Body: {"person":"p-name","token":"...","display":"the name I want shown"}  (display is optional)
 //   or: {"person":"p-name","lock":"<sha-256 hex of a key the browser keeps>","display":"..."}  (no link needed; a steward confirms)
-import { cors, send, body, visitor, tooFast, clean, claimed, textProblems, putItem, newId, storageReady, site, SITE } from './_lib.js';
+import { cors, send, body, visitor, tooFast, clean, claimed, textProblems, putItem, DoorFull, FULL, stuck, newId, storageReady, site, SITE } from './_lib.js';
 
 export default async function handler(req, res) {
   if (cors(req, res)) return;
@@ -31,10 +31,10 @@ export default async function handler(req, res) {
     const display = clean(raw.display, 40);
     const bad = textProblems('display', display);
     if (bad.length) return send(res, 422, { ok: false, problems: bad });
-    if (raw.check) return send(res, 200, { ok: true, person: String(raw.person), valid: true });
+    if (raw.check) return send(res, 200, { ok: true, person: clean(raw.person, 44), valid: true });
     if (!storageReady()) return send(res, 503, { ok: false, problems: ['The door has no storage connected yet.'] });
-    const item = { kind: 'claim', door: newId(), t: new Date().toISOString(), v, person: String(raw.person), display, verified: true };
+    const item = { kind: 'claim', door: newId(), t: new Date().toISOString(), v, person: clean(raw.person, 44), display, verified: true };
     await putItem(item);
     send(res, 202, { ok: true, person: item.person, message: 'This place in the work is yours now. Within the hour the site will show it as claimed, under the name you chose. Keep your link; it is your key.' });
-  } catch (e) { send(res, 500, { ok: false, problems: ['The door stuck: ' + String(e.message || e).slice(0, 120)] }); }
+  } catch (e) { if (e instanceof DoorFull) return send(res, 503, { ok: false, problems: [FULL] }); send(res, 500, { ok: false, problems: [stuck(e)] }); }
 }

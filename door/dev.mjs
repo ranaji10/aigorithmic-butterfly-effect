@@ -11,16 +11,18 @@ process.env.ABE_LOCAL_STORE ||= path.join(here, '.local-store');
 process.env.ABE_SITE_DIR ||= root;
 const media = process.env.ABE_MEDIA_DIR || '', iaDir = process.env.ABE_IA_DIR || '';   // ABE_IA_DIR: a folder standing in for archive.org/download/ (open the site with ?ia=http://localhost:PORT/ia/)
 const routes = {};
-for (const n of ['say', 'inbox', 'remove', 'claim', 'mcp', 'index']) routes[n] = (await import(`./api/${n}.js`)).default;
+for (const n of ['say', 'inbox', 'remove', 'claim', 'mcp', 'index', 'card']) routes[n] = (await import(`./api/${n}.js`)).default;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.json': 'application/json', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4', '.webm': 'audio/webm', '.opus': 'audio/ogg', '.css': 'text/css', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml', '.md': 'text/plain; charset=utf-8' };
 http.createServer(async (req, res) => {
   const u = new URL(req.url, base);
   let p = decodeURIComponent(u.pathname);
-  const api = p === '/mcp' ? 'mcp' : p === '/api' ? 'index' : (/^\/api\/(\w+)$/.exec(p) || [])[1];
+  const api = p === '/mcp' ? 'mcp' : p === '/mcp/server-card' ? 'card' : p === '/api' ? 'index' : (/^\/api\/(\w+)$/.exec(p) || [])[1];
   if (api && routes[api]) { req.query = Object.fromEntries(u.searchParams); return routes[api](req, res); }
   const dir = p.startsWith('/media/') && media ? media : p.startsWith('/ia/') && iaDir ? iaDir : root;
   let file = dir === media ? path.join(media, p.slice(7)) : dir === iaDir ? path.join(iaDir, p.slice(4)) : path.join(root, p === '/' ? 'index.html' : p);
-  if (!file.startsWith(dir) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end('not found'); }
+  // only files inside the folder being served, and never its git history, the door's local store or installed packages
+  const inside = path.relative(dir, file);
+  if (inside.startsWith('..') || path.isAbsolute(inside) || /(^|[\\/])(\.git|\.local-store|node_modules)([\\/]|$)/.test(inside) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end('not found'); }
   res.setHeader('Content-Type', TYPES[path.extname(file)] || 'application/octet-stream');
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (p === '/data/config.json') { const c = JSON.parse(fs.readFileSync(file, 'utf8')); c.door = base.slice(0, -1); return res.end(JSON.stringify(c)); }
@@ -35,4 +37,4 @@ http.createServer(async (req, res) => {
   }
   res.setHeader('Content-Length', size);
   fs.createReadStream(file).pipe(res);
-}).listen(port, () => console.log('rehearsal at ' + base));
+}).listen(port, '127.0.0.1', () => console.log('rehearsal at ' + base + ' (this machine only)'));

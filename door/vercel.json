@@ -3,6 +3,10 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/mcp/server-card",
+      "destination": "/api/card"
+    },
+    {
       "source": "/mcp",
       "destination": "/api/mcp"
     },
@@ -17,6 +21,10 @@
     {
       "source": "/openapi.json",
       "destination": "https://ranaji10.github.io/aigorithmic-butterfly-effect/openapi.json"
+    },
+    {
+      "source": "/llms-full.txt",
+      "destination": "https://ranaji10.github.io/aigorithmic-butterfly-effect/llms-full.txt"
     }
   ],
   "headers": [
@@ -38,6 +46,43 @@
         {
           "key": "X-Robots-Tag",
           "value": "all"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains"
+        },
+        {
+          "key": "Link",
+          "value": "<https://ranaji10.github.io/aigorithmic-butterfly-effect/llms.txt>; rel=\"help\"; type=\"text/plain\", </openapi.json>; rel=\"service-desc\"; type=\"application/json\", </.well-known/ai-catalog.json>; rel=\"describedby\"; type=\"application/ai-catalog+json\""
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/ai-catalog.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/ai-catalog+json"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
         }
       ]
     }

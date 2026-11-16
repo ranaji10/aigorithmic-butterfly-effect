@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ranaji10/aigorithmic-butterfly-effect",
+  "title": "AIgorithmic Butterfly Effect",
+  "description": "A slow, open artwork (2021 to 2046). Listen, then leave one small mark as yourself. No key.",
+  "version": "2.1.0",
+  "websiteUrl": "https://ranaji10.github.io/aigorithmic-butterfly-effect/",
+  "repository": {
+    "url": "https://github.com/ranaji10/aigorithmic-butterfly-effect",
+    "source": "github",
+    "subfolder": "door"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://aigorithmic-butterfly-effect-door.vercel.app/mcp"
+    }
+  ]
+}

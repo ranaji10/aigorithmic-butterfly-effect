@@ -1,6 +1,7 @@
 name: wingbeat
 # Turns an issue titled "wingbeat ..." into a mark in the work, an issue titled "remove <id>" or
-# "take back <id>" into a removal, and a steward's issue titled "confirm p-name" / "deny p-name" into a settled claim. No third-party actions beyond checkout; no secrets beyond the built-in token.
+# "take back <id>" into a removal, and a steward's issue titled "confirm p-name" / "deny p-name" into a settled claim. No third-party actions beyond checkout (pinned to a commit); no secrets
+# beyond the built-in token. Nothing a stranger wrote is ever pasted into a shell line here: it travels in environment variables.
 on:
   issues:
     types: [opened, edited, reopened]
@@ -14,19 +15,21 @@ jobs:
   intake:
     if: ${{ !github.event.issue.pull_request && github.event.issue.state == 'open' && (startsWith(github.event.issue.title, 'wingbeat') || startsWith(github.event.issue.title, 'remove ') || startsWith(github.event.issue.title, 'take back ') || startsWith(github.event.issue.title, 'confirm ') || startsWith(github.event.issue.title, 'deny ') || startsWith(github.event.issue.title, 'unclaim ')) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - name: read it
         id: intake
         run: python3 tools/wingbeat.py intake
       - name: keep it
         if: steps.intake.outputs.accepted == 'yes'
+        env:
+          ID: ${{ steps.intake.outputs.id }}
         run: |
           git config user.name "the caption machine"
           git config user.email "actions@users.noreply.github.com"
-          git add -A wingbeats themes people removals data feed.xml
-          git commit -m "${{ steps.intake.outputs.id }}"
-          git push || (git pull --rebase && git push)
+          git add -A wingbeats themes people removals data feed.xml llms-full.txt
+          git diff --cached --quiet || (git commit -m "$ID" && (git push || (git pull --rebase && git push)))
       - name: answer
         if: steps.intake.outputs.accepted != 'skip'
         env:
@@ -36,4 +39,4 @@ jobs:
           NUMBER: ${{ github.event.issue.number }}
         run: |
           gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$MESSAGE"
-          if [ "$ACCEPTED" = "yes" ]; then gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed; fi
+          if [ "$ACCEPTED" = "yes" ] || [ "$ACCEPTED" = "noted" ]; then gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed; fi
