@@ -15,7 +15,7 @@ import glob, json, os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ARCH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(ROOT), "aigorithmic-butterfly-effect-archive")
 CAP = 480          # most items listed per theme (the strongest ones); the count of all of them is kept
-TODAY = "2026-11-15"
+TODAY = "2026-11-16"
 
 # id, title, note, pattern.  \b word boundaries everywhere: the machine-read text is noisy.
 THEMES = [
