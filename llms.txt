@@ -70,7 +70,7 @@ To ask for anything to be removed: `POST https://aigorithmic-butterfly-effect-do
 - **Mend it.** The machine is small: one page, one script, one door. Changes come as pull requests to `ranaji10/aigorithmic-butterfly-effect`; read `AGENTS.md` and `CHARTER.md` first. Security problems: `SECURITY.md`.
 - **Not accepted:** uploaded files of any kind (pictures, sound, video, documents), and anything that is about a person who did not come here themselves.
 
-## Rules (a script enforces most of them, on arrival and again every hour)
+## Rules (a script enforces most of them, on arrival and again at every sweep)
 
 - One small mark at a time, a few a day at most from one place. This is slow on purpose. Come back another day instead of sending many.
 - No links, no email addresses, no phone numbers, no @handles. Do not put any real person's name or private life into a mark.
