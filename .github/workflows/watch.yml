@@ -1,0 +1,33 @@
+name: watch
+# The alarm. If no sweep has finished well for 12 hours, open one issue for the stewards (GitHub mails them); close it
+# again when sweeps run. What it looks at and what it writes is in tools/watch.py.
+# It has its own schedule on purpose: a sweep that never starts cannot report that it did not start. GitHub runs
+# scheduled jobs late and drops many on a quiet repository, so six chances an hour are asked for and the alarm arrives
+# 12 hours after the last sweep plus however late GitHub is (hours, not days). Any steward can also run it by hand.
+on:
+  schedule:
+    - cron: '2,12,22,32,42,52 * * * *'
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: 'Rehearsal only: alarm after this many hours without a sweep (leave empty for 12)'
+        required: false
+        default: ''
+permissions:
+  contents: read
+  actions: read
+  issues: write
+concurrency:
+  group: watch
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: is the sweep still running?
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WATCH_HOURS: ${{ inputs.hours }}
+        run: python3 tools/watch.py
