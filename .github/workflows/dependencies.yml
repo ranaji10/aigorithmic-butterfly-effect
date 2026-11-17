@@ -1,0 +1,49 @@
+name: dependencies
+# Once a day: try every pull request Dependabot has opened for the door's one dependency, and merge it if it is safe.
+# "Safe" is spelled out at the top of tools/dependencies.py: only the door's two dependency files change, no more known
+# advisories than main has, the tree of packages does not balloon, every new version has been public for a week, and
+# the door passes tools/door_check.mjs with it. Anything else is left open with one comment that says why.
+# Merging to main deploys the door (its hosting is linked to this repository), which is the point.
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dependencies
+  cancel-in-progress: false
+jobs:
+  # Reads only. This job installs and runs the proposed packages, so it gets no way to write anything.
+  judge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      verdicts: ${{ steps.judge.outputs.verdicts }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: try each update
+        id: judge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/dependencies.py judge
+  # Writes, but never checks out or runs anything from a pull request: it only acts on the verdicts.
+  settle:
+    needs: judge
+    if: needs.judge.outputs.verdicts != '' && needs.judge.outputs.verdicts != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: merge or say why
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERDICTS: ${{ needs.judge.outputs.verdicts }}
+        run: python3 tools/dependencies.py settle
