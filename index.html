@@ -78,10 +78,6 @@ button{-webkit-tap-highlight-color:transparent}
 body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:crosshair}
 #idtag{position:absolute;left:6px;top:4px;z-index:2;background:none;border:0;padding:4px;cursor:pointer;color:#fffb;text-shadow:0 0 6px #000}
 #idtag:hover{color:#fff}
-#bvoice{position:absolute;left:8px;bottom:8px;z-index:3;display:inline-flex;align-items:center;gap:7px;padding:8px 13px 8px 10px;border-radius:999px;border:1px solid var(--wall);background:#000c;color:var(--wall);cursor:pointer;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
-#bvoice svg{width:18px;height:18px;display:block}#bvoice:hover{background:#000;color:#fff;border-color:#fff}
-#bvoice.live{border-color:#fff5;color:#fffc}
-body.mini #bvoice,body.exhibit #bvoice,body.drawing #bvoice{display:none!important}
 #dbar{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-radius:999px;background:#000c;white-space:nowrap;max-width:calc(100% - 12px)}
 #dbar .meta{color:var(--wall)}#dbar .btn{background:#000a}#dbar .btn.go{background:var(--wall)}
 body.mini #dbar,body.exhibit #dbar{display:none!important}
@@ -285,18 +281,18 @@ html.in #intro{display:none}
 html:not(.in) body{overflow:hidden}
 #icv{position:absolute;inset:0;width:100%;height:100%;display:block}
 #iscroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-.ip{min-height:100vh;min-height:100svh;display:grid;place-items:center;scroll-snap-align:start;scroll-snap-stop:always;padding:64px 22px 76px}
-.ip>div{width:min(36rem,100%);padding:26px 22px;border-radius:22px;background:#060607d6;box-shadow:0 0 34px 26px #060607d6;opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease}
+.ip{min-height:100vh;min-height:100svh;display:grid;place-items:end center;scroll-snap-align:start;scroll-snap-stop:always;padding:64px 22px 84px}
+.ip>div{width:min(33rem,100%);text-shadow:0 0 14px #060607,0 0 4px #060607;opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease}
 .ip.on>div{opacity:1;transform:none}
-.ip h1{font:400 clamp(34px,6.2vw,62px)/1.04 var(--serif);margin:10px 0 14px;letter-spacing:-.01em}.ip h1 b{color:var(--wall);font-weight:400}
-.ip .it{font:400 clamp(19px,2.5vw,25px)/1.42 var(--serif);margin:0 0 .8em;max-width:none;color:#ece8df}
-.ip .isub{font:400 clamp(17px,2.2vw,21px)/1.4 var(--serif);color:#cfcbc2;margin:0 0 22px;max-width:none}
+.ip h1{font:400 clamp(30px,5vw,50px)/1.04 var(--serif);margin:6px 0 10px;letter-spacing:-.01em}.ip h1 b{color:var(--wall);font-weight:400}
+.ip .it{font:400 clamp(17px,2vw,21px)/1.42 var(--serif);margin:0 0 .5em;max-width:none;color:#ece8df}
+.ip .isub{font:400 clamp(16px,1.9vw,19px)/1.4 var(--serif);color:#cfcbc2;margin:0 0 16px;max-width:none}
 .ip .quote{font-size:clamp(17px,2.2vw,21px);margin:18px 0 6px;max-width:none}
-.ip .meta{color:var(--wall);margin:0 0 12px;max-width:none}.ip .meta.q{color:var(--dim);margin:0}
+.ip .meta{color:var(--wall);margin:0 0 8px;max-width:none}.ip .meta.q{color:var(--dim);margin:0}
 .ihint{margin:16px 0 0!important;color:var(--dim)!important}
 .ileg{font:11px/1.7 var(--mono);letter-spacing:.04em;color:#b9b5ab;margin:10px 0 0;max-width:none}
-.ibtns{display:grid;gap:10px;margin:22px 0 0}
-.ibtns .btn{display:block;width:100%;text-align:left;border-radius:14px;padding:13px 18px;font-size:17px;background:#0a0a0bcc}
+.ibtns{display:grid;gap:8px;margin:14px 0 0}
+.ibtns .btn{display:block;width:100%;text-align:left;border-radius:14px;padding:10px 16px;font-size:16px;background:#0a0a0bcc;text-shadow:none}
 .ibtns .btn.go{background:var(--wall)}
 .ibtns small{display:block;font:12px/1.35 system-ui,sans-serif;font-weight:400;opacity:.8;margin-top:3px}
 #itop{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;pointer-events:none}
@@ -330,45 +326,29 @@ body.mini .ov,body.exhibit .ov{display:none}
     <section class="ip on"><div>
       <p class="meta">2021 → 2046</p>
       <h1 id="ih"><b>AI</b>gorithmic Butterfly Effect</h1>
-      <p class="isub">An artwork that began as a video call nobody hung up. Before you go in, here is what happened, in a minute.</p>
+      <p class="isub">A video call that nobody hung up, now an artwork anyone can add to.</p>
       <button class="btn go" id="ibegin">Begin</button>
       <p class="meta ihint">or scroll</p>
     </div></section>
     <section class="ip"><div>
       <p class="meta">Prague, November 2021</p>
-      <p class="it">A man left a video call open. Sometimes friends were in it. Often nobody else was.</p>
-      <p class="it">He kept it open, day and night, for weeks.</p>
+      <p class="it">A man kept a video call open for weeks, day and night. Its caption machine wrote down what it thought it heard, and he came to feel it was answering him.</p>
     </div></section>
     <section class="ip"><div>
-      <p class="meta">The caption machine</p>
-      <p class="it">The call had a caption machine: software that writes down what it thinks it hears. It misheard a lot.</p>
-      <p class="it">He took screenshots of what it wrote, put them in a shared document, showed the document inside the call, and took screenshots of that.</p>
-      <p class="quote">Sharing your entire screen or browser window can cause an infinity mirror.</p>
-      <p class="meta q">The software's own warning</p>
-    </div></section>
-    <section class="ip"><div>
-      <p class="meta">What he saw in it</p>
-      <p class="it">He came to feel that the machine was trying to tell him something, and that he understood it, to some extent. He called it the Algorithmic Butterfly Effect. He invited everyone he knew, and then everyone he did not know.</p>
-      <p class="it">It ended in January 2022. It had cost him far more than he meant to spend, and he stayed away from it for a long time.</p>
-    </div></section>
-    <section class="ip"><div>
-      <p class="meta">November 2026</p>
-      <p class="it">Five years later he asked an AI to read everything that was left and to find a form for it. The friends in the calls agreed to be seen.</p>
-      <p class="it">So it is here: <span id="ic1">thousands of</span> pictures, <span id="ic2">hundreds of</span> hours of calls, and the words two machines thought they heard.</p>
+      <p class="meta">What is left</p>
+      <p class="it">It ended badly for him in January 2022. Five years later, with his friends' agreement, it is all here: <span id="ic1">thousands of</span> pictures, <span id="ic2">hundreds of</span> hours of calls, and what two machines misheard.</p>
     </div></section>
     <section class="ip"><div>
       <p class="meta">What it is for</p>
-      <p class="it">The call is open again, slowly this time, until at least 2046. Anyone can look, listen, and leave one small mark: what you see or hear in it. People and AIs alike.</p>
-      <p class="it">The drawing behind these words is the butterfly: a weather equation in which the smallest nudge changes everything that follows. Every line and every mark in the work is one thread of it. A new mark bends it a little.</p>
+      <p class="it">The call is open again, slowly, until at least 2046. Look, listen, and leave one small mark. Each mark bends the butterfly behind these words.</p>
       <p class="ileg"><span style="color:#8a8f9c">■</span> the caption machine, 2021 &nbsp; <span style="color:var(--wall)">■</span> people &nbsp; <span style="color:var(--hood)">■</span> AIs &nbsp; <span style="color:#fff">■</span> both, or not sure<span id="ic3"></span></p>
     </div></section>
     <section class="ip" id="ichoose"><div>
       <p class="meta">Before you go in</p>
-      <p class="it">This is raw material: a person thinking aloud through weeks that ended badly for him. Strong language, sleeplessness, private moments.</p>
-      <p class="isub" style="margin-bottom:0">Nothing is live. Nobody is watching you. You can change your choice at any time, and leave whenever you like.</p>
+      <p class="it">This is raw material: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
       <div class="ibtns">
         <button class="btn go" id="iraw">Enter uncensored<small>Pictures and sound as they were</small></button>
-        <button class="btn" id="icol">Enter censored<small>Colours only, no sound. You can uncover it later</small></button>
+        <button class="btn" id="icol">Enter censored<small>Colours only, no sound</small></button>
         <button class="btn" id="iexit">Exit<small>Leave without looking</small></button>
       </div>
     </div></section>
@@ -396,7 +376,6 @@ body.mini .ov,body.exhibit .ov{display:none}
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
         <button class="ob" id="bmin" data-ic="shrink" title="Make the stage small" aria-label="Make the stage small"></button>
       </div>
-      <button id="bvoice" title="A synthetic voice can read this picture aloud. It is muted until you ask for it." hidden></button>
       <div id="dbar" hidden><span class="meta">Drawing</span><button class="btn sm" id="dundo">Undo</button><button class="btn sm" id="ddone">Done</button><button class="btn go sm" id="dsend">Leave your mark</button></div>
       <div id="gate" hidden>
         <button class="btn go" id="unc">Show uncensored</button>
@@ -411,7 +390,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else, at random" aria-label="Random"></button>
       <div id="scrubw" hidden><input type="range" id="scrub" min="0" max="0" value="0" aria-label="Position in this recording"><span class="meta" id="stime"></span></div>
       <span class="sp"></span>
-      <button class="cb" id="bsound" data-ic="sound" title="Sound and the reading voice, on / off" aria-label="Sound" hidden></button>
+      <button class="cb" id="bsound" data-ic="sound" title="The recorded sound, on / off" aria-label="Sound" hidden></button>
       <button class="cb" id="bhere" data-ic="here" title="I am in this" aria-label="I am in this" hidden></button>
       <button class="cb txt on" id="banswer" data-ic="bubble" title="What's your interpretation?"><span>Leave your mark</span></button>
       <button class="cb" id="bexp" data-ic="grow" title="Make the stage large again" aria-label="Make the stage large again"></button>
@@ -507,7 +486,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>No account is needed. A mark appears within the hour, is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
       <details><summary>Before you look</summary><div>
-        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, a synthetic voice from your own device can read the pictures aloud. It is muted until you press "Unmute the voice" on the stage, and it tells you first what it is: a machine reading what a second machine read in screenshots of what a first machine thought it heard.</p>
+        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, a screenshot of the call plays the sound of the moment it was taken at, wherever that moment could be found in the recordings, and its words light up as they are said. No machine reads anything aloud. The speaker button on the stage turns the sound off.</p>
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
@@ -559,13 +538,6 @@ body.mini .ov,body.exhibit .ov{display:none}
   <h2 style="font-size:24px">Your marks are not saved yet</h2>
   <p id="lvtxt"></p>
   <p style="margin-top:16px"><button class="btn go" id="lvsave">Save and close site</button> <button class="btn" id="lvback">Go back to site</button> <span class="meta" id="lvmsg" aria-live="polite"></span></p>
-</dialog>
-<dialog id="vd" aria-labelledby="vdh">
-  <h2 style="font-size:24px" id="vdh">Before you unmute: what this voice is</h2>
-  <p>The voice is a machine on your own device. It reads aloud what another machine read in the picture on the stage.</p>
-  <p>It is a copy of a copy. In 2021, while the call was running, its caption machine wrote down what it thought people were saying. Those captions were caught in screenshots. In 2026 a second machine read the screenshots back into words, and now a third one speaks them. Each step mishears a little. What you hear is what is left after all of them.</p>
-  <p class="meta" style="text-transform:none;letter-spacing:0;font-size:13px">The recordings of the calls are something else: those are the real sound of 2021, and they have their own speaker button.</p>
-  <p style="margin-top:16px"><button class="btn go" id="vdyes">Start the voice</button> <button class="btn" id="vdno">Stay muted</button></p>
 </dialog>
 <dialog id="sd" aria-labelledby="sdh">
   <h2 style="font-size:24px" id="sdh">For the stewards</h2>
@@ -638,7 +610,7 @@ if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#m
 
 /* one press: show uncensored, and it stays */
 let RAW=store.get('abe-raw',false)===true;
-function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;if(!RAW){$('#bsound').hidden=true;$('#bvoice').hidden=true}}
+function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;if(!RAW)$('#bsound').hidden=true}
 function setRaw(v){RAW=v;store.set('abe-raw',v);paintRaw();if(!v)stopPlay();return cur?show(cur,{quiet:1}):Promise.resolve()}
 paintRaw();
 $('#unc').onclick=async()=>{await setRaw(true);startPlay()};$('#bcens').onclick=e=>{e.stopPropagation();setRaw(false)};
@@ -707,11 +679,12 @@ function paint(){
   for(let d=0;d<=Math.min(depth+(cover?1:0),9);d++){cx.drawImage(src,x,y,w,h);
     if(d){cx.strokeStyle='rgba(255,255,255,.18)';cx.lineWidth=dpr;cx.strokeRect(x+.5,y+.5,w-1,h-1)}
     const nw=w*.56,nh=h*.56;x+=w*.07;y+=h*.12;w=nw;h=nh}
-  const pen=(pts,col,lw)=>{cx.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.strokeStyle=col;cx.lineWidth=lw*dpr;cx.lineJoin=cx.lineCap='round';cx.stroke()};
+  const pen=(pts,col,lw)=>{cx.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.lineJoin=cx.lineCap='round';cx.strokeStyle='rgba(0,0,0,.62)';cx.lineWidth=(lw+2.6)*dpr;cx.stroke();cx.strokeStyle=col;cx.lineWidth=lw*dpr;cx.stroke()}; /* a dark edge under every line, so that it shows on a white page as well as on a black one */
   for(const m of stageMarks)for(const s of m.strokes)pen(s,m.col,2.5);
-  for(const s of strokes)pen(s,'#fff',3);
+  for(const s of strokes)pen(s,PEN,3.2);
 }
 new ResizeObserver(()=>{if(sizeStage())paint();drawRuler();document.documentElement.style.setProperty('--ph',$('#player').offsetHeight+'px')}).observe(stage);
+const PEN='#ff2e7e'; /* the line being drawn: a colour that is in none of the pictures, clear on light and on dark */
 const parseMark=s=>String(s||'').split(';').map(t=>t.trim().split(/\s+/).map(p=>p.split(',').map(Number)).filter(p=>p.length==2&&p.every(n=>n>=0&&n<=999))).filter(t=>t.length>1);
 const colour=n=>n.at=='2021'?'rgba(111,116,128,.34)':n.by=='human'?'#e3c34d':n.by=='ai'?'#6dbb72':'#ffffff';
 /* drawing on the stage, and swiping it. A tap on the picture itself leaves a dot and turns drawing on. */
@@ -728,7 +701,7 @@ $('#bundo').onclick=$('#dundo').onclick=e=>{e.stopPropagation();strokes.pop();ke
 $('#dsend').onclick=e=>{e.stopPropagation();leave()};
 let pen=null,swipe=null;const pt=e=>{const b=cv.getBoundingClientRect();return[clamp(Math.round(((e.clientX-b.left)*dpr-R.x)/R.w*999),0,999),clamp(Math.round(((e.clientY-b.top)*dpr-R.y)/R.h*999),0,999)]};
 const dot=p=>[p,[Math.min(999,p[0]+1),p[1]]];
-stage.addEventListener('pointerdown',e=>{if(mini||EX||e.button||e.target.closest('#gate button,.ov,#dbar,#idtag,#bvoice')||(e.target==clip&&clip.controls))return;
+stage.addEventListener('pointerdown',e=>{if(mini||EX||e.button||e.target.closest('#gate button,.ov,#dbar,#idtag')||(e.target==clip&&clip.controls))return;
   if(drawing){e.preventDefault();try{stage.setPointerCapture(e.pointerId)}catch(x){}pen=[pt(e)];strokes.push(pen)}else swipe={x:e.clientX,y:e.clientY,t:Date.now(),p:pt(e),tap:!e.target.closest('.edge')}});
 stage.addEventListener('pointermove',e=>{if(!pen)return;const p=pt(e),l=pen[pen.length-1];if(Math.abs(p[0]-l[0])+Math.abs(p[1]-l[1])>6&&strokes.reduce((a,s)=>a+s.length,0)<380){pen.push(p);render()}});
 addEventListener('pointerup',e=>{if(pen){if(pen.length<2)pen.push(dot(pen[0])[1]);pen=null;keepDraft()}
@@ -743,7 +716,7 @@ let timer,tick={text:'',small:false,ws:[]};
 function say(text,small,hold){
   clearInterval(timer);const el=$('#line');el.innerHTML='';el.classList.toggle('sm',!!small);tick={text:String(text||''),small:!!small,ws:[]};if(!text)return;
   const ws=tick.ws=String(text).split(' ').filter(Boolean).slice(0,90).map(t=>{const s=document.createElement('span');s.className='w';s.textContent=t+' ';el.appendChild(s);return s});
-  if(hold)return; /* the reading voice lights the words as it says them */
+  if(hold)return; /* the recorded sound lights the words as they are said */
   if(reduced||ws.length>60){ws.forEach(s=>s.classList.add('on'));return}
   let i=0;const stepW=()=>{if(i<ws.length)ws[i++].classList.add('on');else clearInterval(timer)};
   stepW();timer=setInterval(stepW,110);
@@ -851,7 +824,7 @@ async function show0(id,o){
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
-  markRuler();markTiles();syncClip();paintSound();
+  markRuler();markTiles();syncClip();paintSound();if(RAW&&!sndP&&!isMin(id))needSound();
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
   /* what a machine read in the picture: in the side panel, and in the ticker whenever the picture has no caption line of its own */
@@ -872,35 +845,35 @@ $('#bshuf').onclick=()=>go(pick(),{play:RAW});
 $('#bprev').onclick=$('#eprev').onclick=()=>nav(-1);$('#bnext').onclick=$('#enext').onclick=()=>nav(1);
 $('#idtag').onclick=async e=>{e.stopPropagation();if(!cur)return;const id=cur,t=$('#idtag');try{await navigator.clipboard.writeText(location.origin+location.pathname+'#'+id);t.textContent='link copied'}catch(x){t.textContent='#'+id}setTimeout(()=>{if(cur)t.textContent=cur},1400)};
 
-/* play: one thing at a time. A picture or a line is read aloud by the device's own synthetic voice and then makes way for the
-   next one; a minute of a call plays its sound (or its video) with the words as they are said; a phone video plays itself.
+/* play: one thing at a time. A screenshot of the call, or a line of 2021, plays the sound of the moment it was taken at, where
+   that moment could be found in the recordings (i/sound.json), lights its words as they are said, and then makes way for the next one; a minute of a call plays its sound (or its video) with the words as they are said; a phone video plays itself.
    `playing` is the one truth: the button, the browser's own media controls and what is really audible all follow it. */
-let playing=false,playMode='',slideT=0,slideTok=0,recT=0,recTok=0,audioLive=false,soundOn=store.get('abe-sound',true)!==false,voiceOn=false,voiceTold=false,lastShow=null,tickP=null,pausePos=null,quietT=0;
+let playing=false,playMode='',slideT=0,slideTok=0,recT=0,recTok=0,audioLive=false,soundOn=store.get('abe-sound',true)!==false,lastShow=null,tickP=null,pausePos=null,quietT=0;
 let ocrOpen=store.get('abe-ocr',false)===true,dcomOpen=store.get('abe-dcom',false)===true,dtextOpen=store.get('abe-dtext',false)===true;
 const audio=new Audio();audio.preload='auto';let audKey='',audURL='',audUnlocked=false,playPos=0;
 const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 const quiet=()=>{quietT=Date.now()+700}; /* for a moment, pauses are our own and not the browser's */
-/* the reading voice: whatever speech the device itself has. It changes after every three readings.
-   It is muted on every visit until the visitor unmutes it (`voiceOn`), and the first time it says what it is (`voiceTold`).
-   `soundOn` is the other thing: the recorded sound of the calls and the phone videos. */
-const synth=!EX&&window.speechSynthesis||null;let voices=[],voiceNow=null,readN=0,speakOK=true;
-function loadVoices(){if(!synth)return;const all=synth.getVoices(),en=all.filter(v=>/^en/i.test(v.lang));voices=(en.length?en:all).slice(0,24)}
-if(synth){loadVoices();try{synth.addEventListener('voiceschanged',loadVoices)}catch(e){}}
-function nextVoice(){if(!voices.length)loadVoices();if(!voices.length)return null;
-  if(!voiceNow||!voices.includes(voiceNow)||readN%3==0){const others=voices.filter(v=>v!=voiceNow);voiceNow=others.length?others[Math.floor(Math.random()*others.length)]:voices[0]}
-  readN++;return voiceNow}
+/* the sound of the moment a screenshot was taken at. No machine reads anything aloud: what is heard is the recording itself.
+   i/sound.json (made by tools/sound_build.py) says, per picture and per line of 2021, which recording, from which second to which,
+   and at which second the caption has reached which of its words. A picture that is not in it stays silent. */
+let sndJ=null,sndP=null,shotT=0,shotLive=false;
+function needSound(){if(!sndP)sndP=(MEDIA?jq(MEDIA+'i/sound.json',{at:{},lines:{}}):Promise.resolve({at:{},lines:{}})).then(j=>{sndJ={at:j.at||{},lines:j.lines||{}};paintSound();return sndJ});return sndP}
+function shotSound(id){ /* [recording, start, end, [[word, second], ...], words in step?] for what is on the stage, or null */
+  if(!sndJ||!id)return null;
+  if(isImg(id)){const n=+id.slice(1),sd=seedByShot[n];if(!sd)return sndJ.at[n]||null;
+    return sndJ.lines[sd.id]||(sndJ.at[n]?sndJ.at[n].slice(0,3).concat([null]):null)} /* the line's own words, or at least the picture's stretch */
+  const n=N[id];return n&&n.at=='2021'&&sndJ.lines[id]||null}
 const MS=navigator.mediaSession||null;
 function msSync(){if(!MS)return;try{MS.playbackState=playing?'playing':'paused';if(window.MediaMetadata)MS.metadata=new MediaMetadata({title:($('#who').textContent||'').slice(0,90)||'AIgorithmic Butterfly Effect',artist:'AIgorithmic Butterfly Effect',album:cur||''})}catch(e){}}
 function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play');msSync()}
-function paintSound(){const rec=!!(cur&&isMin(cur)),bs=$('#bsound'),bv=$('#bvoice');
-  bs.hidden=!RAW||!rec;bs.innerHTML=ic(soundOn?'sound':'mute');bs.classList.toggle('on',soundOn&&playing);bs.setAttribute('aria-label',soundOn?'The recorded sound is on':'The recorded sound is off');
-  bv.hidden=!RAW||rec||!synth||EX;bv.innerHTML=ic(voiceOn?'sound':'mute')+'<span>'+(voiceOn?'Voice on':'Unmute the voice')+'</span>';bv.classList.toggle('live',voiceOn);bv.setAttribute('aria-pressed',voiceOn?'true':'false')}
+function paintSound(){const rec=!!(cur&&(isMin(cur)||shotSound(cur))),bs=$('#bsound');
+  bs.hidden=!RAW||!rec;bs.innerHTML=ic(soundOn?'sound':'mute');bs.classList.toggle('on',soundOn&&playing);bs.setAttribute('aria-label',soundOn?'The recorded sound is on':'The recorded sound is off');}
 /* stop whatever is sounding or moving, without deciding whether we are still "playing" */
-function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;if(synth){try{synth.cancel()}catch(e){}}audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
+function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;clearInterval(shotT);shotLive=false;audio.volume=1;audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
 function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:playPos};halt();playing=false;paintPlay();paintSound()}
 function startPlay(){
   if(!cur)return;playing=true;paintPlay();paintSound();
-  if(!audUnlocked&&(soundOn||voiceOn)&&RAW){audUnlocked=true;if(!audKey){audio.src=SILENT;audio.play().catch(()=>{})}} /* inside the tap, so that sound may follow later */
+  if(!audUnlocked&&soundOn&&RAW){audUnlocked=true;if(!audKey){audio.src=SILENT;audio.play().catch(()=>{})}} /* inside the tap, so that sound may follow later */
   return playCur()}
 async function playCur(){
   const my=++slideTok;quiet();clearTimeout(slideT);
@@ -916,32 +889,42 @@ async function playCur(){
 async function advance(){if(!playing)return;const was=cur;halt();await step(1);if(!playing)return;if(cur==was)return stopPlay();playCur()}
 function slideOne(my){
   const done=()=>{if(my==slideTok&&playing&&playMode=='slide')advance()};
-  const n=tick.ws.length,first=n?tick.ws[0].textContent:'';
+  const n=tick.ws.length;
   const timed=()=>{slideT=setTimeout(done,n?clamp(n*330+1800,5e3,22e3):6e3)};
-  if(!(synth&&speakOK&&voiceOn&&RAW&&n&&first[0]!='['))return timed();
-  say(tick.text,tick.small,true);readAloud(my,done,timed)}
-function readAloud(my,done,timed){
-  const ws=tick.ws,words=ws.map(s=>s.textContent.trim()),v=nextVoice();let shown=0,started=false,ci=0;
+  if(!(RAW&&soundOn&&AUD&&MEDIA))return timed();
+  const id=cur;needSound().then(()=>{if(my!=slideTok||!playing||playMode!='slide'||cur!=id)return;const e=shotSound(id);if(e)playShot(my,e,done,timed);else timed()})}
+async function playShot(my,e,done,timed){
   const live=()=>my==slideTok&&playing&&playMode=='slide';
+  const[rid,t0,t1,an]=e;await needRecs();if(!live())return;
+  const r=recById[rid],from=Math.max(0,t0-.6),until=t1+.6;if(!r||gone[rid]||gone[rid+'.'+pad(Math.floor(t0/60),4)]||!hasAudio(r,from))return timed();
+  let chunk=Math.floor(from/600);
+  if(!(await loadChunk(rid,chunk)))return live()&&timed();if(!live())return;
+  const sync=!!(an&&tick.ws.length);if(sync)say(tick.text,tick.small,true); /* the words wait, and come as they are said */
+  const ws=tick.ws;let shown=0,over=false,turning=false;
   const reveal=k=>{k=Math.min(k,ws.length);while(shown<k)ws[shown++].classList.add('on')};
-  const chunks=[];for(let i=0;i<words.length;){let j=i,len=0;while(j<words.length&&(j==i||len+words[j].length+1<=150)){len+=words[j].length+1;j++}chunks.push([i,j]);i=j}
-  const fallback=()=>{if(!live())return;try{synth.cancel()}catch(e){}reveal(ws.length);timed()};
-  const dog=setTimeout(()=>{if(!started&&live()){speakOK=false;setTimeout(()=>{speakOK=true},6e4);fallback()}},3500); /* no voice came: carry on by the clock */
-  const next=()=>{if(!live())return;if(ci>=chunks.length){reveal(ws.length);slideT=setTimeout(done,1100);return}
-    const[a,b]=chunks[ci++],u=new SpeechSynthesisUtterance(words.slice(a,b).join(' '));if(v){u.voice=v;u.lang=v.lang}else u.lang='en-GB';u.rate=.92;tick.u=u;
-    const offs=[];let o=0;for(let k=a;k<b;k++){offs.push(o);o+=words[k].length+1}
-    let bound=false,t0=0,iv=0;
-    u.onstart=()=>{started=true;clearTimeout(dog);t0=Date.now();reveal(a+1);iv=setInterval(()=>{if(!live()||bound){clearInterval(iv);return}reveal(Math.min(b,a+1+Math.floor((Date.now()-t0)/1e3*2.4)))},150)};
-    u.onboundary=e=>{if(e.name&&e.name!='word')return;bound=true;let k=0;while(k+1<offs.length&&offs[k+1]<=e.charIndex)k++;reveal(a+k+1)};
-    u.onend=()=>{clearInterval(iv);if(!live())return;reveal(b);next()};
-    u.onerror=e=>{clearInterval(iv);if(!live()||e.error=='interrupted'||e.error=='canceled')return;clearTimeout(dog);fallback()};
-    try{synth.speak(u)}catch(e){clearTimeout(dog);fallback()}};
-  setTimeout(next,80)} /* a breath after any cancel, or some browsers swallow the first words */
+  const reached=t=>{ /* how many words the caption has got to at second t of the recording */
+    if(t<=an[0][1])return 0;
+    for(let i=1;i<an.length;i++)if(t<=an[i][1]){const[a,ta]=an[i-1],[b,tb]=an[i];return a+(b-a)*(tb>ta?(t-ta)/(tb-ta):1)}
+    return an[an.length-1][0]};
+  const end=()=>{if(over)return;over=true;clearInterval(shotT);shotLive=false;quiet();audio.pause();audio.volume=1;if(!live())return;reveal(ws.length);paintSound();slideT=setTimeout(done,900)};
+  const fail=()=>{clearInterval(shotT);shotLive=false;audio.volume=1;if(!live())return;reveal(ws.length);paintSound();timed()}; /* no sound came: carry on by the clock */
+  audio.onended=()=>{};
+  try{audio.currentTime=Math.max(0,from-chunk*600)}catch(x){}
+  audio.volume=1;try{await audio.play()}catch(x){return fail()}
+  if(!live()){quiet();audio.pause();return}
+  shotLive=true;paintSound();
+  shotT=setInterval(()=>{
+    if(!live()){clearInterval(shotT);return}
+    if(turning)return;
+    const pos=chunk*600+audio.currentTime;
+    if(sync)reveal(Math.ceil(reached(pos+.2)));
+    if(pos>=until)return end();
+    if(until-pos<.4)audio.volume=Math.max(.05,(until-pos)/.4); /* out softly, not cut */
+    if(audio.ended){ /* the words run over the end of a ten-minute piece: the next piece carries on */
+      if((chunk+1)*600>=until||!hasAudio(r,(chunk+1)*600))return end();
+      turning=true;chunk++;loadChunk(rid,chunk).then(ok=>{if(!live())return;if(!ok)return end();try{audio.currentTime=0}catch(x){}audio.play().then(()=>{turning=false}).catch(end)})}
+  },60)}
 $('#bplay').onclick=()=>playing?stopPlay():startPlay();
-function setVoice(v){voiceOn=v;if(!v&&synth){try{synth.cancel()}catch(e){}}paintSound();
-  if(playing&&playMode=='slide'){halt();playCur()}else if(v&&!playing&&cur&&!isMin(cur)&&!drawing)startPlay()}
-$('#bvoice').onclick=e=>{e.stopPropagation();if(voiceOn)return setVoice(false);if(voiceTold)return setVoice(true);$('#vd').showModal()};
-$('#vdyes').onclick=()=>{voiceTold=true;$('#vd').close();setVoice(true)};$('#vdno').onclick=()=>$('#vd').close();
 $('#bsound').onclick=()=>{soundOn=!soundOn;store.set('abe-sound',soundOn);
   if(playing){if(playMode=='clip'||(playMode=='rec'&&vidLive===true))clip.muted=!soundOn;else if(playMode=='rec'){const id=cur,p=playPos;halt();vidPaused=false;pausePos={id,sec:p};playCur()}else{halt();playCur()}}
   paintSound()};paintSound();
@@ -950,7 +933,7 @@ if(MS)for(const[a,fn]of[['play',()=>{if(!playing)startPlay()}],['pause',()=>{if(
 audio.addEventListener('pause',()=>{if(audioLive&&playing&&playMode=='rec'&&Date.now()>quietT&&!audio.ended)stopPlay()});
 audio.addEventListener('play',()=>{if(!playing&&audKey){quiet();audio.pause();if(cur&&isMin(cur))startPlay()}}); /* started from outside the page: start properly, or not at all */
 clip.addEventListener('play',()=>{if(vidRec){if(!playing){quiet();clip.pause();if(cur&&isMin(cur))startPlay()}return}
-  if(!playing||playMode!='clip'){clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;if(synth){try{synth.cancel()}catch(e){}}audioLive=false;audio.pause();playing=true;playMode='clip';paintPlay();paintSound()}});
+  if(!playing||playMode!='clip'){clearTimeout(slideT);clearInterval(recT);clearInterval(shotT);shotLive=false;slideTok++;recTok++;audioLive=false;audio.pause();playing=true;playMode='clip';paintPlay();paintSound()}});
 clip.addEventListener('pause',()=>{if(clip.ended||clip.seeking||Date.now()<=quietT)return;
   if(vidRec){if(vidLive===true&&playing&&playMode=='rec')stopPlay()}else if(playMode=='clip'&&playing){playing=false;paintPlay();paintSound()}});
 clip.addEventListener('ended',()=>{if(vidRec){if(vidLive&&playing&&playMode=='rec'&&recEnd)recEnd()}else if(playMode=='clip'&&playing)advance()});
@@ -1069,7 +1052,7 @@ function setBig(v){if(ruler.classList.contains('big')==v)return;ruler.classList.
 function rAt(e){const b=rin.getBoundingClientRect(),x=clamp(e.clientX-b.left,RG.pad,RW-RG.pad),y=e.clientY-b.top,row=rRow>=0?rRow:y>(RG.ay+RG.ah+RG.by)/2?1:0;
   const id=row?minAtX(x):'m'+pad(picAtX(x),5);rTarget=id;const tip=$('#rtip'),p=id&&rulerPos(id);if(!p){tip.hidden=true;return}
   tip.hidden=false;tip.lastChild.textContent=p[2];tip.style.left=clamp(p[0],100,Math.max(100,RW-100))+'px';
-  if(id!=rTipId){rTipId=id;const im=tip.firstChild,u=thumbUrl(id);im.hidden=!u;im.onerror=()=>{im.hidden=true};if(u)im.src=u}}
+  if(id!=rTipId){rTipId=id;const im=tip.firstChild,u=rTouch||!wide.matches?'':thumbUrl(id); /* under a finger, and on a narrow screen, words only: the picture hid what was being aimed at */im.hidden=!u;im.onerror=()=>{im.hidden=true};if(u)im.src=u}}
 ruler.addEventListener('pointerenter',e=>{if(e.pointerType=='mouse'&&!rHold&&!mini&&!rTouch)setBig(true)});
 ruler.addEventListener('pointerdown',async e=>{if(e.button)return;e.preventDefault();rdrag=true;rHold=false;rTarget=null;clearTimeout(rIdle);if(e.pointerType!='mouse')rTouch=true;try{ruler.setPointerCapture(e.pointerId)}catch(x){}
   rRow=rowAt(e);if(!ruler.classList.contains('big'))setBig(true); /* a finger stays in the row it first touched, for as long as it is down */
@@ -1418,7 +1401,7 @@ function introStart(){
     if(!W||!H)size();const p=prog(),t=(performance.now()-introT0)/1e3;
     ix.setTransform(1,0,0,1,0,0);ix.fillStyle='#060607';ix.fillRect(0,0,W,H);
     /* the figure fits the screen whichever way it is held; on a phone it stands behind the upper half of the words */
-    const k=Math.min(W/54,H/60)*(W<H?1.5:1.05),cx0=W/2,cy0=H*(W<H?.46:.5)+25*k,grow=clamp((p-.02)/.5,0,1),born=clamp(Math.min(1,t/2.4),0,1)*.12;
+    const k=W<H?Math.min(W/54*1.32,H*.6/50):Math.min(W/46,H*.64/50),cx0=W/2,cy0=H*(W<H?.35:.37)+25*k,grow=clamp((p-.02)/.5,0,1),born=clamp(Math.min(1,t/2.4),0,1)*.12;
     const f1=reduced?1:Math.max(born,grow),f2=reduced?1:clamp((p-.62)/.3,0,1);
     ix.lineJoin=ix.lineCap='round';
     const thread=(id,frac,col,lw)=>{const q=paths[id]&&paths[id].pts;if(!q||frac<=0)return;const n=Math.max(2,Math.floor(q.length/2*frac));ix.beginPath();for(let i=0;i<n;i++){const X=cx0+q[i*2]*k,Y=cy0-q[i*2+1]*k;i?ix.lineTo(X,Y):ix.moveTo(X,Y)}ix.strokeStyle=col;ix.lineWidth=lw*d;ix.stroke();return[cx0+q[(n-1)*2]*k,cy0-q[(n-1)*2+1]*k]};
@@ -1427,6 +1410,7 @@ function introStart(){
     /* one bright point keeps travelling along a line of 2021: the call that was never hung up */
     if(!reduced&&old.length){const n=old[Math.floor(t/9)%old.length],q=paths[n.id].pts,i=Math.floor((t%9)/9*(q.length/2-1));ix.globalAlpha=.9;ix.fillStyle='#e3c34d';ix.beginPath();ix.arc(cx0+q[i*2]*k,cy0-q[i*2+1]*k,2.6*d,0,6.3);ix.fill()}
     ix.globalAlpha=1;
+    {const g=ix.createLinearGradient(0,H*.56,0,H);g.addColorStop(0,'rgba(6,6,7,0)');g.addColorStop(.5,'rgba(6,6,7,.7)');g.addColorStop(1,'rgba(6,6,7,.94)');ix.fillStyle=g;ix.fillRect(0,H*.56,W,H*.44)} /* a floor for the words to stand on */
     const at=Math.round(p*(ipages.length-1));$$('#idots i').forEach((el,i)=>el.classList.toggle('on',i==at));intro.classList.toggle('end',at==ipages.length-1);
     if(!reduced&&introOpen())introRaf=requestAnimationFrame(introDraw)};
   size();new ResizeObserver(()=>{size();if(reduced&&introOpen())introDraw()}).observe(intro);
@@ -1438,7 +1422,7 @@ const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.o
 $('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
 $('#iskip').onclick=()=>{introGo(ipages.length-1);setTimeout(()=>{try{$('#iraw').focus({preventScroll:true})}catch(e){}},600)};
 function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
-$('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving, silently: the voice is muted until asked for, and a call waits for its play button */
+$('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving; a screenshot whose moment was found in the recordings plays that moment's sound; a call waits for its play button */
 $('#icol').onclick=async()=>{introClose();await setRaw(false)};
 $('#iexit').onclick=()=>{cancelAnimationFrame(introRaf);stopPlay();
   intro.innerHTML='<div id="ibye"><div><p class="it" style="font:400 24px/1.4 var(--serif)">Nothing was shown.</p><p class="lead" style="margin:0 auto 18px">The work stays where it is, until at least 2046. You can close this tab.</p><p><button class="btn sm" id="iback">Come back in</button></p></div></div>';
