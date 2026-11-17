@@ -277,7 +277,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radiu
 body.exhibit{cursor:none;overflow:hidden}
 body.exhibit #bar,body.exhibit #ctl,body.exhibit #ruler,body.exhibit #side,body.exhibit #views,body.exhibit footer,body.exhibit #tabbar,body.exhibit #gate,body.exhibit .edge{display:none!important}
 body.exhibit #app{display:block!important;height:auto!important}
-body.exhibit #stage{height:calc(100vh - 150px)!important}
+body.exhibit #stage{flex:none!important;height:calc(100vh - 150px)!important} /* flex:none: on a wide screen the stage is a flex item whose basis would otherwise win over this height and leave it 0 high */
 body.exhibit #line{font-size:clamp(22px,3vw,40px);max-height:none}
 body.exhibit #fly.full{position:fixed;inset:0;width:100vw;height:100vh;border:0;border-radius:0;z-index:50;aspect-ratio:auto}
 @media (prefers-reduced-motion:reduce){#line .w{transition:none}}
@@ -317,6 +317,13 @@ html:not(.in) body{overflow:hidden}
 .ob:hover{background:#000;color:#fff}.ob svg{width:16px;height:16px;display:block}
 body.mini .ov,body.exhibit .ov{display:none}
 @media (max-width:480px){.cb.txt svg{display:none}.cb.txt{padding:0 12px}}
+/* under a finger: the small things that are pressed get room around them */
+@media (pointer:coarse){
+  details.fold>summary,#f summary{padding:9px 0}
+  footer a{display:inline-block;padding:9px 5px}
+  #idtag{padding:10px 8px}
+  #brand{padding:15px 0}
+}
 </style>
 </head>
 <body class="v-stage">
@@ -490,14 +497,14 @@ body.mini .ov,body.exhibit .ov{display:none}
       </div>
       <details><summary>How to take part</summary><div>
         <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it: what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
-        <p>No account is needed. A mark appears within the hour, is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
+        <p>No account is needed. A mark appears at the next sweep (usually within a few hours), is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
       <details><summary>Before you look</summary><div>
         <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, a screenshot of the call plays the sound of the moment it was taken at, wherever that moment could be found in the recordings, and its words light up as they are said. No machine reads anything aloud. The speaker button on the stage turns the sound off.</p>
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
-        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden within the hour and stays hidden until a steward has looked. You do not have to explain.</p>
+        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden at the next sweep (usually within a few hours) and stays hidden until a steward has looked. You do not have to explain.</p>
       </div></details>
       <details><summary>House rules</summary><div>
         <p class="quote">This is an experimental space for anyone to write / draw / delete / confess / rant / create magic. Please stay respectful and open towards the fact that there might be people from diverse cultures reading what you write here. And have fun \o-0/</p>
@@ -553,7 +560,7 @@ body.mini .ov,body.exhibit .ov{display:none}
 </dialog>
 <dialog id="rmd">
   <h2 style="font-size:24px">Ask for removal</h2>
-  <p>Hide <b id="rmid"></b> within the hour, until a steward has looked. You do not have to explain.</p>
+  <p>Hide <b id="rmid"></b> at the next sweep (usually within a few hours), until a steward has looked. You do not have to explain.</p>
   <select id="rmwhy"><option>i am in it</option><option>someone i know is in it</option><option>private information</option><option>hurtful</option><option>copyright</option><option>other</option></select>
   <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg"></span></p>
 </dialog>
@@ -827,7 +834,7 @@ async function show0(id,o){
   const air=pending().filter(p=>p.hears==id),nk=(kids[id]||[]).length+air.length;
   $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
   $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0"><span class="meta"></span><span class="tx"></span></li>').join('')
-    +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
+    +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands at the next sweep</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
@@ -1252,7 +1259,7 @@ async function leave(){
   leaving=false;$('#send').disabled=$('#dsend').disabled=false;
   const left=draftIds().length,all=done==jobs.length;
   if(why=='net')sent.innerHTML='<span class="warn">'+(done?done+' saved. ':'')+'The door could not be reached. '+(done?'The rest is kept on this device.':'<a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''})+'">Leave it through GitHub</a>')+'</span>';
-  else if(all)sent.innerHTML='<span class="ok">Heard. '+(done>1?done+' marks land':'It lands')+' here within the hour.</span>';
+  else if(all)sent.innerHTML='<span class="ok">Heard. '+(done>1?done+' marks land':'It lands')+' here at the next sweep, usually within a few hours.</span>';
   else sent.innerHTML='<span class="warn">'+esc((done?done+' saved. ':'')+why+(left?' '+left+(left==1?' drawing is':' drawings are')+' kept on this device; press again later.':''))+'</span>';
   if(all)setDraw(false);if(done&&cur)show(cur,{quiet:1,keep:1});else paintDraw();
   return all}
@@ -1265,7 +1272,7 @@ $('#lvsave').onclick=async()=>{$('#lvmsg').textContent='Saving …';const ok=awa
 $('#brm').onclick=e=>{e.stopPropagation();$('#rmid').textContent=cur;$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
 $('#rmyes').onclick=async()=>{if(FRAMED){$('#rmmsg').textContent=ownTab();return}if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+cur),'_blank','noopener');$('#rmd').close();return}
   try{const r=await fetch(DOOR+'/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:cur,why:$('#rmwhy').value})}),o=await r.json();
-    $('#rmmsg').textContent=o.ok?'Asked. Hidden within the hour.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
+    $('#rmmsg').textContent=o.ok?'Asked. Hidden at the next sweep, usually within a few hours.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
   catch(e){$('#rmmsg').innerHTML='The door could not be reached. <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">Ask on GitHub instead.</a>'}};
 
 /* people: tap your name, "This is me", a steward confirms */
@@ -1341,7 +1348,7 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;awai
     const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
     try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({person:id,lock,display:$('#dn').value.trim()},proof?{proof}:{}))}),o=await r.json();
       if(o.ok){claim={person:id,key,asked:Date.now()};myLock=lock;store.set('abe-claim',claim);await pInit()}else msg((o.problems||['Could not ask.']).join(' '))}catch(e){msg('The door could not be reached. Try again later.')}};
-  if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows within the hour.':(o.problems||[]).join(' '))}catch(e){msg('The door could not be reached.')}};
+  if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows at the next sweep.':(o.problems||[]).join(' '))}catch(e){msg('The door could not be reached.')}};
   if($('#pforget'))$('#pforget').onclick=()=>{store.set('abe-claim',null);claim=null;myLock='';claimOK=false;pInit()};
   if(o.scroll)$('#popen').scrollIntoView({block:'start'})}
 $('#bhere').onclick=async()=>{if(!claimOK||!cur)return;const b=$('#bhere');b.disabled=true;try{const o=await post({hears:cur,text:'',by:'human',name:P[claim.person].name,person:claim.person,token:claim.key,here:true});

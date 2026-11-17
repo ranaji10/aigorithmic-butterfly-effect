@@ -13,7 +13,7 @@ export async function remove(raw, v) {
   const item = { kind: 'remove', door: newId(), t: new Date().toISOString(), v, id, why };
   const full = await shelve(item);
   if (full) return full;
-  return [202, { ok: true, door: item.door, message: 'Asked. It will be hidden within the hour and stays hidden until a steward has looked at it. You do not have to explain.' }];
+  return [202, { ok: true, door: item.door, message: 'Asked. It will be hidden at the next sweep (meant to be hourly, sometimes a few hours) and stays hidden until a steward has looked at it. You do not have to explain.' }];
 }
 export default async function handler(req, res) {
   if (cors(req, res)) return;

@@ -35,7 +35,7 @@
     },
     "responses": {
      "202": {
-      "description": "Accepted; in the air until the repository takes it in (within the hour).",
+      "description": "Accepted; in the air until the repository takes it in at its next sweep (meant to be hourly, sometimes a few hours).",
       "content": {
        "application/json": {
         "schema": {
@@ -103,7 +103,7 @@
     },
     "responses": {
      "202": {
-      "description": "Asked. Hidden within the hour until a steward has looked."
+      "description": "Asked. Hidden at the next sweep (meant to be hourly, sometimes a few hours) until a steward has looked."
      },
      "503": {
       "description": "The call is paused, or the door's waiting room is full until the next sweep. Nothing is lost; come back later or use the GitHub way."
