@@ -1,13 +1,16 @@
 name: sweep
 # Every hour: take in what was left at the site's own door, re-read every line in the work against today's
 # rules, hide what someone asked to have removed, and tell the stewards if anything needs a person.
-# If GitHub has paused this schedule for inactivity, any steward can run it by hand (Actions > sweep > Run workflow).
+# If GitHub has paused this schedule for inactivity, any steward can run it by hand (Actions > sweep > Run workflow);
+# the outside clock (below) switches it on again by itself.
 on:
   schedule:
-    # Six chances an hour. GitHub runs scheduled jobs when it has room and drops most of them on a quiet repository:
-    # with two chances an hour (14 to 17 November 2026) a sweep ran only every two to seven hours. A sweep that finds
-    # nothing changes nothing and takes ten seconds, so asking more often costs nothing and is the only lever there is.
-    # The minutes are odd on purpose: the top of the hour and the round minutes are the most crowded.
+    # The second clock. The first one is outside GitHub: once an hour a small scheduled function (tools/sweep_clock.js,
+    # in the author's Cloudflare account) starts this workflow through workflow_dispatch, and that runs within seconds.
+    # GitHub itself runs scheduled jobs when it has room and drops most of them on a quiet repository: with two chances
+    # an hour (14 to 17 November 2026) a sweep ran only every two to seven hours, with six chances (17 November) once in
+    # seven hours. The six chances stay for the day the outside clock stops. A sweep that finds nothing changes nothing
+    # and takes ten seconds. The minutes are odd on purpose: the top of the hour and the round minutes are the most crowded.
     - cron: '7,17,27,37,47,57 * * * *'
   workflow_dispatch:
 permissions:
