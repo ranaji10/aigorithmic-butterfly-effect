@@ -230,8 +230,9 @@ def name_unconfirmed(w, P, stewards):
     f = first_word(w.get("name"))
     if not f or f == "anonymous":
         return False
-    # the first word, or all the letters run together, so that "J a n" and "J.a.n" are read as "Jan"
-    mine = {f, "".join(re.findall(r"[^\W\d_]+", unicodedata.normalize("NFKC", str(w.get("name") or "")).casefold()))}
+    # any word of the name, or all its letters run together, so that "J a n", "J.a.n" and "<b>Jan</b>" are read as "Jan"
+    words = re.findall(r"[^\W\d_]+", unicodedata.normalize("NFKC", str(w.get("name") or "")).casefold())
+    mine = set(words) | {"".join(words)}
     same = [p for p in P if mine & ({first_word(p.get("name")), first_word(p.get("display"))} - {""})]
     if same:
         return not any(p.get("claimed") and w.get("as") == p["id"] for p in same)

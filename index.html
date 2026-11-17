@@ -742,7 +742,7 @@ async function pseudo(id){ /* a picture, a minute, a recording, a theme or a per
   if(isMin(id)||isRec(id)){await needRecs();const rid=id.slice(0,4),r=recById[rid];if(!r)return{id,pseudo:1,label:id,text:'[not found]'};
     const min=isMin(id)?+id.slice(5):0,v=await voice(rid),a=min*60,b=a+60,said=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>s[2]).join(' ');
     const heard=(v.heard_hours||[]).includes(Math.floor(min/60));
-    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?(r.screen?'Screen recording':'Phone video'):'Voice memo')+' · '+niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
+    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?(r.screen?'Screen recording':'Phone video'):'Voice memo')+' · '+(r.t0?niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time':'undated')+' · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
       text:said||(r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
   if(isTheme(id)){const t=T[id];return{id,pseudo:1,label:'Theme · '+(t?fmt(t.count):0)+' things',text:t?t.title+(t.note?'. '+t.note:''):'[no such theme]'}}
   return{id,pseudo:1,label:id,text:''}}
@@ -1069,7 +1069,7 @@ ruler.addEventListener('pointerdown',async e=>{if(e.button)return;e.preventDefau
 ruler.addEventListener('pointermove',e=>{if(rdrag||(e.pointerType=='mouse'&&ruler.classList.contains('big')))rAt(e)});
 ruler.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||rTouch)return;rHold=false;$('#rtip').hidden=true;rTipId='';if(!rdrag&&!rZone(e.relatedTarget)){rRow=-1;setBig(false)}});
 for(const el of [$('#ctl'),$('#cap')])el.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||rTouch||rdrag||!ruler.classList.contains('big')||rZone(e.relatedTarget))return;rRow=-1;setBig(false)});
-const rDone=()=>{rdrag=false;rRow=-1;if(rTouch){rStay();return}rHold=true;setBig(false)};
+const rDone=()=>{rdrag=false;rRow=-1;if(rTouch){$('#rtip').hidden=true;rTipId='';rStay();return}rHold=true;setBig(false)}; /* a lifted finger takes the tip with it: it would lie over the controls */
 ruler.addEventListener('pointercancel',rDone);
 addEventListener('scroll',()=>{if(rTouch&&!rdrag&&ruler.classList.contains('big'))rShrink()},{passive:true});
 addEventListener('pointerdown',e=>{if(rTouch&&!rdrag&&!e.target.closest('#ruler')){if(e.target.closest('#ctl,#cap'))rStay();else rShrink()}},true);
@@ -1217,8 +1217,8 @@ const bysum=()=>$('#bysum').textContent=$('#by').selectedOptions[0].textContent+
 $('#t').oninput=()=>$('#cnt').textContent=$('#t').value.length;
 /* a first name from People (or the author's) on a mark is kept, and shown as not confirmed until a steward has confirmed the person */
 const firstWord=v=>((String(v||'').normalize('NFKC').toLowerCase().match(/\p{L}+/u)||[''])[0]);
-function nmNote(){const f=firstWord($('#nm').value),all=(String($('#nm').value).normalize('NFKC').toLowerCase().match(/\p{L}+/gu)||[]).join(''),el=$('#nmnote'),hit=f&&f!='anonymous'&&(Object.values(P).find(p=>{const n=firstWord(p.name);return n==f||n==all})||(/^(rana|ranaji)$/.test(f)||/^(rana|ranaji)$/.test(all))&&{name:'Rana',id:''}),mine=hit&&hit.id&&claim&&claimOK&&claim.person==hit.id;
-  el.hidden=!hit||!!mine;if(hit&&!mine)el.textContent='“'+hit.name+'” is the first name of someone from the calls. Your mark is kept, with “name not confirmed” beside the name'+(hit.id?'. If you are '+hit.name+': People, then “This is me”.':'.')}
+function nmNote(){const ws=(String($('#nm').value).normalize('NFKC').toLowerCase().match(/\p{L}+/gu)||[]),mine=new Set(ws.concat(ws.join(''))),el=$('#nmnote'),hit=ws.length&&!mine.has('anonymous')&&(Object.values(P).find(p=>mine.has(firstWord(p.name)))||(mine.has('rana')||mine.has('ranaji'))&&{name:'Rana',id:''}),own=hit&&hit.id&&claim&&claimOK&&claim.person==hit.id;
+  el.hidden=!hit||!!own;if(hit&&!own)el.textContent='“'+hit.name+'” is the first name of someone from the calls. Your mark is kept, with “name not confirmed” beside the name'+(hit.id?'. If you are '+hit.name+': People, then “This is me”.':'.')}
 $('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum()};$('#nm').oninput=()=>{bysum();nmNote()};
 {const me=store.get('abe-me',null);if(me){if(me.by)$('#by').value=me.by;if(me.name)$('#nm').value=me.name;$('#by').onchange()}}
 
