@@ -1,22 +1,63 @@
 name: year ring
-# Every 14 November the work is tagged and released as a ring, like a tree.
-# If GitHub has paused this schedule for inactivity, any steward can run it by hand (Actions > year ring > Run workflow).
+# Every 14 November the work is tagged and released as a ring, like a tree. The first ring, 2021, is cut by hand
+# (Actions > year ring > Run workflow, year 2021, rehearsal unticked) once the author has settled what stays held.
+# A ring tag can never be moved or deleted (repository rule), so a run started by hand is a rehearsal unless the box is unticked:
+# it checks everything and shows the notes, and makes nothing.
+# If GitHub has paused this schedule for inactivity, any steward can run it by hand.
 on:
   schedule:
     - cron: '14 11 14 11 *'
   workflow_dispatch:
+    inputs:
+      year:
+        description: 'Year of the ring (empty: this year)'
+        required: false
+        default: ''
+      rehearsal:
+        description: 'Rehearsal: check and show the notes, make no tag and no release'
+        type: boolean
+        default: true
 permissions:
   contents: write
+concurrency:
+  group: wingbeat-intake
+  cancel-in-progress: false
 jobs:
   ring:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-      - env:
+      - name: check, then cut
+        env:
           GH_TOKEN: ${{ github.token }}
+          YEAR_IN: ${{ inputs.year }}
+          REHEARSAL: ${{ inputs.rehearsal }}
         run: |
-          YEAR=$(date -u +%Y)
-          N=$(ls wingbeats/w*.json 2>/dev/null | wc -l)
-          gh release create "ring-$YEAR" --repo "$GITHUB_REPOSITORY" --title "Ring $YEAR" \
-            --notes "The work as it stood on 14 November $YEAR: $N wingbeats on the 2021 archive. Download the source archive below and keep a copy somewhere; that is how this lasts."
+          YEAR="${YEAR_IN:-$(date -u +%Y)}"
+          case "$YEAR" in [0-9][0-9][0-9][0-9]) ;; *) echo "::error::not a year"; exit 1 ;; esac
+          FAIL=0
+          # 1. the name must be free: a ring is cut once
+          if [ -n "$(git ls-remote --tags origin "refs/tags/ring-$YEAR")" ]; then echo "::error::ring-$YEAR exists already"; FAIL=1; fi
+          # 2. what the repository publishes must be what its own script builds from it today. If it is not (the indexes carry
+          #    the day they were built), a real run commits the rebuilt indexes first and cuts the ring on that commit.
+          python3 tools/wingbeat.py build
+          STALE=0
+          if ! git diff --quiet -- data feed.xml llms-full.txt; then STALE=1; echo "The indexes are rebuilt before the ring is cut:"; git diff --stat -- data feed.xml llms-full.txt; fi
+          # 3. the notes, with the commits of the archive repository they stand on
+          python3 tools/wingbeat.py ring "$YEAR" > "$RUNNER_TEMP/notes.md" || FAIL=1
+          { echo "## ring-$YEAR"; echo; cat "$RUNNER_TEMP/notes.md"; echo; } >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/notes.md"
+          if [ "$FAIL" != 0 ]; then echo "::error::not cut: see above"; exit 1; fi
+          if [ "$REHEARSAL" = "true" ]; then
+            echo "Rehearsal: everything is in order, nothing was made." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$STALE" = 1 ]; then
+            git config user.name "the caption machine"
+            git config user.email "actions@users.noreply.github.com"
+            git add -A data feed.xml llms-full.txt
+            git commit -m "ring $YEAR: indexes rebuilt"
+            git push || (git pull --rebase && git push)
+          fi
+          gh release create "ring-$YEAR" --repo "$GITHUB_REPOSITORY" --target "$(git rev-parse HEAD)" --title "Ring $YEAR" --notes-file "$RUNNER_TEMP/notes.md"

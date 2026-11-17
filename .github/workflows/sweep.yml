@@ -4,10 +4,11 @@ name: sweep
 # If GitHub has paused this schedule for inactivity, any steward can run it by hand (Actions > sweep > Run workflow).
 on:
   schedule:
-    # Two chances an hour. GitHub runs scheduled jobs when it has room, and on a quiet repository it skips many of them;
-    # the second line is there so that fewer hours pass with no sweep at all. A sweep that finds nothing changes nothing.
-    - cron: '17 * * * *'
-    - cron: '47 * * * *'
+    # Six chances an hour. GitHub runs scheduled jobs when it has room and drops most of them on a quiet repository:
+    # with two chances an hour (14 to 17 November 2026) a sweep ran only every two to seven hours. A sweep that finds
+    # nothing changes nothing and takes ten seconds, so asking more often costs nothing and is the only lever there is.
+    # The minutes are odd on purpose: the top of the hour and the round minutes are the most crowded.
+    - cron: '7,17,27,37,47,57 * * * *'
   workflow_dispatch:
 permissions:
   contents: write

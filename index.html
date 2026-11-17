@@ -104,6 +104,12 @@ input[type=range]{accent-color:var(--wall);height:28px;margin:0}
 #ruler{position:relative;height:52px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
 #rin{position:absolute;left:0;right:0;bottom:0;height:100%;background:var(--bg);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 #ruler.big #rin{height:124px;z-index:16;box-shadow:0 -14px 28px #000d}
+/* while the ruler is large, the words and the controls move up by as much as it grew, so that it never lies over them */
+#cap,#ctl{position:relative;transition:transform .14s ease-out}
+#player.rbig #cap,#player.rbig #ctl{transform:translateY(calc(-1*var(--rg,72px)));z-index:15;background:var(--bg)}
+#player.rbig #cap{box-shadow:0 -12px 22px #000b}
+body.mini #player.rbig #cap,body.mini #player.rbig #ctl,body.exhibit #player.rbig #cap,body.exhibit #player.rbig #ctl{transform:none;box-shadow:none}
+@media (prefers-reduced-motion:reduce){#cap,#ctl{transition:none}}
 #rcv{position:absolute;inset:0;width:100%;height:100%;display:block}
 #rmark{position:absolute;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px #000,0 0 8px var(--wall);pointer-events:none;border-radius:1px}
 #rwin{position:absolute;top:15px;height:15px;border:1px solid #fff;background:#fff2;pointer-events:none}
@@ -424,6 +430,7 @@ body.mini .ov,body.exhibit .ov{display:none}
           <div><label for="nm" class="meta">Name (optional)</label><input type="text" id="nm" maxlength="40" placeholder="anonymous"></div>
           <div id="mdl" hidden><label for="md" class="meta">Model (optional)</label><input type="text" id="md" maxlength="60"></div>
         </div>
+        <p class="meta" id="nmnote" hidden style="text-transform:none;letter-spacing:0;font-size:12px;margin:6px 0 0"></p>
         <div><label for="th" class="meta">Theme (optional)</label><input type="text" id="th" maxlength="48" list="thlist" placeholder="pick one, or name a new one"><datalist id="thlist"></datalist></div>
       </details>
       <div id="asme" class="meta" hidden style="margin:8px 0">You are here as <span id="asname" class="ok"></span> <label style="text-transform:none"><input type="checkbox" id="here"> I am in this</label></div>
@@ -722,7 +729,7 @@ function say(text,small,hold){
   stepW();timer=setInterval(stepW,110);
 }
 function sayNow(text){clearInterval(timer);const el=$('#line');el.classList.remove('sm');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text;tick={text:'',small:false,ws:[]}}
-const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(n.model?', '+n.model.toUpperCase():'')+')'+(n.as&&P[n.as]?' · ✓ '+P[n.as].name.toUpperCase()+', WHO WAS THERE':'');
+const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(n.model?', '+n.model.toUpperCase():'')+')'+(n.as&&P[n.as]?' · ✓ '+P[n.as].name.toUpperCase()+', WHO WAS THERE':'')+(n.name_unconfirmed?' · NAME NOT CONFIRMED':'');
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
 const lineText=n=>n.removed?'[this was taken back]':(n.text||'')+(n.mark?' [a drawing]':'')+(n.theme&&T[n.theme]?' [in “'+T[n.theme].title+'”]':'')+(n.here?' [I am in this]':'')||'[a mark without words]';
@@ -1048,7 +1055,9 @@ let rdrag=false,rTarget=null,rRow=-1,rHold=false,rTipId='',rTouch=false,rIdle=0;
 const rShrink=()=>{clearTimeout(rIdle);rRow=-1;rTouch=false;setBig(false)};
 const rStay=()=>{clearTimeout(rIdle);rIdle=setTimeout(()=>{if(!rdrag)rShrink()},5000)};
 const rowAt=e=>{const b=rin.getBoundingClientRect();return e.clientY-b.top>(RG.ay+RG.ah+RG.by)/2?1:0};
-function setBig(v){if(ruler.classList.contains('big')==v)return;ruler.classList.toggle('big',v);drawRuler();bWin();if(!v){$('#rtip').hidden=true;rTipId=''}}
+function setBig(v){if(ruler.classList.contains('big')==v)return;const pl=$('#player');if(v)pl.style.setProperty('--rg',Math.max(0,124-ruler.offsetHeight)+'px');ruler.classList.toggle('big',v);pl.classList.toggle('rbig',v);drawRuler();bWin();if(!v){$('#rtip').hidden=true;rTipId=''}}
+/* the words and the controls belong to the large ruler while it is large: going up to them does not shrink it away from under the pointer */
+const rZone=t=>!!(t&&t.closest&&t.closest('#ruler,#ctl,#cap'));
 function rAt(e){const b=rin.getBoundingClientRect(),x=clamp(e.clientX-b.left,RG.pad,RW-RG.pad),y=e.clientY-b.top,row=rRow>=0?rRow:y>(RG.ay+RG.ah+RG.by)/2?1:0;
   const id=row?minAtX(x):'m'+pad(picAtX(x),5);rTarget=id;const tip=$('#rtip'),p=id&&rulerPos(id);if(!p){tip.hidden=true;return}
   tip.hidden=false;tip.lastChild.textContent=p[2];tip.style.left=clamp(p[0],100,Math.max(100,RW-100))+'px';
@@ -1058,11 +1067,12 @@ ruler.addEventListener('pointerdown',async e=>{if(e.button)return;e.preventDefau
   rRow=rowAt(e);if(!ruler.classList.contains('big'))setBig(true); /* a finger stays in the row it first touched, for as long as it is down */
   if(!recs)await needRecs();if(rdrag)rAt(e)});
 ruler.addEventListener('pointermove',e=>{if(rdrag||(e.pointerType=='mouse'&&ruler.classList.contains('big')))rAt(e)});
-ruler.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||rTouch)return;rHold=false;if(!rdrag){rRow=-1;setBig(false)}});
+ruler.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||rTouch)return;rHold=false;$('#rtip').hidden=true;rTipId='';if(!rdrag&&!rZone(e.relatedTarget)){rRow=-1;setBig(false)}});
+for(const el of [$('#ctl'),$('#cap')])el.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||rTouch||rdrag||!ruler.classList.contains('big')||rZone(e.relatedTarget))return;rRow=-1;setBig(false)});
 const rDone=()=>{rdrag=false;rRow=-1;if(rTouch){rStay();return}rHold=true;setBig(false)};
 ruler.addEventListener('pointercancel',rDone);
 addEventListener('scroll',()=>{if(rTouch&&!rdrag&&ruler.classList.contains('big'))rShrink()},{passive:true});
-addEventListener('pointerdown',e=>{if(rTouch&&!rdrag&&!e.target.closest('#ruler'))rShrink()},true);
+addEventListener('pointerdown',e=>{if(rTouch&&!rdrag&&!e.target.closest('#ruler')){if(e.target.closest('#ctl,#cap'))rStay();else rShrink()}},true);
 ruler.addEventListener('pointerup',()=>{if(!rdrag)return;const id=rTarget;rDone();if(!id)return;
   if(isMin(id)&&playing&&playMode=='rec'&&cur&&id.slice(0,4)==cur.slice(0,4)){ctx={kind:'rec'};return seek((+id.slice(5))*60)}
   if(isImg(id)){ctx={kind:'pics'};if(document.body.classList.contains('v-browse')&&B.kind=='pics')bJump(+id.slice(1))}else ctx={kind:'rec'};
@@ -1205,7 +1215,11 @@ let claim=store.get('abe-claim',null);if(claim&&claim.token&&!claim.key)claim.ke
 let claimOK=false;
 const bysum=()=>$('#bysum').textContent=$('#by').selectedOptions[0].textContent+', '+($('#nm').value.trim()||'anonymous');
 $('#t').oninput=()=>$('#cnt').textContent=$('#t').value.length;
-$('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum()};$('#nm').oninput=bysum;
+/* a first name from People (or the author's) on a mark is kept, and shown as not confirmed until a steward has confirmed the person */
+const firstWord=v=>((String(v||'').normalize('NFKC').toLowerCase().match(/\p{L}+/u)||[''])[0]);
+function nmNote(){const f=firstWord($('#nm').value),all=(String($('#nm').value).normalize('NFKC').toLowerCase().match(/\p{L}+/gu)||[]).join(''),el=$('#nmnote'),hit=f&&f!='anonymous'&&(Object.values(P).find(p=>{const n=firstWord(p.name);return n==f||n==all})||(/^(rana|ranaji)$/.test(f)||/^(rana|ranaji)$/.test(all))&&{name:'Rana',id:''}),mine=hit&&hit.id&&claim&&claimOK&&claim.person==hit.id;
+  el.hidden=!hit||!!mine;if(hit&&!mine)el.textContent='“'+hit.name+'” is the first name of someone from the calls. Your mark is kept, with “name not confirmed” beside the name'+(hit.id?'. If you are '+hit.name+': People, then “This is me”.':'.')}
+$('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum()};$('#nm').oninput=()=>{bysum();nmNote()};
 {const me=store.get('abe-me',null);if(me){if(me.by)$('#by').value=me.by;if(me.name)$('#nm').value=me.name;$('#by').onchange()}}
 
 async function post(p){if(FRAMED)return{ok:false,problems:[ownTab()]};const r=await fetch(DOOR+'/api/say',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return r.json()}

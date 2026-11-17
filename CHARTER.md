@@ -108,3 +108,11 @@ Made by the author's direction, without the 30 days of section 9, and recorded f
 - **"Within the hour"** (sections 3 and 6) is the intention. The hosting service runs the sweep when it has room, sometimes only every few hours. A request for removal still hides the thing at the next sweep, before anyone has judged it.
 - **The machine (section 4).** The door's one dependency is looked after by a daily run that tries each proposed update and merges it only if it adds no known weakness, does not grow the door, has been public for a week, and the door still passes its check (`tools/dependencies.py`). It changes nothing in the work, and a steward can stop it by deleting one workflow file.
 - **Addresses (section 8).** The files that crawlers and AI agents look for at the top of a domain now exist at the top of this one (repository `ranaji10.github.io`). A free name of its own has been asked for at eu.org. If it is granted, the work moves there and the old address keeps pointing to it; until then nothing changes.
+
+## Amendment 5, 17 November 2026
+
+Made by the author's direction, without the 30 days of section 9, and recorded for the same reason as Amendments 1 to 4. The second steward may object under section 9.
+
+- **First names on marks (section 5, Names).** A mark signed with a first name from People, or with the author's, is kept. Until a steward has confirmed that the person who left it is that person, the name is shown with "name not confirmed" beside it, on the site and in every index. Nobody is turned away for sharing a first name with a friend from the calls, and nobody can speak as one of them.
+- **The sweep (sections 3 and 6).** The schedule now asks the hosting service for a sweep six times an hour instead of twice, because most scheduled runs on a quiet repository are dropped. "Within the hour" stays the intention and is still not a promise the hosting service keeps; a request through a GitHub issue is acted on at once, a request through the site at the next sweep.
+- **The first ring (section 7).** The first ring is `ring-2021`: the material of 2021 as the author released it, cut once he has settled what stays held, on this repository and on the archive repository. After it, a ring every 14 November. A ring run started by hand is a rehearsal unless it is told otherwise, because a ring cannot be cut twice.
