@@ -509,7 +509,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <details><summary>House rules</summary><div>
         <p class="quote">This is an experimental space for anyone to write / draw / delete / confess / rant / create magic. Please stay respectful and open towards the fact that there might be people from diverse cultures reading what you write here. And have fun \o-0/</p>
         <p class="meta">From the original document, November 2021</p>
-        <p>Added in 2026: speak for yourself only. No names, handles, links, numbers or stories that belong to someone who did not come here themselves. A few marks a day at most. A script re-reads everything every hour and removes what breaks these rules. And if the call ever starts to feel as if it is talking only to you, close the tab and go outside. It will be here in the morning. It is meant to take twenty years.</p>
+        <p>Added in 2026: speak for yourself only. No names, handles, links, numbers or stories that belong to someone who did not come here themselves. A few marks a day at most. A script re-reads everything at every sweep and removes what breaks these rules. And if the call ever starts to feel as if it is talking only to you, close the tab and go outside. It will be here in the morning. It is meant to take twenty years.</p>
       </div></details>
       <details id="dfly"><summary>The butterfly</summary><div>
         <p>In 1963 Edward Lorenz found that a three-line weather equation never repeats itself and that the smallest nudge sends it somewhere else entirely. Drawn, it looks like a butterfly. This is that equation. Each line from 2021 starts a path, and each mark nudges its path by an amount taken from its own letters. The drawing is the sum of everything anyone has left so far.</p>
@@ -615,7 +615,7 @@ const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const day=864e5,t1=Date.UTC(2046,10,14),now=Date.now(),C=arch.counts||{};
 $('#n2').textContent=fmt(wb.wingbeats.length);$('#n3').textContent=fmt(Math.max(0,Math.ceil((t1-now)/day)));$('#n4').textContent=fmt(C.spoken_lines||0);
 if(C.pictures){$('#c1').textContent=fmt(C.pictures);$('#c2').textContent=fmt(C.recorded_hours)}
-if(C.pictures_held_for_review||C.recordings_held_for_review)$('#held').textContent=fmt(C.pictures_held_for_review||0)+' more pictures and '+fmt(C.recordings_held_for_review||0)+' recordings are held back: they show details of people who were never in the calls.';
+if(C.pictures_held_for_review||C.recordings_held_for_review)$('#held').textContent=fmt(C.pictures_held_for_review||0)+' more pictures and '+fmt(C.recordings_held_for_review||0)+' recordings are held back: they show details of people who were never in the calls.'+(Object.keys(gone).length?' '+fmt(Object.keys(gone).filter(k=>/^m/.test(k)).length)+' pictures and '+fmt(Object.keys(gone).filter(k=>/^r/.test(k)).length)+' recordings or minutes of recordings are hidden until someone has looked at them.':'');
 if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#mcpurl').innerHTML='<code>'+esc(DOOR)+'/mcp</code>'}
 /* the fence in this page's head names the places it may reach; if the work's own files point somewhere else, say so where a steward will look */
 {const pol=(document.querySelector('meta[http-equiv="Content-Security-Policy"]')||{}).content||'',miss=[DOOR,MEDIA,AUD,IA].filter(Boolean).map(u=>{try{return new URL(u,location.href).origin}catch(e){return''}}).filter(o=>o&&o!=location.origin&&!pol.includes(o));
