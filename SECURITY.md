@@ -50,6 +50,7 @@ There is no bounty. There is a place in the credits if you want one.
     edit data/config.json  ->  "open": false
     # hide one thing now
     python3 tools/wingbeat.py veil <id> "why"
+    # an issue "alarm: no sweep for 12 hours": Actions > sweep > Run workflow, then read the issue (AGENTS.md, The watch)
     # see what the sweep has been doing
     ls removals/ | tail ; git log --oneline -20
     # undo a bad hour
