@@ -15,6 +15,10 @@ Taken out of every new line before it is written: links, mail addresses, handles
 the words listed in PRIVATE_NAMES.txt (surnames; one per line; a file on the author's drive, never in a repository).
 Minutes that are hidden (data/veiled.json) get no new words. "segs" keeps its three-part rows; which language a
 stretch was heard in stands beside it as "lang": [[start s, end s, "hi" | "bn"]].
+A line that spells out an address ("something dot com") or holds one runaway token of more than 40 letters is not taken.
+PRIVATE_NAMES.txt cannot know every surname a model will write down. So after this, and before anything is pushed, run
+the scrub the author keeps beside that file (relisten_scrub.py: it takes out the capitalised word after a first name,
+and prints what is left for a person to read). On 18 November 2026 the second hearing wrote about ninety surnames.
 Afterwards: tools/sound_build.py, tools/themes_build.py, and commit the archive.
 """
 import collections, glob, json, os, re, sys, zlib
@@ -53,7 +57,11 @@ def marked(s):
     return False
 
 
+SPELT = re.compile(r'\b(?:dot|slash)\s+(?:com|dev|io|org|net|in|cz|co)\b|\b[\w-]+\.(?:io|com|org|net|dev|cz)\b', re.I)
+
+
 def clean(t):
+    if SPELT.search(t) or any(len(w) > 40 for w in t.split()): return ''
     t = re.sub(r'\b(?:https?://|www\.)\S+|\b\S+@\S+\.\S+|(?<!\w)@\w{2,}', '[link]', t)
     t = re.sub(r'(?:\d[\s().-]?){7,}', ' ', t)
     if NAME_RE: t = NAME_RE.sub('', t)
