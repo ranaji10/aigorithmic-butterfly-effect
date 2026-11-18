@@ -207,6 +207,39 @@ body.raw .tile img{filter:none;transform:none}
 .tcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left}
 .tcard:hover{border-color:#fff5}.tcard.on{border-color:var(--wall)}
 .tcard b{display:block;font:400 19px/1.2 var(--serif);margin-bottom:4px}
+/* doors: a way in, with a strip of what is behind it */
+.doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin:10px 0 20px}
+.door{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:left;color:inherit;padding:0;min-width:0}
+button.door{cursor:pointer}.door:hover{border-color:#fff5}
+.door .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:0;padding:0;background:#000;cursor:pointer;min-height:8px}
+.door .strip .tile{border:0;border-radius:0;pointer-events:none;aspect-ratio:1}
+.door .in{padding:12px 14px 13px;display:flex;flex-direction:column;flex:1}
+.door b{display:block;font:400 21px/1.2 var(--serif)}
+.door p{font-size:14px;line-height:1.45;color:#bdb9b0;margin:6px 0 12px;max-width:none}
+.door .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:auto}
+.door .said{font:15px/1.35 var(--serif);color:#d8d4ca;padding:12px 14px 0;display:block}
+.trow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px;max-width:none}
+/* themes as words: the more a thing was spoken of, the larger its name */
+.tcloud{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:baseline;margin:4px 0 8px}
+.tw{background:none;border:0;padding:5px 0;cursor:pointer;color:#e2ded5;font-family:var(--serif);line-height:1.15;text-align:left;border-bottom:1px solid transparent}
+.tw:hover,.tw.on{color:var(--wall);border-bottom-color:var(--wall)}
+.tw sup{font:10px/1 var(--mono);color:var(--dim);margin-left:4px;letter-spacing:.04em}
+#truled{margin:0 0 12px;color:var(--dim);font-size:13px}#truled summary{cursor:pointer}#trule{font:12px/1.5 var(--mono);overflow-wrap:anywhere;margin:6px 0 0;max-width:80ch}
+/* browse, day by day */
+#bcal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:720px;margin:14px 0 6px}
+#bcal .dow{font:10px/1 var(--mono);color:var(--dim);text-align:center;letter-spacing:.1em;text-transform:uppercase;padding-bottom:2px}
+.bd{position:relative;aspect-ratio:1.55;min-height:42px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0;overflow:hidden;font:inherit}
+.bd i{position:absolute;left:0;right:0;bottom:0;background:var(--wall);opacity:.3;pointer-events:none}
+.bd b{position:absolute;left:6px;top:5px;font:500 13px/1 var(--mono)}
+.bd em{position:absolute;right:6px;top:5px;font:10px/1 var(--mono);font-style:normal;color:var(--wall);letter-spacing:.08em;text-transform:uppercase}
+.bd span{position:absolute;right:5px;bottom:4px;font:10px/1 var(--mono);color:#cfcbc2}
+.bd.off{opacity:.3;cursor:default}.bd:hover:not(.off){border-color:#fff5}.bd.on{border-color:var(--wall);box-shadow:inset 0 0 0 1px var(--wall)}
+.bkey{display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;text-transform:none;letter-spacing:0;font-size:12px}
+.bkey i{display:inline-block;width:14px;height:10px;background:var(--wall);opacity:.45;border-radius:2px;margin-right:5px;vertical-align:-1px}
+#bday{margin:20px 0 6px;padding:16px 0 4px;border-top:1px solid var(--line);scroll-margin-top:calc(var(--bar) + 84px)}
+.bdh{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}.bdh h3{font:400 clamp(22px,2.6vw,30px)/1.15 var(--serif);margin:0;letter-spacing:0;text-transform:none;color:var(--ink)}
+@media(min-width:1100px){.bsplit{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:30px;align-items:start}.bleft{position:sticky;top:calc(var(--bar) + 78px)}.bsplit #bday{margin-top:8px;padding-top:0;border-top:0}}
+.bmore{margin:2px 0 6px}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:0 0 14px}
 .pcount{display:flex;flex-wrap:wrap;gap:8px 26px;margin:4px 0 14px}.pcount .num{font-size:28px}.pcount>div{min-width:90px}
 #pk{min-height:70px;font-size:16px}
@@ -271,6 +304,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radiu
   .grid{grid-template-columns:repeat(3,1fr);gap:4px}
   .qlist,.calls{grid-template-columns:1fr}
   .tgrid,.pgrid{grid-template-columns:repeat(2,1fr)}
+  .doors{grid-template-columns:1fr}.bd{aspect-ratio:1;min-height:40px}.bd b{left:4px;top:4px;font-size:12px}.bd em{right:3px;top:4px;font-size:9px}.bd span{right:3px;bottom:3px;font-size:9px}#bcal{gap:3px}
   .edge{color:#fff0!important}
 }
 @media (max-width:420px){.cb.txt{padding:0 10px;letter-spacing:.04em}}
@@ -464,11 +498,23 @@ body.mini .ov,body.exhibit .ov{display:none}
     </section>
 
     <section id="v-themes">
-      <div class="tgrid" id="tsubj"></div>
-      <div class="chips" id="tarch"></div>
+      <div id="thome">
+        <h2>What do you want to hear about?</h2>
+        <p class="lead">The calls went wherever the people in them went. A machine sorted what it read and heard under the subjects below, and it mishears, so a theme is a door and not a verdict. Three of them are open here; they change with every visit.</p>
+        <div class="doors" id="tdoors"></div>
+        <p class="trow"><button class="btn sm" id="tmore3">Show three others</button><button class="btn sm" id="tany">Take me somewhere</button><button class="btn sm" id="tnew">Start a theme of your own</button></p>
+        <p class="meta day">What was spoken about · the larger the name, the more of it</p>
+        <div class="tcloud" id="tsubj"></div>
+        <p class="meta day">What the archive itself is made of</p>
+        <div class="tcloud" id="tarch"></div>
+        <p class="meta day" id="tmineh" hidden>Started by visitors</p>
+        <div class="tcloud" id="tmine"></div>
+      </div>
       <div id="topen" hidden>
-        <h2 id="ttitle" style="margin-top:26px"></h2>
+        <p style="margin:0 0 4px"><button class="btn sm" id="tback">← All themes</button></p>
+        <h2 id="ttitle" style="margin-top:14px"></h2>
         <p id="tnote" class="lead"></p>
+        <details id="truled" hidden><summary>How the machine sorted this</summary><p id="trule"></p></details>
         <p><button class="btn go sm" id="tplay">Play</button> <button class="btn sm" id="tanswer">Leave your mark on it</button> <span class="meta" id="tcount" style="margin-left:6px"></span></p>
         <div class="qlist" id="tlist"></div>
         <div id="tsent" style="height:1px"></div>
@@ -1129,23 +1175,76 @@ document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]
 
 /* browse: everything in order, no pages */
 const B={kind:'',grp:'',list:[],a:0,b:0,ready:false,secs:false,title:'',want:''};const BN=120;
-const KINDS=[['pics','','All pictures'],['pics','d','The document'],['pics','p','Camera roll'],['pics','s','Screenshots'],['pics','x','Made in 2026'],['calls','','Calls'],['stories','','Phone videos'],['lines','','Lines'],['marks','','Marks since 2026']];
+const KINDS=[['days','','Day by day'],['pics','','All pictures'],['pics','d','The document'],['pics','p','Camera roll'],['pics','s','Screenshots'],['pics','x','Made in 2026'],['calls','','Calls'],['stories','','Phone videos'],['lines','','Lines'],['marks','','Marks since 2026']];
 $('#bkinds').innerHTML=KINDS.map(([k,g,l])=>'<button class="btn sm" data-k="'+k+'" data-g="'+g+'">'+l+'</button>').join('');
 $('#bkinds').onclick=e=>{const b=e.target.closest('button');if(b)bSet(b.dataset.k,b.dataset.g)};
-async function bInit(){if(B.want){const k=B.want;B.want='';B.ready=true;return bSet(k,'')}if(B.ready){if(B.kind=='pics'&&B.grp!='#'&&cur&&isImg(cur))bJump(+cur.slice(1));bWin();return}B.ready=true;await bSet(cur&&isMin(cur)?(recById[cur.slice(0,4)]&&recById[cur.slice(0,4)].kind=='story'?'stories':'calls'):'pics','')}
+async function bInit(){if(B.want){const k=B.want;B.want='';B.ready=true;return bSet(k,'')}if(B.ready){if(B.kind=='pics'&&B.grp!='#'&&cur&&isImg(cur))bJump(+cur.slice(1));bWin();return}B.ready=true;await bSet('days','')}
 async function bSet(kind,grp,list,title){
   B.kind=kind;B.grp=grp;B.title=title||'';B.secs=kind=='pics'&&!list&&(grp==''||grp=='d');$$('#bkinds button').forEach(b=>b.classList.toggle('on',b.dataset.k==kind&&b.dataset.g==grp));const body=$('#bbody');$('#bearlier').hidden=true;$('#rwin').hidden=true;
-  if(kind=='pics'){const ix=await needImgs();if(B.secs)await needDoc();B.list=list||IMGS.filter(n=>!grp||(ix[n]||[])[2]==grp);body.innerHTML='<div class="grid" id="bgrid"></div>';const at=cur&&isImg(cur)?B.list.indexOf(+cur.slice(1)):0;bWindow(Math.max(0,at))}
+  if(kind=='days'){B.list=[];$('#bhead').textContent='';await bDays();if(B.kind!='days')return}
+  else if(kind=='pics'){const ix=await needImgs();if(B.secs)await needDoc();B.list=list||IMGS.filter(n=>!grp||(ix[n]||[])[2]==grp);body.innerHTML='<div class="grid" id="bgrid"></div>';const at=cur&&isImg(cur)?B.list.indexOf(+cur.slice(1)):0;bWindow(Math.max(0,at))}
   else if(kind=='marks'){B.list=[];await needRecs();if(B.kind!='marks')return;body.innerHTML=marksHTML()}
   else if(kind=='lines'){B.list=[];$('#bhead').textContent=fmt(lineIds.length)+' lines';body.innerHTML='<div class="grid" id="bgrid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+lineIds.map(i=>tile(i,(kids[i]||[]).length||'')).join('')+'</div>'}
   else{await needRecs();B.list=[];const want=kind=='calls'?'call':'story',L=recOrder.filter(r=>kind=='calls'?r.kind!='story':r.kind=='story');
     $('#bhead').textContent=kind=='calls'?fmt(L.length)+' recordings':fmt(L.length)+' videos';
     if(kind=='stories'){body.innerHTML='<div class="grid" id="bgrid">'+L.map(r=>tile(r.id+'.0000','')).join('')+'</div>'}
     else{const byDay={};for(const r of L.filter(r=>r.t0).concat(L.filter(r=>!r.t0))){const d=r.t0?niceDay(r.t0):'Date not known';(byDay[d]=byDay[d]||[]).push(r)}
-      body.innerHTML=Object.keys(byDay).map(d=>'<p class="meta day">'+esc(d)+'</p><div class="calls">'+byDay[d].map(r=>{const m0=0;return'<button class="call" data-rec="'+esc(r.id)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(r.id,Math.min(r.min-1,2),1))+'" alt=""></span><span><b>'+prague(r.t0).slice(11)+' · '+dur(r.sec)+'</b><span class="meta">'+(r.lines?fmt(r.lines)+' lines':'no words')+' · '+esc(r.id)+'</span></span></button>'}).join('')+'</div>').join('')}}
+      body.innerHTML=Object.keys(byDay).map(d=>'<p class="meta day">'+esc(d)+'</p><div class="calls">'+byDay[d].map(callCard).join('')+'</div>').join('')}}
   if(!EX&&view=='browse'&&cur)history.replaceState(null,'',hashFor());
   markTiles()}
 $('#bbody').addEventListener('click',async e=>{const c=e.target.closest('.call');if(!c)return;const r=recById[c.dataset.rec];if(!r)return;setMini(false,false);const v=await voice(r.id),f=v.segs[0];ctx={kind:'rec'};go(r.id+'.'+pad(f?Math.floor(f[0]/60):0,4),{keep:1,play:RAW})});
+function callCard(r){return'<button class="call" data-rec="'+esc(r.id)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(r.id,Math.min(r.min-1,2),1))+'" alt=""></span><span><b>'+(r.t0?prague(r.t0).slice(11)+' · ':'')+dur(r.sec)+'</b><span class="meta">'+(r.lines?fmt(r.lines)+' lines':'no words')+' · '+esc(r.id)+'</span></span></button>'}
+/* browse, day by day: the nine weeks as a calendar. A day shows what was recorded, screenshotted, photographed and said on it.
+   Where a screenshot was taken is known from the sound (i/sound.json); other pictures carry their own date. Prague time. */
+let BD=null,bDaySel='';const dkey=ms=>prague(ms).slice(0,10),pick4=L=>{L=L.slice();const o=[];while(o.length<4&&L.length)o.push(L.splice(Math.floor(Math.random()*L.length),1)[0]);return o};
+const strip=ids=>ids.map(i=>'<span class="tile"><img loading="lazy" decoding="async" src="'+esc(thumbUrl(i))+'" alt=""></span>').join('');
+async function bDayData(){if(BD)return BD;await needRecs();const ix=await needImgs(),snd=await needSound(),cj=await jq('data/call-2021.json',{});
+  const D={},g=k=>D[k]||(D[k]={calls:[],stories:[],shots:[],pics:[],lines:[],min:0});
+  for(const r of recOrder){if(!r.t0)continue;const x=g(dkey(r.t0));(r.kind=='story'?x.stories:x.calls).push(r)}
+  const t0=Date.parse((cj.start||'2021-11-14')+'T00:00:00Z');(cj.minutes_on_call_per_day||[]).forEach((m,i)=>{if(m&&t0)g(new Date(t0+i*day).toISOString().slice(0,10)).min=m});
+  for(const n of IMGS){const a=snd.at[n],r=a&&recById[a[0]];if(r&&r.t0){g(dkey(r.t0+a[1]*1e3)).shots.push(n);continue}const e=ix[n];if(e&&e[2]!='d'&&/^\d{4}-\d\d-\d\d$/.test(e[4]||''))g(e[4]).pics.push(n)}
+  for(const id of lineIds){const a=snd.lines[id],r=a&&recById[a[0]];if(r&&r.t0)g(dkey(r.t0+a[1]*1e3)).lines.push(id)}
+  for(const k in D)if(!D[k].min&&D[k].calls.length)D[k].min=Math.min(1440,Math.round(D[k].calls.reduce((s,r)=>s+r.sec,0)/60));
+  return BD=D}
+function bDoors(ix){const byG=g=>IMGS.filter(n=>(ix[n]||[])[2]==g),im=L=>pick4(L).map(n=>'m'+pad(n,5)),calls=recOrder.filter(r=>r.kind!='story'),st=recOrder.filter(r=>r.kind=='story'),marks=liveMarks();
+  const rf=L=>pick4(L).map(r=>r.id+'.'+pad(Math.floor(Math.random()*Math.max(1,r.min)),4));
+  const A=[['pics','d','The document',fmt(byG('d').length)+' screenshots','The shared document of November 2021: every screenshot of the call in the order it was pasted, under the document’s own headings and hashtags.',im(byG('d'))],
+    ['calls','','The calls',fmt(calls.length)+' recordings','The call itself: a frame for every minute, its sound, and what a small speech model made of the talking.',rf(calls)],
+    ['pics','p','Camera roll',fmt(byG('p').length)+' photographs','What the phone’s camera saw away from the screen: the floor, the sky, the snow.',im(byG('p'))],
+    ['stories','','Phone videos',fmt(st.length)+' videos','Short videos and screen recordings from the phone, as they were posted or kept.',rf(st)],
+    ['pics','s','Other screenshots',fmt(byG('s').length)+' pictures','Screens that were saved outside the document.',im(byG('s'))],
+    ['pics','x','Made in 2026',fmt(byG('x').length)+' pictures','One recording broke while it was being made. These are the pictures a machine drew from what was left of it.',im(byG('x'))],
+    ['lines','','The lines',fmt(lineIds.length)+' lines','Ninety-eight sentences the caption machine of 2021 wrote under the call, and the words left since. The work opens with them; every mark answers one of them or something else here.',[]],
+    ['marks','','Marks since 2026',fmt(marks.length)+(marks.length==1?' mark':' marks'),'What people and machines have left since the work reopened on 14 November 2026. Yours would be listed here.',[]]];
+  return A.filter(a=>a[0]!='pics'||byG(a[1]).length).map(a=>'<button class="door" data-kind="'+a[0]+'" data-grp="'+a[1]+'">'+(a[5].length?'<span class="strip">'+strip(a[5])+'</span>':a[0]=='lines'&&lineIds.length?'<span class="said">“'+esc(N[lineIds[Math.floor(Math.random()*lineIds.length)]].text||'')+'”</span>':'')+'<span class="in"><b>'+a[2]+'</b><p>'+esc(a[4])+'</p><span class="row"><span class="meta">'+a[3]+'</span></span></span></button>').join('')}
+async function bDays(){const D=await bDayData(),ix=await needImgs();if(B.kind!='days')return;
+  const has=k=>{const x=D[k];return!!x&&!!(x.calls.length||x.stories.length||x.shots.length||x.pics.length)},mx=Math.max(1,...Object.values(D).map(x=>x.min));
+  let h='<h2>Nine weeks, day by day</h2><p class="lead">On 14 November 2021 a video call was opened and left open, on and off, until 13 January 2022. Whatever came through it was recorded, captioned by a machine, screenshotted and pasted into one shared document. Pick a day to see what it left behind.</p><div class="bsplit"><div class="bleft"><div id="bcal">'
+    +['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>'<span class="dow">'+d+'</span>').join('');
+  const s0=Date.UTC(2021,10,8),keys=[];
+  for(let i=0;i<70;i++){const d=new Date(s0+i*day),k=d.toISOString().slice(0,10),x=D[k],ok=has(k),n=ok?x.shots.length+x.pics.length:0;if(ok)keys.push(k);
+    const lab=niceDay(d.getTime())+(ok?': '+(x.min?dur(x.min*60)+' on the call, ':'')+n+' pictures':': nothing kept');
+    h+='<button class="bd'+(ok?'':' off')+'" data-day="'+k+'"'+(ok?'':' disabled')+' aria-label="'+esc(lab)+'" title="'+esc(lab)+'">'+(ok&&x.min?'<i style="height:'+Math.max(6,Math.round(100*x.min/mx))+'%"></i>':'')+'<b>'+d.getUTCDate()+'</b>'+(i==0||d.getUTCDate()==1?'<em>'+MON[d.getUTCMonth()]+'</em>':'')+(n?'<span>'+fmt(n)+'</span>':'')+'</button>'}
+  h+='</div><p class="meta bkey"><span><i></i>how long the call was open that day</span><span>the small number: pictures of that day</span><span>Prague time</span></p></div><div id="bday"></div></div><p class="meta day">Or by what it is</p><div class="doors" id="bdoors">'+bDoors(ix)+'</div>';
+  $('#bbody').innerHTML=h;
+  let k=bDaySel;if(!has(k)){k='';if(cur&&isMin(cur)){const r=recById[cur.slice(0,4)];if(r&&r.t0)k=dkey(r.t0+(+cur.slice(5))*6e4)}else if(cur&&isImg(cur)){const a=sndJ&&sndJ.at[+cur.slice(1)],r=a&&recById[a[0]];if(r&&r.t0)k=dkey(r.t0+a[1]*1e3)}}
+  if(!has(k))k=keys[Math.floor(Math.random()*keys.length)]||'';if(k)bDay(k)}
+function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySel=k;$$('#bcal .bd').forEach(b=>b.classList.toggle('on',b.dataset.day==k));
+  const keys=$$('#bcal .bd:not(.off)').map(b=>b.dataset.day),i=keys.indexOf(k),ms=Date.parse(k+'T00:00:00Z'),nd=niceDay(ms),f=[];
+  if(x.min)f.push('The call was open for '+dur(x.min*60));if(x.calls.length)f.push(fmt(x.calls.length)+(x.calls.length==1?' recording':' recordings')+' started');if(x.shots.length)f.push(fmt(x.shots.length)+(x.shots.length==1?' screenshot':' screenshots')+' taken');
+  if(x.pics.length)f.push(fmt(x.pics.length)+(x.pics.length==1?' other picture':' other pictures'));if(x.stories.length)f.push(fmt(x.stories.length)+(x.stories.length==1?' phone video':' phone videos'));if(x.lines.length)f.push(fmt(x.lines.length)+' of the 98 lines said');
+  const nav=(j,l,a)=>'<button class="btn sm" data-day="'+(keys[j]||'')+'"'+(keys[j]?'':' disabled')+' aria-label="'+a+'">'+l+'</button>';
+  const sec=(title,L,id)=>{if(!L.length)return'';const N0=24;return'<p class="meta day">'+title+'</p><div class="grid" id="'+id+'">'+L.slice(0,N0).map(n=>tile('m'+pad(n,5),(kids['m'+pad(n,5)]||[]).length||'').replace('data-id=','data-list="'+id+'" data-id=')).join('')+'</div>'+(L.length>N0?'<p class="bmore"><button class="btn sm" data-all="'+id+'">Show all '+fmt(L.length)+'</button></p>':'')};
+  el.innerHTML='<div class="bdh">'+nav(i-1,'←','The day before')+'<h3>'+esc(nd)+'</h3>'+nav(i+1,'→','The day after')+'</div><p class="lead">'+esc(f.join(' · '))+'.</p>'
+    +(x.calls.length?'<p class="meta day">Recordings started this day · tap one to hear it</p><div class="calls">'+x.calls.map(callCard).join('')+'</div>':'')
+    +(x.lines.length?'<p class="meta day">Said this day, among the 98 lines</p><div class="grid" id="bdl" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+x.lines.map(l=>tile(l,(kids[l]||[]).length||'').replace('data-id=','data-list="bdl" data-id=')).join('')+'</div>':'')
+    +sec('Screenshots taken during the call',x.shots,'bds')+sec('Photographs and other pictures',x.pics,'bdp')
+    +(x.stories.length?'<p class="meta day">Phone videos</p><div class="grid" id="bdv">'+x.stories.map(r=>tile(r.id+'.0000','')).join('')+'</div>':'');
+  markTiles();if(scroll&&!matchMedia('(min-width:1100px)').matches)el.scrollIntoView({block:'start'})}
+$('#bbody').addEventListener('click',e=>{const d=e.target.closest('[data-day]'),a=e.target.closest('[data-all]'),k=e.target.closest('[data-kind]');
+  if(d&&d.dataset.day){bDay(d.dataset.day,!!d.closest('.bdh')?0:1);return}
+  if(a&&BD&&BD[bDaySel]){const x=BD[bDaySel],L=a.dataset.all=='bds'?x.shots:x.pics;bSet('pics','#',L,(a.dataset.all=='bds'?'Screenshots of ':'Pictures of ')+niceDay(Date.parse(bDaySel+'T00:00:00Z')));scrollTo(0,0);return}
+  if(k){bSet(k.dataset.kind,k.dataset.grp);scrollTo(0,0)}});
 function bTiles(a,b){let h='',ps=a>0?secOf(B.list[a-1]):-2;
   for(let i=a;i<b;i++){const n=B.list[i],id='m'+pad(n,5);
     if(B.secs&&docJ&&n<=DOCN){const s=secOf(n);if(s!=ps){ps=s;if(s>=0)h+='<div class="bsec" data-s="'+s+'">'+esc(docJ.sections[s][1])+'</div>'}}
@@ -1194,16 +1293,28 @@ paintCount();
 
 /* themes */
 const quotes={};let tShown=0,tReady=false;
+const T_QUIET=new Set(['t-suicide','t-violence']); /* never put on the front as a door with pictures; they stay in the list */
+function tDoor(t){const m=t.items.filter(i=>isMedia(i)&&!gone[i]&&!gone[i.slice(0,4)]);
+  return'<div class="door"><button class="strip" data-t="'+esc(t.id)+'" aria-label="Open '+esc(t.title)+'">'+strip(pick4(m))+'</button><div class="in"><b>'+esc(t.title)+'</b><p>'+esc(t.note||'')+'</p><span class="row"><button class="btn go sm" data-tplay="'+esc(t.id)+'">Play</button><button class="btn sm" data-t="'+esc(t.id)+'">Open</button><span class="meta">'+fmt(t.count)+(t.count==1?' moment':' moments')+'</span></span></div></div>'}
+function tShuffle(){const ok=themesJ.themes.filter(t=>!T_QUIET.has(t.id)&&t.items&&t.items.some(isMedia)),subj=ok.filter(t=>t.kind=='subject'),rest=ok.filter(t=>t.kind!='subject');
+  const L=pick4(subj).slice(0,rest.length?2:3).concat(pick4(rest).slice(0,1));$('#tdoors').innerHTML=L.map(tDoor).join('')}
+const tCloud=L=>{const c=L.map(t=>Math.log(Math.max(2,t.count))),lo=Math.min(...c),hi=Math.max(...c);return L.map((t,i)=>'<button class="tw" data-t="'+esc(t.id)+'" style="font-size:'+(15+Math.round(14*(hi>lo?(c[i]-lo)/(hi-lo):.4)))+'px">'+esc(t.title)+'<sup>'+fmt(t.count)+'</sup></button>').join('')};
 function tInit(){if(tReady)return;tReady=true;
-  const subj=themesJ.themes.filter(t=>t.kind=='subject'&&t.by=='the material'),rest=themesJ.themes.filter(t=>!(t.kind=='subject'&&t.by=='the material'));
-  $('#tsubj').innerHTML=subj.map(t=>'<button class="tcard" data-t="'+esc(t.id)+'"><b>'+esc(t.title)+'</b><span class="meta">'+fmt(t.count)+'</span></button>').join('')||'<span class="meta">No themes yet.</span>';
-  $('#tarch').innerHTML=rest.map(t=>'<button class="btn sm" data-t="'+esc(t.id)+'">'+esc(t.title)+' <span class="meta">'+fmt(t.count)+'</span></button>').join('');
+  const own=t=>t.by=='the material'||t.by=='the archive',subj=themesJ.themes.filter(t=>t.kind=='subject'&&own(t)),arch=themesJ.themes.filter(t=>t.kind!='subject'&&own(t)),mine=themesJ.themes.filter(t=>!own(t));
+  $('#tsubj').innerHTML=subj.length?tCloud(subj):'<span class="meta">No themes yet.</span>';
+  $('#tarch').innerHTML=tCloud(arch);$('#tmine').innerHTML=tCloud(mine);$('#tmineh').hidden=!mine.length;
+  needRecs().then(tShuffle);
   $('#thlist').innerHTML=themesJ.themes.map(t=>'<option value="'+esc(t.title)+'">').join('')}
+function closeT(){openTheme='';$('#topen').hidden=true;$('#thome').hidden=false;$$('#v-themes [data-t]').forEach(b=>b.classList.remove('on'));drawRuler();if(!EX)history.replaceState(null,'',hashFor());scrollTo(0,0)}
+$('#tback').onclick=closeT;$('#tmore3').onclick=tShuffle;
+$('#tany').onclick=()=>{const L=themesJ.themes.filter(t=>!T_QUIET.has(t.id)&&t.items&&t.items.length);if(!L.length)return;openT(L[Math.floor(Math.random()*L.length)].id).then(()=>$('#tplay').click())};
+$('#tnew').onclick=()=>{$('#banswer').click();setTimeout(()=>{const f=$('#th');f.scrollIntoView({block:'center'});f.focus({preventScroll:true})},140)};
+$('#tdoors').addEventListener('click',e=>{const b=e.target.closest('[data-tplay]');if(b){e.stopPropagation();openT(b.dataset.tplay).then(()=>$('#tplay').click())}});
 $('#thlist').innerHTML=themesJ.themes.map(t=>'<option value="'+esc(t.title)+'">').join('');
 $('#v-themes').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b)openT(b.dataset.t,{scroll:1})});
 async function openT(id,o){o=o||{};const t=T[id];if(!t)return;openTheme=id;tInit();await needRecs();
   $$('#v-themes [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==id));
-  $('#topen').hidden=false;$('#ttitle').textContent=t.title;$('#tnote').textContent=t.note||'';
+  $('#thome').hidden=true;$('#topen').hidden=false;$('#ttitle').textContent=t.title;$('#tnote').textContent=t.note||'';$('#truled').hidden=!t.rule;$('#truled').open=false;$('#trule').textContent=t.rule||'';
   $('#tcount').textContent=t.count>t.items.length?fmt(t.items.length)+' of '+fmt(t.count):fmt(t.items.length);
   if(!quotes[id])quotes[id]=(await jq('themes/'+id+'.json',{})).quotes||{};
   if(openTheme!=id)return;tShown=0;$('#tlist').innerHTML='';tMore();drawRuler();if(!EX)history.replaceState(null,'',hashFor());
