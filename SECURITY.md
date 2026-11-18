@@ -41,8 +41,25 @@ There is no bounty. There is a place in the credits if you want one.
 - **The door is trusted about who proved a private link.** See `AGENTS.md`: retire the door's address in `data/config.json` before the hosting project.
 - **A determined crowd can fill a day.** Three hundred marks from three hundred places pauses the call until a steward reopens it. That is the design: closed and intact rather than open and flooded.
 - **The filter is a short list of patterns**, not a judge. It will miss things, and stewards remove what it misses (charter, section 3).
-- **`@vercel/blob` 1.x depends on an `undici` release with two published advisories** (multipart parsing). The door never parses multipart bodies, so they are not reachable here; the fix is the 2.x line of the storage client, to be taken after a rehearsal on a preview deployment.
-- **The main branch has no protection rule**, because the sweep pushes to it. A rule that only forbids force-pushes and deletion would cost nothing and is recommended.
+- **The history of the archive repository keeps what was taken out.** Hiding, removing or masking a picture or a recording changes what the site and the archive's pages serve. The file as it was stays in the git history of the archive repository, where anyone who knows the commit can still fetch it, and a copy of an original that was sent to the Internet Archive stays there. For most removals that is accepted. For something that must be gone for good, see "Taking something out for good" below; it is a steward's decision, it cannot be undone, and it has not been done so far.
+- **The censoring on the site is a warning, not a lock.** "Show uncensored" spares a visitor the raw material until they ask for it. Everything public is in the archive repository and its index for anyone who reads those directly.
+
+Settled since the first review: the door's storage client is on its 2.x line (2.4.0, pinned); the main branch and the archive's branches can no longer be force-pushed or deleted, and a `ring-*` tag can never be moved (repository rules, 16 November 2026).
+
+## For stewards: taking something out for good
+
+The work's own repository is never rewritten: its history is the work. The archive repository holds media, and a file that must not exist anywhere (a stranger's private details published by mistake, say) can be cut out of its history. This is the only case in which that is right, and only the author decides it.
+
+    # 1. remove the file in the ordinary way first (and its words: tools/veil_text.py), push, let the pages deploy
+    # 2. in a fresh full clone of the archive repository:
+    git filter-repo --invert-paths --path i/w/m01234.webp --path i/t/m01234.webp     # every path the thing ever had
+    # 3. the author lifts the rule "no force-push" on the archive's main for the length of one push, then:
+    git push --force origin main          # and the same for the branch `audio` if sound is concerned
+    # 4. put the rule back. Ask GitHub Support to clear cached views of the old commits (they keep them otherwise).
+    # 5. if an original went to the Internet Archive: delete the file from its item there (the author's account).
+    # 6. every clone and fork made before this still has the file. Say so in removals/ where the removal is recorded.
+
+Do this before a year ring is cut and before the archive repository is sent to Software Heritage: both keep for good what they were given.
 
 ## For stewards: if something is happening
 

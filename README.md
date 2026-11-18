@@ -22,7 +22,7 @@ At most 280 characters, a few a day, no links, nobody else's name. Marks are pub
 
 ## Ask for something to be removed
 
-Anyone can, for anything. On the site: put it on the stage and press *Ask for removal*. Here: open an issue titled `remove <id>`. Through an issue it is hidden at once, through the site at the next sweep (usually within a few hours), and it stays hidden until a steward has looked (charter, section 6).
+Anyone can, for anything. On the site: put it on the stage and press *Ask for removal*. Here: open an issue titled `remove <id>`. Through an issue it is hidden at once, through the site at the next sweep (usually within the hour), and it stays hidden until a steward has looked (charter, section 6).
 
 ## What is in this folder
 
