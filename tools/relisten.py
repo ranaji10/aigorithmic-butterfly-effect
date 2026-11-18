@@ -16,7 +16,7 @@ word should stay an English word. Whatever is still in Devanagari or Bengali let
 alphabet by rule (tools/romanize.py). Nothing is published by this: it writes OUTDIR/<recording>.json, and
 tools/relisten_merge.py decides what replaces the first hearing.
 """
-import argparse, json, os, sys, time, urllib.request
+import argparse, json, os, subprocess, sys, time, urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from romanize import latin
 
@@ -42,7 +42,6 @@ if A.only.strip(): mine = [r for r in A.only.split() if r in plan]
 print('shard', A.shard, ':', len(mine), 'recordings,', round(sum(b - a for r in mine for a, b, _ in plan[r]) / 3600, 2), 'h', flush=True)
 
 from faster_whisper import WhisperModel
-from faster_whisper.audio import decode_audio
 import numpy as np
 model = WhisperModel(A.model, device='cpu', compute_type='int8', cpu_threads=A.threads)
 os.makedirs(A.out, exist_ok=True); os.makedirs('/tmp/aud', exist_ok=True)
@@ -59,7 +58,9 @@ def piece(rid, k):
     p = '/tmp/aud/%s_%03d.webm' % (rid, k)
     try:
         if not os.path.exists(p): urllib.request.urlretrieve('%s%s/%03d.webm' % (A.audio, rid, k), p)
-        x = decode_audio(p, sampling_rate=SR)
+        r = subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-i', p, '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'], capture_output=True)
+        if r.returncode != 0 and not r.stdout: raise RuntimeError(r.stderr.decode('utf-8', 'replace')[:120])
+        x = np.frombuffer(r.stdout, dtype=np.float32).copy()
     except Exception as e:
         print('  no sound', rid, k, str(e)[:80], flush=True); x = np.zeros(0, dtype=np.float32)
     for key in list(_piece)[:-1]: del _piece[key]
