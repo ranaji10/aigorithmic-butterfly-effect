@@ -49,6 +49,10 @@ os.makedirs(A.out, exist_ok=True); os.makedirs('/tmp/aud', exist_ok=True)
 _piece = {}
 
 
+def keep(res, dst):
+    json.dump(res, open(dst + '.part', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':')); os.replace(dst + '.part', dst)
+
+
 def piece(rid, k):
     """Ten minutes of sound (second // 600 = k) as samples; the last two are kept in memory."""
     if (rid, k) in _piece: return _piece[(rid, k)]
@@ -94,7 +98,7 @@ for rid in mine:
         key = '%.1f' % a
         if key in res['windows']: continue
         if time.time() - T0 > A.budget:
-            json.dump(res, open(dst, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':')); print('out of time; partly done:', rid, flush=True); sys.exit(0)
+            keep(res, dst); print('out of time; partly done:', rid, flush=True); sys.exit(0)
         marks = [a] + [s for s in starts if a + 4 < s < b - 2] + [b]; cuts = [a]
         for m in marks[1:]:                           # pieces of at most 28 s, cut where the first hearing found a pause
             if m - cuts[-1] > 28:
@@ -123,7 +127,7 @@ for rid in mine:
             ch['segs'] = [[round(c0 + s, 1), round(c0 + e, 1), latin(t), lp, ns] for s, e, t, lp, ns in final]
             chunks.append(ch)
         res['windows'][key] = {'a': a, 'b': b, 'signs': signs, 'chunks': chunks}
-        if len(res['windows']) % 10 == 0: json.dump(res, open(dst, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+        if len(res['windows']) % 10 == 0: keep(res, dst)
     res['done'] = True
-    json.dump(res, open(dst, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    keep(res, dst)
     print('done', rid, len(res['windows']), 'windows,', round((time.time() - T0) / 60), 'min in', flush=True)
