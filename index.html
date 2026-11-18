@@ -1454,7 +1454,8 @@ async function bDayData(){if(BD)return BD;await needRecs();const ix=await needIm
     /* a call that runs past midnight belongs to both days: each gets the stretch that falls in it */
     for(let t=r.t0,e=r.t0+r.sec*1e3,guard=0;t<e&&guard++<90;){const k=dkey(t),d0=dayStart(k),t2=Math.min(e,d0+day);g(k).segs.push({r,a:(t-d0)/6e4,b:(t2-d0)/6e4,off:(t-r.t0)/1e3});t=t2}}
   const t0=Date.parse((cj.start||'2021-11-14')+'T00:00:00Z');(cj.minutes_on_call_per_day||[]).forEach((m,i)=>{if(m&&t0)g(new Date(t0+i*day).toISOString().slice(0,10)).min=m});
-  for(const n of IMGS){const ms=shotMs(n);if(ms){BT[n]=ms;g(dkey(ms)).shots.push(n);continue}const e=ix[n];if(e&&e[2]!='d'&&/^\d{4}-\d\d-\d\d$/.test(e[4]||''))g(e[4]).pics.push(n)}
+  for(const n of IMGS){const ms=shotMs(n);if(ms){BT[n]=ms;g(dkey(ms)).shots.push(n);continue}const e=ix[n];if(e&&e[2]!='d'&&/^\d{4}-\d\d-\d\d$/.test(e[4]||'')){const tm=/^(\d\d):(\d\d)$/.exec(e[5]||''); /* a photograph whose camera wrote down the minute stands in its hour, like a screenshot */
+    if(tm){BT[n]=dayStart(e[4])+(+tm[1]*60+ +tm[2])*6e4;g(e[4]).shots.push(n)}else g(e[4]).pics.push(n)}}
   for(const id of lineIds){const a=snd.lines[id],r=a&&recById[a[0]];if(r&&r.t0){const ms=r.t0+a[1]*1e3;g(dkey(ms)).lines.push([id,ms])}}
   for(const k in D){const x=D[k];x.shots.sort((a,b)=>BT[a]-BT[b]);if(!x.min&&x.segs.length)x.min=Math.min(1440,Math.round(x.segs.reduce((s,q)=>s+q.b-q.a,0)))}
   return BD=D}
@@ -1464,16 +1465,18 @@ function bDoors(ix){const byG=g=>IMGS.filter(n=>(ix[n]||[])[2]==g),im=L=>pick4(L
     ['pics','s',fmt(byG('s').length)+' pictures',im(byG('s'))],['pics','x',fmt(byG('x').length)+' pictures',im(byG('x'))],['lines','',fmt(lineIds.length)+' lines',[]],['marks','',fmt(marks.length)+(marks.length==1?' mark':' marks'),[]]];
   const info=a=>a[0]=='marks'?['Marks since 2026','What people and machines have left since the work reopened on 14 November 2026. Yours would be listed here.']:KINFO[a[0]+'/'+a[1]];
   return A.filter(a=>a[0]!='pics'||byG(a[1]).length).map(a=>'<button class="door" data-kind="'+a[0]+'" data-grp="'+a[1]+'">'+(a[3].length?'<span class="strip">'+strip(a[3])+'</span>':a[0]=='lines'&&lineIds.length?'<span class="said">“'+esc(N[lineIds[Math.floor(Math.random()*lineIds.length)]].text||'')+'”</span>':'')+'<span class="in"><b>'+info(a)[0]+'</b><p>'+esc(info(a)[1].split('. ').slice(0,2).join('. ').replace(/\.?$/,'.'))+'</p><span class="row"><span class="note">'+a[2]+'</span></span></span></button>').join('')}
+const isCam=n=>((imgIdx||{})[n]||[])[2]=='p';
 const dayHas=x=>!!x&&!!(x.segs.length||x.stories.length||x.shots.length||x.pics.length);
 /* one thing to stand for a day in the calendar: a screenshot from the middle of it, or a photograph, or a frame of the call */
 function dayFace(x){if(x.shots.length)return mid5(x.shots[x.shots.length>>1]);if(x.pics.length)return mid5(x.pics[0]);
   for(const s of x.segs){if(!s.r.frames)continue;const m=clamp(Math.floor(s.off/60+(s.b-s.a)/2),0,s.r.min-1),id=s.r.id+'.'+pad(m,4);if(okItem(id))return id}
   return x.stories.length?x.stories[0].id+'.0000':''}
 async function bDays(){const D=await bDayData(),ix=await needImgs();if(B.kind!='days')return;
-  let h='<h2>Nine weeks, day by day</h2><p class="lead">A video call was opened on 14 November 2021 and left open, on and off, until 13 January 2022. Pick a day and move through its hours.</p><div class="bsplit"><div class="bleft"><div id="bcal">'
+  let h='<h2>Nine weeks, day by day</h2><p class="lead">A video call was opened on 14 November 2021 and left open, on and off, until 13 January 2022. A few photographs from the days just before and after are here too. Pick a day and move through its hours.</p><div class="bsplit"><div class="bleft"><div id="bcal">'
     +['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>'<span class="dow">'+d+'</span>').join('');
-  const s0=Date.UTC(2021,10,8),keys=[];
-  for(let i=0;i<70;i++){const d=new Date(s0+i*day),k=d.toISOString().slice(0,10),x=D[k],ok=dayHas(x),n=ok?x.shots.length+x.pics.length:0,face=ok?dayFace(x):'';if(ok)keys.push(k);
+  /* thirteen whole weeks, Monday 1 November 2021 to Sunday 30 January 2022: the months the author searched his drives for; the call itself ran from 14 November to 13 January */
+  const s0=Date.UTC(2021,10,1),nd=91,keys=[];
+  for(let i=0;i<nd;i++){const d=new Date(s0+i*day),k=d.toISOString().slice(0,10),x=D[k],ok=dayHas(x),n=ok?x.shots.length+x.pics.length:0,face=ok?dayFace(x):'';if(ok)keys.push(k);
     const lab=longDay(d.getTime()+432e5)+(ok?': '+(x.min?'the call was open for '+dur(x.min*60)+', ':'')+fmt(n)+(n==1?' picture':' pictures'):': nothing kept');
     h+='<button class="bd'+(ok?'':' off')+'" data-day="'+k+'"'+(ok?'':' disabled')+' aria-label="'+esc(lab)+'" title="'+esc(lab)+'">'+(face?'<span class="ph">'+pic(face)+'</span>':'')+'<b>'+d.getUTCDate()+'</b>'+(i==0||d.getUTCDate()==1?'<em>'+MONTH[d.getUTCMonth()].slice(0,3)+'</em>':'')
       +(ok&&x.segs.length?'<span class="b24">'+x.segs.map(s=>'<i style="left:'+(s.a/14.4).toFixed(1)+'%;width:'+Math.max(1.5,(s.b-s.a)/14.4).toFixed(1)+'%"></i>').join('')+'</span>':'')+'</button>'}
@@ -1489,7 +1492,7 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
   for(const n of x.shots)H[hOf(BT[n])].shots.push(n);for(const r of x.stories)H[hOf(r.t0)].stories.push(r);for(const[id,ms]of x.lines)H[hOf(ms)].lines.push(id);
   for(const s of x.segs)for(let h=Math.floor(s.a/60);h<Math.min(24,Math.ceil(s.b/60));h++)if(!H[h].seg)H[h].seg=s;
   bHours=H;
-  /* the band: the call as film, screenshots as white marks under it, phone videos as green ones */
+  /* the band: the call as film, screenshots and photographs as white marks under it, phone videos as green ones */
   const bins={};for(const n of x.shots){const b=Math.floor((BT[n]-d0)/3e5);bins[b]=(bins[b]||0)+1}
   let band='<div id="bband" tabindex="0" role="group" aria-label="The twenty-four hours of this day. Left and right move through them, Enter goes there.">';
   for(const s of x.segs){const w=s.b-s.a,n=s.r.frames?clamp(Math.round(w/50),1,14):0;let f='';for(let j=0;j<n;j++){const m=clamp(Math.floor(s.off/60+(j+.5)*w/n),0,s.r.min-1);if(okItem(s.r.id+'.'+pad(m,4)))f+='<img loading="lazy" decoding="async" src="'+esc(frameUrl(s.r.id,m,1))+'" alt="">'}
@@ -1497,7 +1500,7 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
   for(const b in bins)band+='<i class="tk" style="left:'+(b/2.88).toFixed(2)+'%;opacity:'+Math.min(1,.45+bins[b]*.12).toFixed(2)+'"></i>';
   for(const r of x.stories)band+='<i class="tk v" style="left:'+clamp((r.t0-d0)/864e3,0,99.6).toFixed(2)+'%"></i>';
   band+='<span id="bcur" hidden><b></b></span></div><div class="bax" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>';
-  const f=[];if(x.min)f.push(['the call was open',dur(x.min*60)]);if(x.shots.length)f.push([x.shots.length==1?'screenshot':'screenshots',fmt(x.shots.length)]);if(x.pics.length)f.push([x.pics.length==1?'other picture':'other pictures',fmt(x.pics.length)]);
+  const f=[];if(x.min)f.push(['the call was open',dur(x.min*60)]);const nc=x.shots.filter(isCam).length,ns=x.shots.length-nc;if(ns)f.push([ns==1?'screenshot':'screenshots',fmt(ns)]);if(nc)f.push([(nc==1?'photograph':'photographs')+', by the camera\u2019s clock',fmt(nc)]);if(x.pics.length)f.push([x.pics.length==1?'other picture':'other pictures',fmt(x.pics.length)]);
   if(x.stories.length)f.push([x.stories.length==1?'phone video':'phone videos',fmt(x.stories.length)]);if(x.lines.length)f.push([x.lines.length==1?'line of the caption machine':'lines of the caption machine',fmt(x.lines.length)]);
   /* hour by hour. Hours in which the call was open and nothing else happened are told together, as one stretch. */
   let hours='';const CAP=36,blocks=[];
@@ -1508,7 +1511,7 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
     if(q.seg)says.push(bl.h1>bl.h0?'the call stays open until '+pad(bl.h1+1,2)+':00':'the call is open');
     t+=q.shots.slice(0,CAP).map(n=>tile(mid5(n),(kids[mid5(n)]||[]).length||'').replace('data-id=','data-list="bhours" data-id=')).join('');
     if(q.shots.length>CAP)t+='<button class="tile more" data-hour="'+h+'">'+fmt(q.shots.length-CAP)+' more</button>';
-    if(q.shots.length)says.push(fmt(q.shots.length)+(q.shots.length==1?' screenshot':' screenshots'));
+    {const c=q.shots.filter(isCam).length,s2=q.shots.length-c;if(s2)says.push(fmt(s2)+(s2==1?' screenshot':' screenshots'));if(c)says.push(fmt(c)+(c==1?' photograph':' photographs'))}
     t+=q.stories.map(r=>tile(r.id+'.0000','').replace('data-id=','data-list="bhours" data-id=').replace('class="tile"','class="tile vid"')).join('');
     if(q.stories.length)says.push(q.stories.length+(q.stories.length==1?' phone video':' phone videos'));
     hours+='<section class="hr"><b>'+pad(h,2)+'<small>:00</small></b><div class="hx"><span class="note">'+esc(says.join(', '))+'</span>'
@@ -1529,7 +1532,7 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
 /* the band under the hand: a line with the time, and what is there */
 function bandBind(x,d0){const band=$('#bband'),curEl=$('#bcur');if(!band)return;let at=-1;
   const what=m=>{const s=x.segs.find(q=>m>=q.a&&m<q.b);if(s){const mm=clamp(Math.floor(s.off/60+(m-s.a)),0,s.r.min-1),id=s.r.id+'.'+pad(mm,4);if(okItem(id))return[id,'the call']}
-    let bn=0,bd=11;for(const n of x.shots){const d=Math.abs((BT[n]-d0)/6e4-m);if(d<bd){bd=d;bn=n}}if(bn)return[mid5(bn),'a screenshot'];
+    let bn=0,bd=11;for(const n of x.shots){const d=Math.abs((BT[n]-d0)/6e4-m);if(d<bd){bd=d;bn=n}}if(bn)return[mid5(bn),isCam(bn)?'a photograph':'a screenshot'];
     for(const r of x.stories)if(Math.abs((r.t0-d0)/6e4-m)<12&&okItem(r.id))return[r.id+'.0000','a phone video'];return['','nothing was recorded']};
   const put=m=>{at=clamp(Math.round(m),0,1439);const w=what(at);curEl.hidden=false;curEl.style.left=(at/14.4)+'%';curEl.classList.toggle('r',at>1000);curEl.firstChild.textContent=hm(at*60)+', '+w[1];return w};
   const mAt=e=>{const b=band.getBoundingClientRect();return(e.clientX-b.left)/b.width*1440};
