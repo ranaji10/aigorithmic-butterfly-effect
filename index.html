@@ -469,7 +469,9 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   .fs{display:flex;overflow-x:auto;scrollbar-width:none}.fr{flex:0 0 92px}.cs header .btn{margin-left:0}
   .vt{height:150px}.lns{columns:1}.ln q{font-size:var(--t-quote)}
   .dsplit{grid-template-columns:1fr;gap:10px}#dtoc{position:static;max-height:none;overflow:visible;padding:0}#dtocb{display:inline-block}#dtocl{display:none;max-height:46vh;overflow:auto;margin-top:8px;padding:4px 10px;border:1px solid var(--line);border-radius:var(--r-card)}#dtoc.open #dtocl{display:block}#dtocl button{padding:9px 0}
-  .tts{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:132px;gap:6px}.tt b{font-size:var(--t-quote)}.tt.xl{grid-row:span 2}.tt.xl b{font-size:var(--t-title)}.tt .tq{font-size:var(--t-body)}
+  .tts{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:132px;gap:6px}
+  /* small tiles on a phone: the name and the count over a darker ground, the two lines of note left out */
+  .tt:not(.xl) .tn{display:none}.tt:not(.xl) .ph::after{background:linear-gradient(#0005 0%,#000c 45%,#000e 100%)}.tt b{font-size:var(--t-quote)}.tt.xl{grid-row:span 2}.tt.xl b{font-size:var(--t-title)}.tt .tq{font-size:var(--t-body)}
   .mgrid{grid-template-columns:1fr;gap:26px}.thero,.mo{grid-template-columns:1fr;gap:12px}.mo{margin-bottom:30px}.mo.fl .ph{order:0}.thero h2{font-size:var(--t-title)}.tday{margin-top:34px}.tlines{columns:1}
   .edge{color:#fff0!important}
 }
