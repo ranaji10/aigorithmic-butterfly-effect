@@ -1105,6 +1105,21 @@ function pick(){const r=Math.random();
   if(recs&&recs.length&&r<.3){const calls=recs.filter(x=>x.kind=='call'&&x.lines),c=calls[Math.floor(Math.random()*calls.length)];if(c){const v=voiceCache[c.id];const m=v&&v.segs.length?Math.floor(v.segs[Math.floor(Math.random()*v.segs.length)][0]/60):Math.floor(Math.random()*Math.min(c.min,60*(c.heard||[0]).length||c.min));return c.id+'.'+pad(m,4)}}
   if(IMGS.length&&r<.75)return'm'+pad(IMGS[Math.floor(Math.random()*IMGS.length)],5);
   let k;do{k=lineIds[Math.floor(Math.random()*lineIds.length)]}while(k==cur&&lineIds.length>1);return k}
+/* Where a visit opens (Amendment 9): always on a thing that has both a picture and words. A minute of a call in which something
+   was said; a screenshot whose moment was found in the recordings, so that its words are said; or a line of 2021 with its
+   screenshot. The first two need a file of the archive and get a second and a half for it; the third needs nothing.
+   pick() stays as it is for "Somewhere else" and for a room. */
+async function pickLanding(){
+  const soon=p=>Promise.race([Promise.resolve(p).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),1500))]),any=L=>L[Math.floor(Math.random()*L.length)];
+  const dark=n=>{const c=n<=DOCN&&atlasCols&&atlasCols[n-1];return!!c&&(c[0]+c[1]+c[2])/3<24};
+  const line=()=>{const L=lineIds.filter(k=>{const s=+N[k].shot;return s&&IMG.has(s)&&!dark(s)});return any(L.length?L:lineIds)};
+  const r=Math.random();
+  try{
+    if(r<.3){await soon(needRecs());const c=any((recs||[]).filter(x=>x.kind=='call'&&x.lines));
+      if(c){const v=await soon(voice(c.id)),S=v&&v.segs||[];for(let k=0;k<12&&S.length;k++){const s=any(S),m=Math.floor(s[0]/60),id=c.id+'.'+pad(m,4);if((s[2]||'').trim()&&m<c.min&&!gone[id])return id}}}
+    else if(r<.75){const snd=await soon(needSound()),L=snd&&snd.at?IMGS.filter(n=>snd.at[n]&&!dark(n)):[];if(L.length)return'm'+pad(any(L),5)}
+  }catch(e){}
+  return line()}
 $('#bshuf').onclick=()=>go(pick(),{play:RAW});
 $('#bprev').onclick=$('#eprev').onclick=()=>nav(-1);$('#bnext').onclick=$('#enext').onclick=()=>nav(1);
 $('#idtag').onclick=async e=>{e.stopPropagation();if(!cur)return;const id=cur,t=$('#idtag');try{await navigator.clipboard.writeText(location.origin+location.pathname+'#'+id);t.textContent='link copied'}catch(x){t.textContent='#'+id}setTimeout(()=>{if(cur)t.textContent=cur},1400)};
@@ -1915,7 +1930,7 @@ async function route(first){
   if(isPerson(id)&&P[id]){v='people';openPerson=id}
   const ok=async i=>{if(N[i]||(isTheme(i)&&T[i]))return true;if(isImg(i))return IMG.has(+i.slice(1));if(isMin(i)||isRec(i)){await needRecs();const r=recById[i.slice(0,4)];return!!r&&(isRec(i)||+i.slice(5)<r.min)}return false};
   if(id!=cur&&await ok(id)){if(first)await show(id,{quiet:1});else await go(id,{quiet:1})}
-  else if(first){await Promise.race([needRecs(),new Promise(r=>setTimeout(r,1500))]);await show(pick(),{quiet:1})} /* every visit opens somewhere else in the work */
+  else if(first)await show(await pickLanding(),{quiet:1}); /* every visit opens somewhere else in the work, on a thing with a picture and words */
   setView(v,{quiet:1});if(v=='themes'&&openTheme)openT(openTheme);if(v=='people'&&openPerson)pInit();
   if(a=='marks'&&!EX)history.replaceState(null,'','#marks')}
 addEventListener('hashchange',()=>route(false));addEventListener('popstate',()=>route(false));
