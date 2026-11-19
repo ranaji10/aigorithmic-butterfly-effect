@@ -38,7 +38,7 @@
 <script>/* a first visit starts at the introduction; someone who has been through it, or an exhibition screen, starts in the work */
 try{if(localStorage.getItem('abe-in')||/[?&]exhibit\b/.test(location.search))document.documentElement.className='in'}catch(e){}</script>
 <style>
-:root{--bg:#0a0a0b;--panel:#111113;--ink:#ece8df;--dim:#8f8b83;--line:#25252a;--wall:#e3c34d;--hood:#6dbb72;
+:root{--bg:#0a0a0b;--panel:#111113;--ink:#ece8df;--dim:#8f8b83;--line:#25252a;--edge:#6b6b73;--wall:#e3c34d;--hood:#6dbb72;
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
 --bar:48px;--tab:0px}
 *{box-sizing:border-box}
@@ -51,6 +51,10 @@ button{-webkit-tap-highlight-color:transparent}
 .ok{color:var(--hood)}.warn{color:var(--wall)}
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--wall);outline-offset:2px}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#skip{position:fixed;left:8px;top:-60px;z-index:200;background:var(--wall);color:#151204;padding:10px 14px;border-radius:8px;font:600 14px/1 system-ui,sans-serif;text-decoration:none}
+#skip:focus{top:8px}html:not(.in) #skip{display:none}
+[tabindex="-1"]:focus{outline:0}
 
 /* top bar */
 #bar{position:sticky;top:0;z-index:20;height:var(--bar);display:flex;align-items:center;gap:18px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--line)}
@@ -59,8 +63,8 @@ button{-webkit-tap-highlight-color:transparent}
 #tabs{display:flex;gap:2px;margin-left:auto}
 #tabs button,#tabbar button{background:none;border:0;cursor:pointer;font:11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:10px 12px;border-radius:6px}
 #tabs button:hover{color:var(--ink)}
-#tabs button.on,#tabbar button.on{color:var(--wall)}
-.pill{border:1px solid #fff3;background:none;border-radius:999px;padding:6px 12px;cursor:pointer;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+#tabs button.on,#tabbar button.on{color:var(--wall);box-shadow:inset 0 -2px 0 var(--wall)}
+.pill{border:1px solid #fff8;background:none;border-radius:999px;padding:6px 12px;cursor:pointer;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
 .pill:hover{border-color:#fff}
 #tabbar{display:none}
 
@@ -149,11 +153,11 @@ body.mini #bplay{width:40px;height:40px}
 body.mini #ruler,body.mini .edge,body.mini #gate,body.mini #idtag{display:none!important}
 
 /* buttons, forms */
-.btn{border:1px solid #fff5;background:none;padding:8px 15px;border-radius:999px;cursor:pointer;text-decoration:none;color:inherit;display:inline-block;font-size:14px}
+.btn{border:1px solid #fff8;background:none;padding:8px 15px;border-radius:999px;cursor:pointer;text-decoration:none;color:inherit;display:inline-block;font-size:14px}
 .btn:hover{border-color:#fff;color:inherit}.btn.go{background:var(--wall);border-color:var(--wall);color:#151204;font-weight:600}
 .btn.go:hover{background:#f3d869;color:#151204}.btn.sm{padding:5px 11px;font-size:13px}.btn.on{border-color:var(--wall);color:var(--wall)}
 .btn[disabled]{opacity:.4;cursor:default}
-textarea,input[type=text],select{width:100%;background:#000;border:1px solid #3a3a41;border-radius:8px;padding:10px 12px;font-size:16px}
+textarea,input[type=text],select{width:100%;background:#000;border:1px solid var(--edge);border-radius:8px;padding:10px 12px;font-size:16px}
 textarea{min-height:84px;resize:vertical;font-family:var(--serif);font-size:18px;line-height:1.35}
 .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}.row>div{flex:1;min-width:130px}
 
@@ -165,8 +169,9 @@ textarea{min-height:84px;resize:vertical;font-family:var(--serif);font-size:18px
 #dtags{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0 0}
 #dtags button{background:none;border:0;padding:0;cursor:pointer;font:12px/1.5 var(--mono);color:var(--wall);overflow-wrap:anywhere;text-align:left}
 #dtags button:hover{color:#fff}
-#dtext{margin:8px 0 0;font:15px/1.45 var(--serif);color:#cfcbc2;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+#dtext{margin:8px 0 0;font:15px/1.45 var(--serif);color:#cfcbc2;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #dtext.open{display:block}
+#dmore{margin-top:4px}
 details.fold{margin:8px 0 0}details.fold>summary{cursor:pointer;color:var(--dim);font-size:13px}
 #dcomb{margin:6px 0 0;padding:0;list-style:none}
 #dcomb li{padding:6px 0 6px 10px;border-left:2px solid var(--line);font-size:14px;line-height:1.4;color:#c9c5bb;overflow-wrap:anywhere;margin-bottom:6px}
@@ -183,8 +188,8 @@ h3{font:600 11px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;c
 .thread li .tx{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 .thread li.kid{margin-left:18px}.thread li.air{border-left-style:dashed;cursor:default;color:#c9c5bb}
 .voice{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#0e0e11;font-size:14px;line-height:1.4}
-.voice div{padding:3px 0;cursor:pointer;color:#a9a59b}.voice div:hover{color:#fff}
-.voice div.now{color:var(--ink);border-left:2px solid var(--wall);padding-left:8px;margin-left:-10px}
+.voice button{display:block;width:100%;background:none;border:0;text-align:left;font:inherit;padding:3px 0;cursor:pointer;color:#a9a59b}.voice button:hover{color:#fff}
+.voice button.now{color:var(--ink);border-left:2px solid var(--wall);padding-left:8px;margin-left:-10px;width:calc(100% + 10px)}
 .voice .meta{margin-right:8px}.voice .chat{color:var(--hood)}
 #ocr{font-size:13px;color:var(--dim);margin-top:6px;overflow-wrap:anywhere}
 
@@ -389,7 +394,7 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .about>details>summary:hover{color:var(--wall)}
 .about>details>div{padding:0 0 18px}
 footer{color:var(--dim);font-size:13px;padding:30px 16px 40px;text-align:center}
-dialog{background:#141418;color:var(--ink);border:1px solid #3a3a41;border-radius:14px;max-width:min(560px,92vw);padding:22px}dialog::backdrop{background:#000b}
+dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-radius:14px;max-width:min(560px,92vw);padding:22px}dialog::backdrop{background:#000b}
 
 /* wide screens */
 @media (min-width:900px){
@@ -487,10 +492,12 @@ body.mini .ov,body.exhibit .ov{display:none}
   footer a{display:inline-block;padding:9px 5px}
   #idtag{padding:10px 8px}
   #brand{padding:15px 0}
+  .ob{width:44px;height:44px}.ob.tx{height:44px}#ftools .cb{width:44px;height:44px}.btn.go{min-height:44px}input[type=range]{height:44px}
 }
 </style>
 </head>
 <body class="v-stage">
+<a id="skip" href="#app">Skip to the work</a>
 <noscript><div style="max-width:640px;margin:8vh auto;padding:0 20px">
   <h1 style="font:400 28px/1.2 Georgia,serif">AIgorithmic Butterfly Effect</h1>
   <p>A slow, open artwork, 2021 to 2046. Humans and AI agents answer lines, pictures and minutes of recordings with one small mark. This page needs its script to show the work. Without it, everything that is always open is plain text:</p>
@@ -537,12 +544,13 @@ body.mini .ov,body.exhibit .ov{display:none}
 <header id="bar">
   <a id="brand" href="#" title="The stage. Already there? Then this lets you draw on it."><b>AI</b>gorithmic Butterfly Effect</a>
   <nav id="tabs" aria-label="Parts of the work">
-    <button data-v="stage" class="on">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
+    <button data-v="stage" class="on" aria-current="page">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
   </nav>
 </header>
 
 <div id="app">
-  <div id="player"><div id="pin">
+  <h1 class="vh">AIgorithmic Butterfly Effect</h1>
+  <div id="player" role="region" aria-label="The stage"><div id="pin">
     <div id="stage">
       <canvas id="field" aria-label="The stage: a colour field, picture or frame from the work"></canvas>
       <video id="clip" playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload noplaybackrate nofullscreen noremoteplayback" hidden></video>
@@ -580,11 +588,13 @@ body.mini .ov,body.exhibit .ov{display:none}
   </div></div>
 
   <aside id="side" aria-label="Your mark, and the marks so far">
+    <h2 class="vh" id="sideh" tabindex="-1">The stage: your mark, and the marks so far</h2>
     <div id="docbox" hidden>
       <div class="meta">In the 2021 document</div>
       <button id="dhead" title="Browse this section of the document"></button>
       <div id="dtags"></div>
-      <p id="dtext" title="Show all of it"></p>
+      <p id="dtext"></p>
+      <button type="button" class="lk" id="dmore" aria-expanded="false" aria-controls="dtext">Show all of it</button>
       <details class="fold" id="dcom"><summary></summary><ul id="dcomb"></ul></details>
     </div>
     <form id="f" autocomplete="off">
@@ -631,7 +641,7 @@ body.mini .ov,body.exhibit .ov{display:none}
 
     <section id="v-themes">
       <div id="thome">
-        <h2>What do you want to hear about?</h2>
+        <h2 tabindex="-1">What do you want to hear about?</h2>
         <p class="lead">The calls went wherever the people in them went. A machine sorted what it read and heard under these subjects. It mishears, so a theme is a door and not a verdict.</p>
         <div class="tts" id="tsubj"></div>
         <p class="trow"><button class="btn sm" id="tany">Take me somewhere</button><button class="btn sm" id="tnew">Start a theme of your own</button></p>
@@ -646,7 +656,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <div id="topen" hidden>
         <p style="margin:0 0 4px"><button class="btn sm" id="tback">← All themes</button></p>
         <header class="thero" id="thero"><span class="ph" id="tcov"></span><div>
-          <h2 id="ttitle"></h2>
+          <h2 id="ttitle" tabindex="-1"></h2>
           <p id="tnote" class="lead"></p>
           <p class="trow"><button class="btn go" id="tplay">Play</button><button class="btn" id="tanswer">Leave your mark on it</button></p>
         </div></header>
@@ -662,6 +672,7 @@ body.mini .ov,body.exhibit .ov{display:none}
     </section>
 
     <section id="v-people">
+      <h2>Who was in the calls</h2>
       <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all. Is one of them you? Tap your name.</p>
       <div class="pgrid" id="plist"></div>
       <div id="popen" hidden></div>
@@ -734,11 +745,11 @@ body.mini .ov,body.exhibit .ov{display:none}
 <footer>Begun 14 November 2021 by Rana, reopened 14 November 2026. Form found with Claude. Marks are CC0.<br><a href="feed.xml">Feed</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">source</a></footer>
 
 <nav id="tabbar" aria-label="Parts of the work">
-  <button data-v="stage" class="on">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
+  <button data-v="stage" class="on" aria-current="page">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
 </nav>
 
-<dialog id="lvd">
-  <h2 style="font-size:24px">Your marks are not saved yet</h2>
+<dialog id="lvd" aria-labelledby="lvh">
+  <h2 style="font-size:24px" id="lvh">Your marks are not saved yet</h2>
   <p id="lvtxt"></p>
   <p style="margin-top:16px"><button class="btn go" id="lvsave">Save and close site</button> <button class="btn" id="lvback">Go back to site</button> <span class="meta" id="lvmsg" aria-live="polite"></span></p>
 </dialog>
@@ -747,11 +758,12 @@ body.mini .ov,body.exhibit .ov{display:none}
   <div id="sdb"></div>
   <p style="margin-top:16px"><button class="btn" id="sdx">Close</button></p>
 </dialog>
-<dialog id="rmd">
-  <h2 style="font-size:24px">Ask for removal</h2>
+<dialog id="rmd" aria-labelledby="rmh">
+  <h2 style="font-size:24px" id="rmh">Ask for removal</h2>
   <p>Hide <b id="rmid"></b> at the next sweep (usually within the hour), until a steward has looked. You do not have to explain.</p>
+  <label for="rmwhy" class="meta" style="display:block;margin:0 0 4px">Why</label>
   <select id="rmwhy"><option>i am in it</option><option>someone i know is in it</option><option>private information</option><option>hurtful</option><option>copyright</option><option>other</option></select>
-  <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg"></span></p>
+  <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg" aria-live="polite"></span></p>
 </dialog>
 
 <script>
@@ -837,9 +849,11 @@ async function docBox(mid,tok){const box=$('#docbox'),n=mid?+mid.slice(1):0;if(!
   const title=c.s?c.s[1]:'',prose=c.t.replace(TAGRX,'').replace(/[^A-Za-z]/g,'').length>2,tags=c.tags.filter(g=>!title.includes(g));
   $('#dhead').textContent=title;$('#dhead').hidden=!title;$('#dhead').dataset.n=c.s?c.s[2]:n;
   $('#dtags').innerHTML=tags.slice(0,14).map(g=>'<button type="button" data-tag="'+esc(g)+'">'+esc(g)+'</button>').join('');$('#dtags').hidden=!tags.length;
-  $('#dtext').textContent=prose?c.t:'';$('#dtext').hidden=!prose;$('#dtext').classList.toggle('open',dtextOpen);
+  $('#dtext').textContent=prose?c.t:'';$('#dtext').hidden=!prose;$('#dtext').classList.toggle('open',dtextOpen);dmoreSync();
   $('#dcom').hidden=!c.com.length;$('#dcom').open=dcomOpen;$('#dcom summary').textContent=c.com.length+(c.com.length==1?' comment':' comments')+' from 2021';
   $('#dcomb').innerHTML=c.com.map(t=>'<li>'+esc(t)+'</li>').join('');box.hidden=false}
+/* where the second hearing heard Hindi or Bengali, written in the English alphabet: a screen reader is told so */
+const segLang=(v,t)=>{for(const g of(v&&v.lang)||[])if(t>=g[0]-.05&&t<g[1])return g[2]=='hi'?'hi-Latn':g[2]=='bn'?'bn-Latn':'';return''};
 async function voice(rid){if(!voiceCache[rid])voiceCache[rid]=await jq(MEDIA+'r/'+rid+'/voice.json',{segs:[],chat:[],heard_hours:[]});return voiceCache[rid]}
 const frameN=(rid,min)=>{const r=recById[rid],step=r?r.step:60;return pad(Math.floor(min*60/step),5)};
 const frameUrl=(rid,min,small)=>MEDIA+'r/'+rid+'/'+(small&&(!recById[rid]||recById[rid].small!==false)?'s':'f')+'/'+frameN(rid,min)+'.webp';
@@ -921,14 +935,14 @@ const markString=L=>L.map(s=>s.map(p=>p.join(',')).join(' ')).join(';');
 /* captions arrive word by word, the way they did */
 let timer,tick={text:'',small:false,ws:[]};
 function say(text,small,hold){
-  clearInterval(timer);const el=$('#line');el.innerHTML='';el.classList.toggle('sm',!!small);tick={text:String(text||''),small:!!small,ws:[]};if(!text)return;
+  clearInterval(timer);const el=$('#line');el.removeAttribute('lang');el.innerHTML='';el.classList.toggle('sm',!!small);tick={text:String(text||''),small:!!small,ws:[]};if(!text)return;
   const ws=tick.ws=String(text).split(' ').filter(Boolean).slice(0,90).map(t=>{const s=document.createElement('span');s.className='w';s.textContent=t+' ';el.appendChild(s);return s});
   if(hold)return; /* the recorded sound lights the words as they are said */
   if(reduced||ws.length>60){ws.forEach(s=>s.classList.add('on'));return}
   let i=0;const stepW=()=>{if(i<ws.length)ws[i++].classList.add('on');else clearInterval(timer)};
   stepW();timer=setInterval(stepW,110);
 }
-function sayNow(text){clearInterval(timer);const el=$('#line');el.classList.remove('sm');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text;tick={text:'',small:false,ws:[]}}
+function sayNow(text,lang){clearInterval(timer);const el=$('#line');el.classList.remove('sm');if(lang)el.lang=lang;else el.removeAttribute('lang');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text;tick={text:'',small:false,ws:[]}}
 const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(n.model?', '+n.model.toUpperCase():'')+')'+(n.as&&P[n.as]?' · ✓ '+P[n.as].name.toUpperCase()+', WHO WAS THERE':'')+(n.name_unconfirmed?' · NAME NOT CONFIRMED':'');
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
@@ -1030,7 +1044,7 @@ async function show0(id,o){
   const list=(head&&!solo?[[head,head.id==id?'cur':'']]:[]).concat(chain.map(m=>[m,m.id===id?'cur':''])).concat((kids[id]||[]).map(k=>[N[k],kc]));
   const air=pending().filter(p=>p.hears==id),nk=(kids[id]||[]).length+air.length;
   $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
-  $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0"><span class="meta"></span><span class="tx"></span></li>').join('')
+  $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></li>').join('')
     +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands at the next sweep</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
@@ -1047,7 +1061,7 @@ async function show0(id,o){
   else if(isMin(id)){const rid=id.slice(0,4),m=+id.slice(5),r=recById[rid];if(r&&m+1<r.min)loadImg(RAW?frameUrl(rid,m+1):frameUrl(rid,m+1,1))}
 }
 $('#thread').addEventListener('click',e=>{const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)});
-$('#thread').addEventListener('keydown',e=>{if(e.key=='Enter'){const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)}});
+$('#thread').addEventListener('keydown',e=>{if(e.key=='Enter'||e.key==' '){const li=e.target.closest('li[data-id]');if(li){e.preventDefault();go(li.dataset.id)}}});
 function pick(){const r=Math.random();
   if(recs&&recs.length&&r<.3){const calls=recs.filter(x=>x.kind=='call'&&x.lines),c=calls[Math.floor(Math.random()*calls.length)];if(c){const v=voiceCache[c.id];const m=v&&v.segs.length?Math.floor(v.segs[Math.floor(Math.random()*v.segs.length)][0]/60):Math.floor(Math.random()*Math.min(c.min,60*(c.heard||[0]).length||c.min));return c.id+'.'+pad(m,4)}}
   if(IMGS.length&&r<.75)return'm'+pad(IMGS[Math.floor(Math.random()*IMGS.length)],5);
@@ -1192,7 +1206,7 @@ async function startRec(sec,bound){
     if(!scrubbing){$('#scrub').value=Math.floor(playPos);$('#stime').textContent=stime(playPos,r)}
     if(audioLive||vidLive){let s=null;for(let i=v._i||0;i<v.segs.length;i++){const g=v.segs[i];if(g[0]>playPos)break;if(g[1]>=playPos-1.5){s=g;v._i=i;break}}
       if(v._i&&v.segs[v._i]&&v.segs[v._i][0]>playPos+30)v._i=0;
-      if(s&&s!=lastSeg){lastSeg=s;sayNow(s[2]);const el=$('#voice [data-s="'+s[0]+'"]');if(el){$$('#voice .now').forEach(n=>n.classList.remove('now'));el.classList.add('now');$('#voice').scrollTop=el.offsetTop-$('#voice').offsetTop-70}}}
+      if(s&&s!=lastSeg){lastSeg=s;sayNow(s[2],segLang(v,s[0]));const el=$('#voice [data-s="'+s[0]+'"]');if(el){$$('#voice .now').forEach(n=>n.classList.remove('now'));el.classList.add('now');$('#voice').scrollTop=el.offsetTop-$('#voice').offsetTop-70}}}
   },250)}
 let scrubbing=false;
 $('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=stime(+$('#scrub').value,ownClip()&&clip.duration?{sec:clip.duration}:r)});
@@ -1210,12 +1224,12 @@ async function syncRec(id,tok){
   const v=await voice(rid);if(tok!=showing)return;
   const a=(min-2)*60,b=(min+4)*60,rows=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>[s[0],'',s[2]]).concat((v.chat||[]).filter(c=>c[0]>=a&&c[0]<b).map(c=>[c[0],c[1],c[2]])).sort((p,q)=>p[0]-q[0]);
   $('#recbox').hidden=r.kind!='call'&&!rows.length;
-  $('#voice').innerHTML=rows.map(s=>'<div data-s="'+esc(s[0])+'" class="'+(Math.floor(s[0]/60)==min?'now':'')+(s[1]?' chat':'')+'"><span class="meta">'+clock(s[0],r.sec>=3600)+'</span>'+(s[1]?'<b>'+esc(s[1])+' wrote:</b> ':'')+esc(s[2])+'</div>').join('')||'<span class="meta">'+((v.heard_hours||[]).includes(Math.floor(min/60))?'Nothing was said around this minute.':'Not listened to yet.')+'</span>';
+  $('#voice').innerHTML=rows.map(s=>{const lg=s[1]?'':segLang(v,s[0]);return'<button type="button" data-s="'+esc(s[0])+'"'+(lg?' lang="'+lg+'"':'')+' class="'+(Math.floor(s[0]/60)==min?'now':'')+(s[1]?' chat':'')+'"><span class="meta" lang="en">'+clock(s[0],r.sec>=3600)+'</span>'+(s[1]?'<b>'+esc(s[1])+' wrote:</b> ':'')+esc(s[2])+'</button>'}).join('')||'<span class="meta">'+((v.heard_hours||[]).includes(Math.floor(min/60))?'Nothing was said around this minute.':'Not listened to yet.')+'</span>';
   const n=$('#voice .now');if(n)$('#voice').scrollTop=n.offsetTop-$('#voice').offsetTop-60;
   const snd=(r.aud||[]).includes(Math.floor(min/60));
   $('#recnote').textContent=r.kind=='call'?'Words by a small speech model, 2026. It mishears.':'';
   if(r.kind=='call'&&RAW)iaUrl(r).then(u=>{if(tok==showing&&!u)$('#recnote').textContent+=' One frame a minute until the full video of this call has been uploaded.'})}
-$('#voice').onclick=async e=>{const d=e.target.closest('div[data-s]');if(!d)return;await seek(+d.dataset.s);if(!playing&&RAW&&!drawing)startPlay()};
+$('#voice').onclick=async e=>{const d=e.target.closest('[data-s]');if(!d)return;await seek(+d.dataset.s);if(!playing&&RAW&&!drawing)startPlay()};
 
 /* the ruler: where you are in the whole work */
 const ruler=$('#ruler'),rin=$('#rin'),rc=$('#rcv'),rx=rc.getContext('2d');let RW=0,RH=0,atlasCols=null;
@@ -1232,16 +1246,16 @@ function minAtX(x){if(!recs||!recs.length)return null;const ms=T0+(x-RG.pad)/(RW
   if(!best)return null;const m=clamp(Math.floor((ms-best.t0)/6e4),0,best.min-1);return best.id+'.'+pad(m,4)}
 function drawRuler(){
   const b=rin.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1),big=ruler.classList.contains('big');if(!b.width)return;RW=b.width;RH=b.height;rc.width=Math.round(RW*d);rc.height=Math.round(RH*d);rx.setTransform(d,0,0,d,0,0);
-  RG.ay=big?17:13;RG.ah=big?40:9;RG.by=big?68:26;RG.bh=big?36:9; /* under the hand it grows, so that one picture or one hour can be hit */
-  rx.clearRect(0,0,RW,RH);rx.font='9px ui-monospace,Menlo,monospace';rx.textBaseline='top';rx.fillStyle='#8f8b83';
-  rx.fillText('PICTURES',RG.pad,2);
+  RG.ay=big?17:14;RG.ah=big?40:8;RG.by=big?70:24;RG.bh=big?36:8; /* under the hand it grows, so that one picture or one hour can be hit */
+  rx.clearRect(0,0,RW,RH);rx.font='11px ui-monospace,Menlo,monospace';rx.textBaseline='top';rx.fillStyle='#8f8b83';
+  rx.fillText('PICTURES',RG.pad,1);if(big)rx.fillText('CALLS',RG.pad,RG.by-13);
   const wd=wDoc();
   if(atlasCols){for(let x=0;x<wd;x++){const n=clamp(Math.floor(x/wd*DOCN),0,DOCN-1),c=atlasCols[n],k=IMG.has(n+1)?1:.28;rx.fillStyle='rgb('+Math.round(c[0]*k)+','+Math.round(c[1]*k)+','+Math.round(c[2]*k)+')';rx.fillRect(RG.pad+x,RG.ay,1.05,RG.ah)}}
   else{rx.fillStyle='#2a2a30';rx.fillRect(RG.pad,RG.ay,wd,RG.ah)}
   if(OTHERS.length){rx.fillStyle='#3d3d46';rx.fillRect(RG.pad+wd+4,RG.ay,RW-2*RG.pad-wd-4,RG.ah)}
   rx.fillStyle='#1a1a1e';rx.fillRect(RG.pad,RG.by,RW-2*RG.pad,RG.bh);
   for(let t=T0+36e5,i=0;t<=T1;t+=day,i++){const x=xTime(t-36e5);rx.fillStyle=i%7==0?'#55555e':'#2c2c33';rx.fillRect(x,RG.by,1,RG.bh+(i%7==0?4:0));
-    if(i%7==0&&RW>520||i%14==0){const dd=new Date(t);rx.fillStyle='#8f8b83';rx.fillText(dd.getUTCDate()+' '+MON[dd.getUTCMonth()],x+3,RG.by+RG.bh+2)}}
+    if(i%7==0&&RW>520||i%14==0){const dd=new Date(t);rx.fillStyle='#8f8b83';rx.fillText((i==0&&!big?'CALLS · ':'')+dd.getUTCDate()+' '+MON[dd.getUTCMonth()],x+3,RG.by+RG.bh+1)}}
   if(recs)for(const r of recs){if(!r.t0)continue;const x=xTime(r.t0),w=Math.max(1.5,r.sec*1e3/(T1-T0)*(RW-2*RG.pad));rx.fillStyle=r.kind=='call'?'#e3c34d':r.kind=='story'?'#6dbb72':'#fff';rx.globalAlpha=r.kind=='call'?.85:.9;rx.fillRect(x,r.kind=='call'?RG.by:RG.by+RG.bh-4,w,r.kind=='call'?RG.bh:4);rx.globalAlpha=1}
 
   /* where the open theme lives */
@@ -1296,15 +1310,22 @@ ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){nav(-1);e.preventDef
 const VIEWS=['stage','browse','themes','people','about'];let view='stage',openTheme='',openPerson='';
 /* the stage keeps no address of its own, so that every visit opens somewhere else; the id in the corner copies a link to one thing */
 function hashFor(){const sub=view=='themes'?openTheme:view=='people'?openPerson:'';if(view=='browse'&&(B.kind=='marks'||B.want=='marks'))return'#marks';return view=='stage'?location.pathname+location.search:'#'+view+(sub?'/'+sub:cur&&view=='browse'?'/'+cur:'')}
+const TITLE0=document.title,WORK='AIgorithmic Butterfly Effect';
+/* the title of the tab says where one is; the bare address keeps the long title */
+function setTitle(){const p=view=='themes'?[openTheme&&T[openTheme]?T[openTheme].title:'','Themes']:view=='people'?[openPerson&&P[openPerson]?P[openPerson].name:'','People']:view=='browse'?['Browse']:view=='about'?['About']:[];document.title=p.length?p.filter(Boolean).concat(WORK).join(' · '):TITLE0}
+/* after a change of view the keyboard carries on from the new place: its heading takes the focus (and shows no ring) */
+function focusHead(tries){const el=view=='stage'?$('#bplay'):view=='themes'&&openTheme?$('#ttitle'):$('#v-'+view+' h2');
+  if(el&&el.offsetParent){if(!el.hasAttribute('tabindex')&&el.tagName=='H2')el.tabIndex=-1;try{el.focus({preventScroll:true})}catch(e){}}else if((tries||0)<40)setTimeout(()=>focusHead((tries||0)+1),60)}
 function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view;view=v;
   document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
-  $$('#tabs button,#tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));
+  $$('#tabs button,#tabbar button').forEach(b=>{const on=b.dataset.v==v;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});setTitle();
   if(v=='browse')bInit();if(v=='themes')tInit();if(v=='people')pInit();if(v=='about'){drawFly()}
   syncDock();if(was!=v){setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
   requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
 /* pressing "stage" while already on it is not nothing: it turns drawing on (or off again) */
 function tabTo(v){if(v=='stage'&&view=='stage'&&!mini&&!EX){setDraw(!drawing);return}setView(v)}
-$$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>tabTo(b.dataset.v));
+$$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>{const was=view;tabTo(b.dataset.v);if(view!=was)focusHead()});
+$('#skip').onclick=e=>{e.preventDefault();focusHead()};
 $('#brand').onclick=e=>{e.preventDefault();tabTo('stage')};
 $('#banswer').onclick=()=>{setView('stage');const t=$('#t');if(!wide.matches)t.scrollIntoView({block:'center'});setTimeout(()=>t.focus({preventScroll:wide.matches}),60)};
 /* away from the wide stage view the stage is docked on top: it shrinks to a thumbnail when you scroll, and a tap brings it back */
@@ -1345,6 +1366,15 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 wide.addEventListener('change',syncDock);
 $('#t').addEventListener('focus',()=>{if(!wide.matches)setMini(true,true)});
 
+/* a strip of frames and the calendar are one stop for the Tab key each; the arrow keys move inside them */
+{const groupOf=b=>b.classList.contains('fr')?b.closest('.fs'):b.classList.contains('bd')?b.closest('#bcal'):null,items=g=>[...g.querySelectorAll(g.id=='bcal'?'.bd:not([disabled])':'.fr')];
+  const rove=()=>{for(const g of $$('#bbody .fs,#bbody #bcal')){const L=items(g);if(!L.length)continue;const keep=L.find(b=>b.tabIndex==0&&b.dataset.rv)||L.find(b=>b.classList.contains('on')||b.classList.contains('cur'))||L[0];for(const b of L){b.tabIndex=b==keep?0:-1;b.dataset.rv=1}}};
+  let rt=0;new MutationObserver(()=>{clearTimeout(rt);rt=setTimeout(rove,80)}).observe($('#bbody'),{childList:true,subtree:true});
+  $('#bbody').addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('.fr,.bd'),g=b&&groupOf(b);if(!g)return;const L=items(g),i=L.indexOf(b),cal=g.id=='bcal';
+    let j=e.key=='ArrowRight'?i+1:e.key=='ArrowLeft'?i-1:e.key=='Home'?0:e.key=='End'?L.length-1:-2;
+    if(cal&&(e.key=='ArrowDown'||e.key=='ArrowUp')){const all=[...g.querySelectorAll('.bd')],k=all.indexOf(b)+(e.key=='ArrowDown'?7:-7);for(let q=k;q>=0&&q<all.length;q+=e.key=='ArrowDown'?7:-7)if(!all[q].disabled){j=L.indexOf(all[q]);break}}
+    if(j<0||j>=L.length||j==i)return;e.preventDefault();for(const x of L)x.tabIndex=-1;L[j].tabIndex=0;L[j].focus()})}
+
 /* tiles */
 function tile(id,n){
   if(gone[id]||gone[id.slice(0,4)])return'';
@@ -1381,12 +1411,12 @@ const idMs=id=>{if(isImg(id))return shotMs(+id.slice(1));if(isRec(id)){const r=r
 /* pictures in rows of one height, each as wide as it is */
 function jTile(n,list){const id=mid5(n),m=(imgIdx&&imgIdx[n])||[],ar=clamp((m[0]||4)/(m[1]||3),.5,2.4);if(gone[id])return'';
   return'<button class="jt ph" data-id="'+id+'"'+(list?' data-list="'+esc(list)+'"':'')+' style="flex-grow:'+Math.round(ar*100)+';flex-basis:'+Math.round(ar*150)+'px;aspect-ratio:'+ar.toFixed(3)+'">'+pic(id,ar>1.2)+'<span class="tag">'+id+'</span></button>'}
-$('#bkinds').innerHTML=KINDS.map(([k,g,l])=>'<button class="btn sm" data-k="'+k+'" data-g="'+g+'">'+l+'</button>').join('');
+$('#bkinds').innerHTML=KINDS.map(([k,g,l])=>'<button class="btn sm" aria-pressed="false" data-k="'+k+'" data-g="'+g+'">'+l+'</button>').join('');
 $('#bkinds').onclick=e=>{const b=e.target.closest('button');if(b){bSet(b.dataset.k,b.dataset.g);if(scrollY>dockTh())scrollTo(0,Math.max(0,$('#views').getBoundingClientRect().top+scrollY-90))}};
 async function bInit(){if(B.want){const k=B.want;B.want='';B.ready=true;return bSet(k,'')}if(B.ready){if(B.kind=='pics'&&B.grp!='#'&&cur&&isImg(cur))bJump(+cur.slice(1));bWin();return}B.ready=true;await bSet('days','')}
 let bTok=0;
 async function bSet(kind,grp,list,title){
-  const tok=++bTok;B.kind=kind;B.grp=grp;B.title=title||'';B.secs=kind=='pics'&&!list&&(grp==''||grp=='d');$$('#bkinds button').forEach(b=>b.classList.toggle('on',b.dataset.k==kind&&b.dataset.g==grp));const body=$('#bbody');$('#bearlier').hidden=true;$('#rwin').hidden=true;$('#bhead').textContent='';
+  const tok=++bTok;B.kind=kind;B.grp=grp;B.title=title||'';B.secs=kind=='pics'&&!list&&(grp==''||grp=='d');$$('#bkinds button').forEach(b=>{const on=b.dataset.k==kind&&b.dataset.g==grp;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')});const body=$('#bbody');$('#bearlier').hidden=true;$('#rwin').hidden=true;$('#bhead').textContent='';
   if(kind=='days'){B.list=[];await bDays();if(tok!=bTok)return}
   else if(kind=='pics'){const ix=await needImgs();if(B.secs)await needDoc();if(tok!=bTok)return;B.list=list||IMGS.filter(n=>!grp||(ix[n]||[])[2]==grp);
     if(!list&&/^[psx]$/.test(grp)){B.a=0;B.b=B.list.length;body.innerHTML=khead(kind,grp)+bByDate(ix);bWin()}
@@ -1433,7 +1463,8 @@ function bJump(n,scroll){let i=B.list.indexOf(n);if(i<0)i=B.list.findIndex(x=>x>
 /* from the side panel: the section of the document a picture sits in, or every picture under one of its hashtags */
 $('#dhead').onclick=async()=>{const n=+$('#dhead').dataset.n;if(!n)return;setView('browse');await bSet('pics','d');bJump(n,1);dockSync()};
 $('#dtags').onclick=async e=>{const b=e.target.closest('[data-tag]');if(!b)return;const tag=b.dataset.tag;await needDoc();const L=tagPics(tag);if(!L.length)return;setView('browse');await bSet('pics','#',L,tag);ctx={kind:'pics'}};
-$('#dtext').onclick=()=>{dtextOpen=$('#dtext').classList.toggle('open');store.set('abe-dtext',dtextOpen)};
+function dmoreSync(){const p=$('#dtext'),b=$('#dmore');b.hidden=p.hidden||(!dtextOpen&&p.scrollHeight<=p.clientHeight+2);b.textContent=dtextOpen?'Show less':'Show all of it';b.setAttribute('aria-expanded',dtextOpen?'true':'false')}
+$('#dmore').onclick=()=>{dtextOpen=$('#dtext').classList.toggle('open');store.set('abe-dtext',dtextOpen);dmoreSync()};
 /* what is unfolded in the side panel stays unfolded from one thing to the next */
 $('#ocrbox').addEventListener('toggle',()=>{if($('#ocrbox').hidden)return;ocrOpen=$('#ocrbox').open;store.set('abe-ocr',ocrOpen)});
 $('#dcom').addEventListener('toggle',()=>{if($('#dcom').hidden||$('#docbox').hidden)return;dcomOpen=$('#dcom').open;store.set('abe-dcom',dcomOpen)});
@@ -1527,7 +1558,7 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
       for(const s of x.segs){if(s.b<=m0||s.a>=m1)continue;const r=s.r,v=await voice(r.id);if(tok!=bDayTok)return;
         const a0=s.off+(Math.max(m0,s.a)-s.a)*60,b0=s.off+(Math.min(m1,s.b)-s.a)*60;
         for(const g of v.segs){if(g[0]<a0||g[0]>=b0)continue;const t=g[2]||'',L=t.length;if(L<40||L>210||gone[r.id+'.'+pad(Math.floor(g[0]/60),4)])continue;const w=t.toLowerCase().split(/\s+/),sc=L*Math.pow(new Set(w).size/w.length,3);if(sc>bs){bs=sc;best=g;br=r}}}
-      if(best){b.dataset.id=br.id+'.'+pad(Math.floor(best[0]/60),4);b.querySelector('q').textContent=best[2];b.querySelector('.note').textContent=prague(br.t0,best[0]).slice(11)+', as a machine heard it in 2026';b.hidden=false}}
+      if(best){b.dataset.id=br.id+'.'+pad(Math.floor(best[0]/60),4);{const q=b.querySelector('q'),lg=segLang(await voice(br.id),best[0]);q.textContent=best[2];if(lg)q.lang=lg}b.querySelector('.note').textContent=prague(br.t0,best[0]).slice(11)+', as a machine heard it in 2026';b.hidden=false}}
     markTiles()})()}
 /* the band under the hand: a line with the time, and what is there */
 function bandBind(x,d0){const band=$('#bband'),curEl=$('#bcur');if(!band)return;let at=-1;
@@ -1595,7 +1626,7 @@ function tInit(){if(tReady)return tReady;return tReady=(async()=>{await needRecs
   const care=subj.filter(t=>T_QUIET.has(t.id));$('#tcare').innerHTML=care.map(t=>tTile(t,'')).join('');$('#tcareh').hidden=$('#tcaren').hidden=!care.length;
   $('#tarch').innerHTML=arch.map(t=>tTile(t,'')).join('');$('#tarchh').hidden=!arch.length;$('#tmine').innerHTML=mine.map(t=>tTile(t,'')).join('');$('#tmineh').hidden=!mine.length;
   if(feat)jq('themes/'+feat.id+'.json',{}).then(j=>{quotes[feat.id]=j.quotes||{};const s=tQuote(quotes[feat.id]),el=$('#tsubj .tq');if(s&&el){el.textContent=s;el.hidden=false}})})()}
-function closeT(){openTheme='';$('#topen').hidden=true;$('#thome').hidden=false;drawRuler();if(!EX)history.replaceState(null,'',hashFor());scrollTo(0,0)}
+function closeT(){openTheme='';$('#topen').hidden=true;$('#thome').hidden=false;setTitle();drawRuler();if(!EX)history.replaceState(null,'',hashFor());scrollTo(0,0)}
 $('#tback').onclick=closeT;
 $('#tany').onclick=()=>{const L=themesJ.themes.filter(t=>!T_QUIET.has(t.id)&&t.items&&t.items.length);if(!L.length)return;openT(L[Math.floor(Math.random()*L.length)].id).then(()=>$('#tplay').click())};
 $('#tnew').onclick=()=>{$('#banswer').click();setTimeout(()=>{const f=$('#th');f.scrollIntoView({block:'center'});f.focus({preventScroll:true})},140)};
@@ -1609,13 +1640,14 @@ function tBuild(t,q){const out=[];let g=null;
   const dayOf=g=>{const d=g.k=='i'&&g.n>DOCN&&imgIdx&&imgIdx[g.n]?imgIdx[g.n][4]||'':'';return/^\d{4}-\d\d-\d\d$/.test(d)?Date.parse(d+'T11:00:00Z'):0};
   for(const g of out){g.ms=idMs(g.ids[0]);if(!g.ms){g.ms=dayOf(g);g.nt=!!g.ms}let best='';for(const i of g.ids){const s=q[i]||(N[i]&&N[i].text)||'';if(s.length>best.length)best=s}g.q=best}
   return{lines:out.filter(g=>g.k=='l'),dated:out.filter(g=>g.k!='l'&&g.ms).sort((a,b)=>a.ms-b.ms),und:out.filter(g=>g.k!='l'&&!g.ms)}}
-function moHTML(g,lead){const id=g.ids[0],r=g.k=='r'?recById[g.rid]:null,m=g.k=='i'?(imgIdx&&imgIdx[+id.slice(1)])||[]:[],n=g.ids.length;
+function moHTML(g,lead){const lg=(l=>l=='hi'||l=='bn'?l:'')((qlang[openTheme]||{})[g.ids.find(i=>(quotes[openTheme]||{})[i]==g.q)||g.ids[0]]),id=g.ids[0],r=g.k=='r'?recById[g.rid]:null,m=g.k=='i'?(imgIdx&&imgIdx[+id.slice(1)])||[]:[],n=g.ids.length;
   const what=g.k=='i'?(n>1?n+' screenshots of this moment':m[2]=='p'?'a photograph':m[2]=='x'?'made in 2026 from a recording that broke':'a screenshot'):r&&r.kind=='story'?(r.screen?'a screen recording':'a phone video'):n>1?n+' minutes of the call':'a minute of the call';
   const sec=g.k=='i'&&!g.ms&&docJ?(s=>s>=0?'under “'+docJ.sections[s][1]+'” in the document':'')(secOf(+id.slice(1))):'';
   if(!g.q)return g.k=='i'?jTile(+id.slice(1)):(a=>'<button class="jt ph" data-id="'+esc(id)+'" style="flex-grow:'+Math.round(a*100)+';flex-basis:'+Math.round(a*190)+'px;aspect-ratio:'+a+'">'+pic(id,a>1)+'<span class="tag">'+esc(id)+'</span></button>')(r&&r.kind=='story'&&!r.screen?.5625:1.6);
-  return'<button class="'+(lead?'mo'+(tFlip++%2?' fl':''):'mc')+'" data-id="'+esc(id)+'"><span class="ph">'+pic(id,lead)+'</span><span class="mx"><q>'+esc(g.q)+'</q><span class="note">'+esc([g.ms&&!g.nt?prague(g.ms).slice(11):'',what,sec].filter(Boolean).join(', '))+'</span></span></button>'}
+  return'<button class="'+(lead?'mo'+(tFlip++%2?' fl':''):'mc')+'" data-id="'+esc(id)+'"><span class="ph">'+pic(id,lead)+'</span><span class="mx"><q'+(lg?' lang="'+lg+'-Latn"':'')+'>'+esc(g.q)+'</q><span class="note">'+esc([g.ms&&!g.nt?prague(g.ms).slice(11):'',what,sec].filter(Boolean).join(', '))+'</span></span></button>'}
+const qlang={};
 async function openT(id,o){o=o||{};const t=T[id];if(!t)return;openTheme=id;await tInit();await Promise.all([needRecs(),needImgs(),needSound(),needDoc()]);
-  if(!quotes[id])quotes[id]=(await jq('themes/'+id+'.json',{})).quotes||{};
+  if(!quotes[id]){const tj=await jq('themes/'+id+'.json',{});quotes[id]=tj.quotes||{};qlang[id]=tj.langs||{}}
   if(openTheme!=id)return;
   $('#thome').hidden=true;$('#topen').hidden=false;$('#ttitle').textContent=t.title;$('#tnote').textContent=t.note||'';$('#truled').hidden=!t.rule;$('#truled').open=false;$('#trule').textContent=t.rule||'';
   const c=T_QUIET.has(id)?'':tCover(t);$('#tcov').innerHTML=c?pic(c,1):'';$('#tcov').hidden=!c;$('#thero').classList.toggle('nc',!c);
@@ -1629,8 +1661,9 @@ async function openT(id,o){o=o||{};const t=T[id];if(!t)return;openTheme=id;await
   for(let i=0;i<61;i++){const k=new Date(s0+i*day).toISOString().slice(0,10),n=by[k]||0,lab=longDay(s0+i*day+432e5)+': '+(n?n+(n==1?' moment':' moments'):'nothing');sp+='<button data-tday="'+k+'"'+(n?'':' disabled')+' style="height:'+(n?Math.max(8,Math.round(100*n/mx)):2)+'%" title="'+esc(lab)+'" aria-label="'+esc(lab)+'"></button>'}
   $('#tspark').innerHTML=sp;$('#tsparkw').hidden=!b.dated.length;
   const nm=b.lines.length+b.dated.length+b.und.length;$('#tcount').textContent=(t.count>t.items.length?fmt(t.items.length)+' of the '+fmt(t.count)+' things a machine sorted here':fmt(t.items.length)+(t.items.length==1?' thing':' things'))+', as '+fmt(nm)+(nm==1?' moment':' moments')+'.';
-  $('#tlist').innerHTML='';tMore();drawRuler();if(!EX)history.replaceState(null,'',hashFor());
-  if(o.scroll)scrollTo(0,Math.max(0,$('#topen').getBoundingClientRect().top+scrollY-90))}
+  $('#tlist').innerHTML='';tMore();drawRuler();setTitle();if(!EX)history.replaceState(null,'',hashFor());
+  /* the way back must not end up under the bars: the top bar, the small bar the stage becomes, and a little air */
+  if(o.scroll){scrollTo(0,Math.max(0,$('#topen').getBoundingClientRect().top+scrollY-($('#bar').offsetHeight+(mini?pin.offsetHeight:69)+12)));try{$('#ttitle').focus({preventScroll:true})}catch(e){}}}
 function tMore(){if(!T[openTheme])return;let h='',n=0,grid='';const shut=()=>{if(grid){h+='</div>';grid=''}},into=c=>{if(grid!=c){shut();h+='<div class="'+c+'">';grid=c}};
   while(tShown<TM.length&&n<24){const[k,v]=TM[tShown++];
     if(k=='lines'){shut();h+='<div class="tlines">'+v.map(g=>'<button class="tline" data-id="'+esc(g.ids[0])+'">'+esc(g.q)+'</button>').join('')+'</div><p class="note" style="margin:0 0 6px">Written under the call by the caption machine in 2021.</p>'}
@@ -1744,7 +1777,7 @@ async function pInit(){const st=await claimUI();
     return'<button class="tcard" data-p="'+esc(p.id)+'"><b>'+esc(p.name)+'</b><span class="meta">'+src+(p.claimed||p.pending||(p.here||[]).length?' · ':'')+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting</span>':'asked · waiting'):'')+((p.here||[]).length?' in '+fmt(p.here.length):'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
   if(openPerson)openP(openPerson)}
 $('#plist').onclick=e=>{const b=e.target.closest('[data-p]');if(b)openP(b.dataset.p,{scroll:1})};
-async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;await needRecs();const st=claim&&claim.person==id?await claimState():'';
+async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;setTitle();await needRecs();const st=claim&&claim.person==id?await claimState():'';
   const nm=(await needNames())[id]||{};if(openPerson!=id)return;
   const first=p.name.split(' ')[0],wrote=(p.wrote||[]).filter(w=>!gone[w[0]]),pics=(nm.pics||[]).filter(n=>IMG.has(n)),tagCalls=Object.keys(nm.calls||{}).filter(r=>recById[r]&&recById[r].kind=='call'),calls=[...new Set(tagCalls.concat(wrote.map(w=>w[0]).filter(r=>recById[r])))].sort(),mineView=st=='mine'||st=='pending';
   const cnt=[[pics.length,pics.length==1?'screenshot':'screenshots'],[calls.length,calls.length==1?'call recording':'call recordings'],[wrote.length,wrote.length==1?'line typed in the chat':'lines typed in the chat'],[(p.here||[]).length,'marked “I am in this”'],[(p.said||[]).length,(p.said||[]).length==1?'mark left':'marks left']].filter(c=>c[0]);
@@ -1868,14 +1901,15 @@ const introGo=i=>{const el=ipages[clamp(i,0,ipages.length-1)];isc.scrollTo({top:
 const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.offsetTop-isc.scrollTop);if(dd<bd){bd=dd;b=i}});return b};
 $('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
 $('#iskip').onclick=()=>{introGo(ipages.length-1);setTimeout(()=>{try{$('#iraw').focus({preventScroll:true})}catch(e){}},600)};
-function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
+let introAgain=false;
+function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
 $('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving; a screenshot whose moment was found in the recordings plays that moment's sound; a call waits for its play button */
 $('#icol').onclick=async()=>{introClose();await setRaw(false)};
 $('#iexit').onclick=()=>{cancelAnimationFrame(introRaf);stopPlay();
   intro.innerHTML='<div id="ibye"><div><p class="it" style="font:400 24px/1.4 var(--serif)">Nothing was shown.</p><p class="lead" style="margin:0 auto 18px">The work stays where it is, until at least 2046. You can close this tab.</p><p><button class="btn sm" id="iback">Come back in</button></p></div></div>';
   $('#iback').onclick=()=>location.reload();
   setTimeout(()=>{try{if(history.length>1)history.back();else window.close()}catch(e){}},1400)};
-$('#iagain').onclick=()=>{stopPlay();document.documentElement.classList.remove('in');isc.scrollTop=0;ipages.forEach((el,i)=>el.classList.toggle('on',i==0));if(introDraw){introT0=performance.now();introDraw()}else introStart()};
+$('#iagain').onclick=()=>{introAgain=true;stopPlay();document.documentElement.classList.remove('in');isc.scrollTop=0;ipages.forEach((el,i)=>el.classList.toggle('on',i==0));if(introDraw){introT0=performance.now();introDraw()}else introStart()};
 intro.addEventListener('keydown',e=>{if(e.key=='ArrowDown'||e.key=='PageDown'){introGo(introAt()+1);e.preventDefault()}else if(e.key=='ArrowUp'||e.key=='PageUp'){introGo(introAt()-1);e.preventDefault()}else if(e.key=='Escape'){$('#iskip').click();e.preventDefault()}
   else if(e.key=='Tab'){const f=[...intro.querySelectorAll('button')].filter(b=>b.offsetParent),i=f.indexOf(document.activeElement);if(f.length&&(e.shiftKey?i<=0:i==f.length-1)){f[e.shiftKey?f.length-1:0].focus();e.preventDefault()}}}); /* the way in is a choice, so focus stays inside it */
 if(introOpen())introStart();

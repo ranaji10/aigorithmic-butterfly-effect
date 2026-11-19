@@ -115,6 +115,9 @@ def sentence(text, m, width=150):
     return ("… " if a else "") + text[a:b].strip() + (" …" if b < len(text) else "")
 
 
+LANGS = {}                                             # minute id -> "hi" or "bn", where most of what was heard in it is in that language
+
+
 def main():
     RX = [(tid, re.compile(r"\b(?:%s)\b" % pat, re.I)) for tid, _, _, pat in THEMES]
     hits = {tid: {} for tid, _, _, _ in THEMES}        # id -> [score, order, quote]
@@ -138,9 +141,14 @@ def main():
     for r in sorted(recs, key=lambda r: r.get("start") or "9"):
         if r["id"] in gone: continue
         v = load(os.path.join(ARCH, "r", r["id"], "voice.json"), {}) or {}
-        mins = {}
+        mins, lmin = {}, {}
+        lang = v.get("lang", [])
         for s in v.get("segs", []):
             mins.setdefault(int(s[0] // 60), []).append(s[2])
+            # where the second hearing heard Hindi or Bengali: remembered for the minute, so the page can say so
+            lg = next((g[2] for g in lang if g[0] - .05 <= s[0] < g[1]), "")
+            c = lmin.setdefault(int(s[0] // 60), {})
+            c[lg] = c.get(lg, 0) + len(s[2])
         for c in v.get("chat", []):
             mins.setdefault(int(c[0] // 60), []).append(str(c[2]))
         for mn, parts in mins.items():
@@ -150,6 +158,9 @@ def main():
             for tid, rx in RX:
                 ms = list(rx.finditer(t))
                 if ms: hits[tid][iid] = [len(set(m.group(0).lower() for m in ms)) + min(len(ms), 4) / 4, (2, r.get("start") or "9", mn), sentence(t, ms[0])]
+            c = lmin.get(mn) or {}
+            top = max(c, key=c.get) if c else ""
+            if top and c[top] * 2 > sum(c.values()): LANGS[iid] = top
     # write
     for old in glob.glob(os.path.join(ROOT, "themes", "t-*.json")):
         o = load(old, {})
@@ -172,6 +183,8 @@ def main():
         t = {"id": "t-" + tid, "title": title, "note": note, "by": "the material", "name": "", "at": TODAY, "kind": "subject",
              "rule": "pictures, minutes and lines where a machine read or heard: " + pat.replace("\\w*", "…").replace("\\b", "")[:160],
              "found": len(keep), "items": items, "quotes": {i: h[i][2] for i in items}}
+        lg = {i: LANGS[i] for i in items if i in LANGS}
+        if lg: t["langs"] = lg
         with open(os.path.join(ROOT, "themes", "t-%s.json" % tid), "w", encoding="utf-8") as f:
             json.dump(t, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
