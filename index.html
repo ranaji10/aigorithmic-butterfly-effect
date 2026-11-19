@@ -1380,7 +1380,11 @@ ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){nav(-1);e.preventDef
 /* views */
 const VIEWS=['stage','browse','themes','people','about'];let view='stage',openTheme='',openPerson='';
 /* the stage keeps no address of its own, so that every visit opens somewhere else; the id in the corner copies a link to one thing */
-function hashFor(){const sub=view=='themes'?openTheme:view=='people'?openPerson:'';if(view=='browse'&&(B.kind=='marks'||B.want=='marks'))return'#marks';return view=='stage'?location.pathname+location.search:'#'+view+(sub?'/'+sub:cur&&view=='browse'?'/'+cur:'')}
+/* Browse says in the address which of its ways is open (#browse/calls, #browse/document/m00123), so that a way can be linked to and
+   Back returns to it; the older form #browse/m00123 still opens. */
+const BSL={'days/':'days','pics/d':'document','calls/':'calls','pics/p':'camera','stories/':'videos','pics/s':'screenshots','pics/x':'made-in-2026','lines/':'lines','pics/':'pictures'},BSLR={};for(const k in BSL)BSLR[BSL[k]]=k;
+const bSlug=()=>BSL[B.kind+'/'+B.grp]||'';
+function hashFor(){const sub=view=='themes'?openTheme:view=='people'?openPerson:'';if(view=='browse'&&(B.kind=='marks'||B.want=='marks'))return'#marks';if(view=='browse'){const s=bSlug();return'#browse'+(s?'/'+s:'')+(cur?'/'+cur:'')}return view=='stage'?location.pathname+location.search:'#'+view+(sub?'/'+sub:'')}
 const TITLE0=document.title,WORK='AIgorithmic Butterfly Effect';
 /* the title of the tab says where one is; the bare address keeps the long title */
 function setTitle(){const p=view=='themes'?[openTheme&&T[openTheme]?T[openTheme].title:'','Themes']:view=='people'?[openPerson&&P[openPerson]?P[openPerson].name:'','People']:view=='browse'?['Browse']:view=='about'?['About']:[];document.title=p.length?p.filter(Boolean).concat(WORK).join(' · '):TITLE0}
@@ -1485,7 +1489,7 @@ function jTile(n,list){const id=mid5(n),m=(imgIdx&&imgIdx[n])||[],ar=clamp((m[0]
   return'<button class="jt ph" data-id="'+id+'"'+(list?' data-list="'+esc(list)+'"':'')+' style="flex-grow:'+Math.round(ar*100)+';flex-basis:'+Math.round(ar*150)+'px;aspect-ratio:'+ar.toFixed(3)+'">'+pic(id,ar>1.2)+'<span class="tag">'+id+'</span></button>'}
 $('#bkinds').innerHTML=KINDS.map(([k,g,l])=>'<button class="btn sm" aria-pressed="false" data-k="'+k+'" data-g="'+g+'">'+l+'</button>').join('');
 $('#bkinds').onclick=e=>{const b=e.target.closest('button');if(b){bSet(b.dataset.k,b.dataset.g);if(scrollY>dockTh())scrollTo(0,Math.max(0,$('#views').getBoundingClientRect().top+scrollY-90))}};
-async function bInit(){if(B.want){const k=B.want;B.want='';B.ready=true;return bSet(k,'')}if(B.ready){if(B.kind=='pics'&&B.grp!='#'&&cur&&isImg(cur))bJump(+cur.slice(1));bWin();return}B.ready=true;await bSet('days','')}
+async function bInit(){if(B.want){const[k,g='']=B.want.split('/');B.want='';B.ready=true;return bSet(k,g)}if(B.ready){if(B.kind=='pics'&&B.grp!='#'&&cur&&isImg(cur))bJump(+cur.slice(1));bWin();return}B.ready=true;await bSet('days','')}
 let bTok=0;
 async function bSet(kind,grp,list,title){
   const tok=++bTok;B.kind=kind;B.grp=grp;B.title=title||'';B.secs=kind=='pics'&&!list&&(grp==''||grp=='d');$$('#bkinds button').forEach(b=>{const on=b.dataset.k==kind&&b.dataset.g==grp;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')});const body=$('#bbody');$('#bearlier').hidden=true;$('#rwin').hidden=true;$('#bhead').textContent='';
@@ -1499,7 +1503,7 @@ async function bSet(kind,grp,list,title){
   else{await needRecs();await needImgs();if(tok!=bTok)return;B.list=[];const L=recOrder.filter(r=>kind=='calls'?r.kind!='story':r.kind=='story');
     $('#bhead').textContent=kind=='calls'?fmt(L.length)+' recordings':fmt(L.length)+' videos';
     body.innerHTML=kind=='stories'?khead('stories','')+bStories(L):khead('calls','')+bCalls(L)}
-  if(!EX&&view=='browse'&&cur)history.replaceState(null,'',hashFor());
+  if(!EX&&view=='browse'){const s=bSlug()||kind;if(B.hist&&s!=B.slug&&!B.quiet)history.pushState(null,'',hashFor());else history.replaceState(null,'',hashFor());B.slug=s;B.hist=true}B.quiet=false;
   markTiles()}
 /* things that carry a day, gathered under their days */
 function byDay(L,keyOf){const by={},keys=[];for(const x of L){const k=keyOf(x)||'';if(!by[k]){by[k]=[];keys.push(k)}by[k].push(x)}keys.sort((a,b)=>a==''?1:b==''?-1:a<b?-1:1);return keys.map(k=>[k,by[k]])}
@@ -1941,8 +1945,8 @@ addEventListener('keydown',e=>{if(introOpen()||e.target.closest('input,textarea,
 async function route(first){
   let h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){} /* a mangled address opens the work somewhere, like any other visit */
   const sm=/^seal=(p-[a-z0-9-]{1,40})$/.exec(h);if(sm){h='people/'+sm[1];if(!EX){history.replaceState(null,'','#'+h);if(introOpen()){document.documentElement.classList.add('in')}openSeal(sm[1])}}
-  const[a,b]=h.split('/');let v='stage',id='';
-  if(a=='marks'){v='browse';B.want='marks'}else if(VIEWS.includes(a)){v=a;id=b||''}else id=a;
+  const[a,b,c]=h.split('/');let v='stage',id='';
+  if(a=='marks'){v='browse';B.want='marks';B.quiet=true}else if(VIEWS.includes(a)){v=a;id=b||'';if(a=='browse'&&b&&BSLR[b]){id=c||'';if(BSLR[b]!=B.kind+'/'+B.grp){B.want=BSLR[b];B.quiet=true}}else if(a=='browse'&&!first&&B.kind=='marks'){B.want='days/';B.quiet=true}}else id=a;
   if(isTheme(id)&&T[id]){if(v=='stage'&&first)v='themes';openTheme=id}
   if(isPerson(id)&&P[id]){v='people';openPerson=id}
   const ok=async i=>{if(N[i]||(isTheme(i)&&T[i]))return true;if(isImg(i))return IMG.has(+i.slice(1));if(isMin(i)||isRec(i)){await needRecs();const r=recById[i.slice(0,4)];return!!r&&(isRec(i)||+i.slice(5)<r.min)}return false};
