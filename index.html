@@ -496,7 +496,8 @@ html:not(.in) body{overflow:hidden}
 .ileg{font:var(--t-label)/1.7 var(--mono);letter-spacing:.04em;color:var(--soft);margin:10px 0 0;max-width:none}
 .ibtns{display:grid;gap:8px;margin:14px 0 0}
 .ibtns .btn{display:block;width:100%;text-align:left;border-radius:var(--r-sheet);padding:10px 16px;font-size:var(--t-body);background:#0a0a0bcc;text-shadow:none}
-.ibtns .btn.go{background:var(--wall)}
+/* the choice: a ground for its words, and three doors of the same weight */
+#ichoose>div{background:#060607d9;padding:20px 22px;border-radius:var(--r-sheet)}
 .ibtns small{display:block;font:var(--t-note)/1.35 system-ui,sans-serif;font-weight:400;opacity:.8;margin-top:3px}
 #itop{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;pointer-events:none}
 #itop>*{pointer-events:auto}#itop .meta{color:var(--soft)}
@@ -558,9 +559,9 @@ body.mini .ov,body.exhibit .ov{display:none}
     </div></section>
     <section class="ip" id="ichoose"><div>
       <p class="meta">Before you go in</p>
-      <p class="it">This is raw material: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
+      <p class="it" id="ichoosep" tabindex="-1">This is raw material: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
       <div class="ibtns">
-        <button class="btn go" id="iraw">Enter uncensored<small>Pictures and sound as they were</small></button>
+        <button class="btn" id="iraw">Enter uncensored<small>Pictures and sound as they were</small></button>
         <button class="btn" id="icol">Enter censored<small>Colours only, no sound</small></button>
         <button class="btn" id="iexit">Exit<small>Leave without looking</small></button>
       </div>
@@ -1953,10 +1954,11 @@ function introStart(){
   const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting)e.target.classList.add('on')},{root:isc,threshold:.35});ipages.forEach(el=>io.observe(el));
   if(reduced)isc.addEventListener('scroll',()=>introDraw(),{passive:true});
   introDraw();try{$('#ibegin').focus({preventScroll:true})}catch(e){}}
-const introGo=i=>{const el=ipages[clamp(i,0,ipages.length-1)];isc.scrollTo({top:el.offsetTop,behavior:reduced?'auto':'smooth'})};
+/* at the choice the keyboard stands on the words, not on one of the answers */
+const introGo=i=>{const el=ipages[clamp(i,0,ipages.length-1)];isc.scrollTo({top:el.offsetTop,behavior:reduced?'auto':'smooth'});if(i>=ipages.length-1)setTimeout(()=>{try{$('#ichoosep').focus({preventScroll:true})}catch(e){}},600)};
 const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.offsetTop-isc.scrollTop);if(dd<bd){bd=dd;b=i}});return b};
 $('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
-$('#iskip').onclick=()=>{introGo(ipages.length-1);setTimeout(()=>{try{$('#iraw').focus({preventScroll:true})}catch(e){}},600)};
+$('#iskip').onclick=()=>introGo(ipages.length-1);
 let introAgain=false;
 function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
 $('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving; a screenshot whose moment was found in the recordings plays that moment's sound; a call waits for its play button */
