@@ -10,6 +10,8 @@ For every piece of sound that was heard again (at most 28 seconds):
   - heard as English: replaced only if the first hearing was marked there (a loop, too many words, word pairs found
     nowhere else); where the second hearing hears no speech at all, a loop of the first is taken out and nothing put in;
   - otherwise the first hearing stays.
+A piece from the sweep (tools/relisten_sweep.py) heard as Hindi or Bengali is taken only where the model was sure of the
+language; one it skipped as English is left alone; a recording never heard before (sign "new") is taken whole.
 A line of the second hearing that is itself a loop, or that the model was unsure was speech, is not taken.
 Taken out of every new line before it is written: links, mail addresses, handles, runs of seven or more digits, and
 the words listed in PRIVATE_NAMES.txt (surnames; one per line; a file on the author's drive, never in a repository).
@@ -78,6 +80,11 @@ for f in sorted(glob.glob(os.path.join(HEARD, 'r*.json'))):
         for c in w['chunks']:
             a, b = c['s'], c['e']; tally['pieces'] += 1; secs[c['lang']] += b - a; tally['heard ' + c['lang']] += 1
             if c.get('skipped'): tally['sweep: English, left alone'] += 1; continue
+            # a sweep replaces English that may well be right: it is believed only where the model was sure of the language
+            # (at least an even chance, and twice as likely as English). On 19 Nov 2026 a piece heard as "Hindi" at 42% against
+            # 42% English was an English sentence, written down correctly by the first hearing and garbled by the second.
+            if 'sweep' in (w.get('signs') or []) and c['lang'] in ('hi', 'bn') and not (c['p'].get(c['lang'], 0) >= 0.5 and c['p'].get(c['lang'], 0) >= 2 * c['p'].get('en', 0)):
+                tally['sweep: language not sure enough, left alone'] += 1; continue
             if any(veiled.get('%s.%04d' % (rid, m)) for m in range(int(a // 60), int(b // 60) + 1)) or veiled.get(rid): tally['hidden, left alone'] += 1; continue
             inside = [i for i, s in enumerate(old) if a <= (s[0] + s[1]) / 2 < b]
             good = [[r[0], r[1], clean(r[2])] for r in c['segs'] if not loop(r[2]) and not (r[4] > 0.8 and r[3] < -0.6) and r[3] > -1.3]
