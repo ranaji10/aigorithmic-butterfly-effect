@@ -88,6 +88,8 @@ button{-webkit-tap-highlight-color:transparent}
 body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:crosshair}
 #idtag{position:absolute;left:6px;top:4px;z-index:2;background:none;border:0;padding:4px;cursor:pointer;color:#fffb;text-shadow:0 0 6px #000}
 #idtag:hover{color:#fff}
+#vwait{position:absolute;left:8px;bottom:8px;z-index:2;color:#fff;background:var(--scrim-2);padding:4px 8px;border-radius:var(--r-pic);max-width:calc(100% - 16px);pointer-events:none}
+body.mini #vwait,body.exhibit #vwait{display:none}
 #dbar{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;border-radius:var(--r-pill);background:var(--scrim-2);white-space:nowrap;max-width:calc(100% - 12px)}
 #dbar .meta{color:var(--wall)}#dbar .btn{background:var(--scrim)}#dbar .btn.go{background:var(--wall)}
 body.mini #dbar,body.exhibit #dbar{display:none!important}
@@ -592,6 +594,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <canvas id="field" aria-label="The stage: a colour field, picture or frame from the work"></canvas>
       <video id="clip" playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload noplaybackrate nofullscreen noremoteplayback" hidden></video>
       <button class="meta" id="idtag" title="Copy a link to this"></button>
+      <span class="meta" id="vwait" role="status" hidden>The moving picture is loading. Until then, one frame a minute.</span>
       <button class="edge l" id="eprev" aria-label="Previous">‹</button><button class="edge r" id="enext" aria-label="Next">›</button>
       <div class="ov">
         <button class="ob tx" id="bcens" title="Back to colours only: no pictures, no sound" hidden>Colours only</button>
@@ -996,7 +999,7 @@ const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
 const lineText=n=>n.removed?'[this was taken back]':(n.text||'')+(n.mark?' [a drawing]':'')+(n.theme&&T[n.theme]?' [in “'+T[n.theme].title+'”]':'')+(n.here?' [I am in this]':'')||'[a mark without words]';
-const GROUP={d:'The 2021 document',p:'Camera roll',s:'Screenshot',x:'Made in 2026 from a file that could not be read'};
+const GROUP={d:'The 2021 document',p:'Camera roll',s:'Screenshot',x:'Made in 2026 from a file that is not a picture'};
 const seedByShot={};for(const s of seeds)seedByShot[s.shot]=s;
 async function pseudo(id){ /* a picture, a minute, a recording, a theme or a person, described so it can sit in a thread */
   if(gone[id]||gone[id.slice(0,4)])return{id,pseudo:1,label:id,text:'[hidden at someone’s request, until a steward has looked]',hidden:1};
@@ -1005,8 +1008,8 @@ async function pseudo(id){ /* a picture, a minute, a recording, a theme or a per
   if(isMin(id)||isRec(id)){await needRecs();const rid=id.slice(0,4),r=recById[rid];if(!r)return{id,pseudo:1,label:id,text:'[not found]'};
     const min=isMin(id)?+id.slice(5):0,v=await voice(rid),a=min*60,b=a+60,said=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>s[2]).join(' ');
     const heard=(v.heard_hours||[]).includes(Math.floor(min/60));
-    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?(r.screen?'Screen recording':'Phone video'):'Voice memo')+' · '+(r.t0?niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time':'undated')+' · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
-      text:said||(r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
+    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?(r.screen?'Screen recording':r.cam?'Camera video':'Phone video'):r.kind=='phone call'?'Phone call':'Voice memo')+' · '+(r.t0?niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time':'undated')+' · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
+      text:said||r.note||(r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
   if(isTheme(id)){const t=T[id];return{id,pseudo:1,label:'Theme · '+(t?fmt(t.count):0)+' things',text:t?t.title+(t.note?'. '+t.note:''):'[no such theme]'}}
   return{id,pseudo:1,label:id,text:''}}
 async function backdrop(rootId,depth,tok){
@@ -1016,23 +1019,28 @@ async function backdrop(rootId,depth,tok){
   else{let id=N[rootId]&&N[rootId].shot?'m'+pad(N[rootId].shot,5):rootId;if(isTheme(id)&&T[id])id=T[id].items.find(i=>!gone[i]&&isMedia(i))||'';
     if(isRec(id))id=id+'.0000';
     if(isMedia(id)&&!gone[id]&&!gone[id.slice(0,4)]){if(!isImg(id))await needRecs();
-      const img=await loadImg(RAW?bigUrl(id):thumbUrl(id))||await loadImg(thumbUrl(id))||await loadImg(bigUrl(id));
+      const rr=isImg(id)?null:recById[id.slice(0,4)]; /* a recording of sound alone has no picture to ask for */
+      const img=rr&&!rr.frames?null:await loadImg(RAW?bigUrl(id):thumbUrl(id))||await loadImg(thumbUrl(id))||await loadImg(bigUrl(id));
       if(img)src={img,id}}}
   if(tok!=showing)return;
   stageSrc=src||{el:fieldCanvas('1a1a1e'.repeat(144)),cover:true};stageDepth=depth;stageMarks=marks;render()}
 /* the whole original of a call, as one continuous stream, once it has reached the Internet Archive */
 const iaSeen={};let vidRec='',vidLive=false,vidPaused=false,recFallback=null,recEnd=null;
 async function iaUrl(r){
-  if(!IA||!r||!r.ia||!r.file||r.kind!='call')return'';
+  if(!IA||!r||!r.ia||!r.file||!/\.mp4$/.test(r.file)||(r.kind!='call'&&r.clip))return''; /* calls, and a long recording of the phone's screen that has no small copy of its own */
   if(LOCAL&&QS.get('ia'))return IA+r.ia+'/'+r.file;
   if(!iaSeen[r.ia])iaSeen[r.ia]=(async()=>{const k='abe-ia-'+r.ia,c=store.get(k,null);if(c&&c.f&&Date.now()-c.t<12e5)return c.f;
     try{const j=await(await fetch(IA.replace(/download\/$/,'metadata/')+r.ia+'/files')).json(),f=(j.result||[]).map(x=>x.name).filter(x=>/\.mp4$/.test(x));store.set(k,{t:Date.now(),f});return f}catch(e){return c&&c.f||[]}})();
   const f=await iaSeen[r.ia],d=r.file.replace(/\.mp4$/,'.ia.mp4');
   return f.includes(d)?IA+r.ia+'/'+d:f.includes(r.file)?IA+r.ia+'/'+r.file:''}
+let vwT=0,vwS=0;
 function vidArm(u,r,tok){ /* load it and, as soon as it can play from where we are, let it take over from the frames */
   if(clip.dataset.u!=u){clip.dataset.u=u;clip.controls=false;clip.removeAttribute('poster');clip.src=u;clip.load()}
   vidRec=r.id;clip.muted=!soundOn;
   const live=()=>tok==recTok&&playing&&playMode=='rec'&&clip.dataset.u==u&&RAW&&!drawing;
+  /* a full-length original is gigabytes at the Internet Archive and can take half a minute to begin: say so, instead of leaving
+     the visitor to wonder why the picture only moves once a minute */
+  {const vw=$('#vwait');clearInterval(vwT);clearTimeout(vwS);vwS=setTimeout(()=>{if(live()&&!vidLive)vw.hidden=false},1200);vwT=setInterval(()=>{if(!live()||vidLive){vw.hidden=true;clearTimeout(vwS);clearInterval(vwT)}},300)}
   const take=()=>{if(!live())return;const at=Math.min(playPos+.4,Math.max(0,(clip.duration||r.sec)-2));
     const on=follow=>{if(!live()){clip.pause();return}vidPaused=false;clip.hidden=false;if(follow)vidLive='follow';else{vidLive=true;audio.pause();audioLive=false}paintSound()};
     const go=()=>{if(!live())return;clip.play().then(()=>on(false)).catch(()=>{ /* no sound without a tap here: run it silent under the sound we already have */
@@ -1102,12 +1110,12 @@ async function show0(id,o){
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
   /* what a machine read in the picture: in the side panel, and in the ticker whenever the picture has no caption line of its own */
-  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec')){const w=t.split(' ').filter(Boolean);say(w.slice(0,40).join(' ')+(w.length>40?' …':''),true);const wh=$('#who');if(!/read by a machine$/.test(wh.textContent))wh.textContent+=' · read by a machine'}}); /* the first forty words; all of it is in the side panel */else{$('#ocrbox').hidden=true;tickP=null}
+  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec')){const w=t.split(' ').filter(Boolean);say(w.slice(0,40).join(' ')+(w.length>40?' …':''),true);const wh=$('#who');if(!/read by a machine$/.test(wh.textContent)&&((imgIdx&&imgIdx[+id.slice(1)])||[])[2]!='x')wh.textContent+=' · read by a machine'}}); /* the first forty words; all of it is in the side panel */else{$('#ocrbox').hidden=true;tickP=null}
   docBox(mid,tok);
   if(document.body.classList.contains('v-about'))drawFly();
   /* have the neighbours ready, so that moving on is instant */
   if(isImg(id)){const L=picIds(),i=L.indexOf(+id.slice(1));for(const d of[1,-1]){const n=L[i+d];if(n)loadImg(RAW?bigUrl('m'+pad(n,5)):thumbUrl('m'+pad(n,5)))}}
-  else if(isMin(id)){const rid=id.slice(0,4),m=+id.slice(5),r=recById[rid];if(r&&m+1<r.min)loadImg(RAW?frameUrl(rid,m+1):frameUrl(rid,m+1,1))}
+  else if(isMin(id)){const rid=id.slice(0,4),m=+id.slice(5),r=recById[rid];if(r&&r.frames&&m+1<r.min)loadImg(RAW?frameUrl(rid,m+1):frameUrl(rid,m+1,1))}
 }
 $('#thread').addEventListener('click',e=>{const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)});
 $('#thread').addEventListener('keydown',e=>{if(e.key=='Enter'||e.key==' '){const li=e.target.closest('li[data-id]');if(li){e.preventDefault();go(li.dataset.id)}}});
@@ -1286,7 +1294,7 @@ async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),wa
 let seekAt=null;
 async function syncRec(id,tok){
   const rid=id.slice(0,4),min=+id.slice(5);await needRecs();const r=recById[rid];if(!r||tok!=showing)return;
-  const sw=$('#scrubw'),own=r.kind=='story'&&r.clip&&RAW&&!drawing;sw.hidden=own?r.sec<15:r.kind!='call'||r.sec<120;$('#scrub').max=Math.max(0,r.sec-1);
+  const sw=$('#scrubw'),own=r.kind=='story'&&r.clip&&RAW&&!drawing;sw.hidden=own?r.sec<15:r.sec<120||!(r.kind=='call'||(r.audio&&!r.clip));$('#scrub').max=Math.max(0,r.sec-1);
   if(!sw.hidden&&cur==id){const w=$('#who');w.textContent=w.textContent.replace(/ · [\d:]+ of [\d:]+$/,'')}
   if(!(playing&&playMode=='rec')){const at=seekAt&&seekAt.id==id?seekAt.sec:min*60;$('#scrub').value=Math.floor(at);$('#stime').textContent=stime(at,r)}
   const v=await voice(rid);if(tok!=showing)return;
@@ -1296,7 +1304,7 @@ async function syncRec(id,tok){
   const n=$('#voice .now');if(n)$('#voice').scrollTop=n.offsetTop-$('#voice').offsetTop-60;
   const snd=(r.aud||[]).includes(Math.floor(min/60));
   $('#recnote').textContent=r.kind=='call'?'Words by a small speech model, 2026. It mishears.':'';
-  if(r.kind=='call'&&RAW)iaUrl(r).then(u=>{if(tok==showing&&!u)$('#recnote').textContent+=' One frame a minute until the full video of this call has been uploaded.'})}
+  if((r.kind=='call'||!r.clip)&&r.video&&RAW)iaUrl(r).then(u=>{if(tok==showing&&!u)$('#recnote').textContent+=' One frame a minute: the full video of this recording is not at the Internet Archive.'})}
 $('#voice').onclick=async e=>{const d=e.target.closest('[data-s]');if(!d)return;await seek(+d.dataset.s);if(!playing&&RAW&&!drawing)startPlay()};
 
 /* the ruler: where you are in the whole work */
@@ -1558,7 +1566,7 @@ const pick4=L=>{L=L.slice();const o=[];while(o.length<4&&L.length)o.push(L.splic
 const strip=ids=>ids.map(i=>'<span class="tile"><img loading="lazy" decoding="async" src="'+esc(thumbUrl(i))+'" alt=""></span>').join('');
 async function bDayData(){if(BD)return BD;await needRecs();const ix=await needImgs(),snd=await needSound(),cj=await jq('data/call-2021.json',{});
   const D={},g=k=>D[k]||(D[k]={calls:[],segs:[],stories:[],shots:[],pics:[],lines:[],min:0});
-  for(const r of recOrder){if(!r.t0)continue;const x=g(dkey(r.t0));if(r.kind=='story'){x.stories.push(r);continue}x.calls.push(r);
+  for(const r of recOrder){if(!r.t0)continue;const x=g(dkey(r.t0));if(r.kind!='call'){x.stories.push(r);continue}x.calls.push(r); /* only the Meet call is "the call"; a phone call or a voice memo stands in its hour like a phone video */
     /* a call that runs past midnight belongs to both days: each gets the stretch that falls in it */
     for(let t=r.t0,e=r.t0+r.sec*1e3,guard=0;t<e&&guard++<90;){const k=dkey(t),d0=dayStart(k),t2=Math.min(e,d0+day);g(k).segs.push({r,a:(t-d0)/6e4,b:(t2-d0)/6e4,off:(t-r.t0)/1e3});t=t2}}
   const t0=Date.parse((cj.start||'2021-11-14')+'T00:00:00Z');(cj.minutes_on_call_per_day||[]).forEach((m,i)=>{if(m&&t0)g(new Date(t0+i*day).toISOString().slice(0,10)).min=m});
@@ -1606,10 +1614,10 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
   for(const s of x.segs){const w=s.b-s.a,n=s.r.frames?clamp(Math.round(w/50),1,14):0;let f='';for(let j=0;j<n;j++){const m=clamp(Math.floor(s.off/60+(j+.5)*w/n),0,s.r.min-1);if(okItem(s.r.id+'.'+pad(m,4)))f+='<img loading="lazy" decoding="async" src="'+esc(frameUrl(s.r.id,m,1))+'" alt="">'}
     band+='<span class="seg ph" style="left:'+(s.a/14.4).toFixed(2)+'%;width:'+(w/14.4).toFixed(2)+'%">'+f+'</span>'}
   for(const b in bins)band+='<i class="tk" style="left:'+(b/2.88).toFixed(2)+'%;opacity:'+Math.min(1,.45+bins[b]*.12).toFixed(2)+'"></i>';
-  for(const r of x.stories)band+='<i class="tk v" style="left:'+clamp((r.t0-d0)/864e3,0,99.6).toFixed(2)+'%"></i>';
+  for(const r of x.stories)band+='<i class="tk'+(r.video?' v':'')+'" style="left:'+clamp((r.t0-d0)/864e3,0,99.6).toFixed(2)+'%"></i>';
   band+='<span id="bcur" hidden><b></b></span></div><div class="bax" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>';
   const f=[];if(x.min)f.push(['the call was open',dur(x.min*60)]);const nc=x.shots.filter(isCam).length,ns=x.shots.length-nc;if(ns)f.push([ns==1?'screenshot':'screenshots',fmt(ns)]);if(nc)f.push([(nc==1?'photograph':'photographs')+', by the camera\u2019s clock',fmt(nc)]);if(x.pics.length)f.push([x.pics.length==1?'other picture':'other pictures',fmt(x.pics.length)]);
-  if(x.stories.length)f.push([x.stories.length==1?'phone video':'phone videos',fmt(x.stories.length)]);if(x.lines.length)f.push([x.lines.length==1?'line of the caption machine':'lines of the caption machine',fmt(x.lines.length)]);
+  {const nv=x.stories.filter(r=>r.video).length,na=x.stories.length-nv;if(nv)f.push([nv==1?'video':'videos',fmt(nv)]);if(na)f.push([na==1?'sound recording':'sound recordings',fmt(na)])}if(x.lines.length)f.push([x.lines.length==1?'line of the caption machine':'lines of the caption machine',fmt(x.lines.length)]);
   /* hour by hour. Hours in which the call was open and nothing else happened are told together, as one stretch. */
   let hours='';const CAP=36,blocks=[];
   for(let h=0;h<24;h++){const q=H[h];if(!q.seg&&!q.shots.length&&!q.stories.length&&!q.lines.length)continue;const still=!q.shots.length&&!q.stories.length&&!q.lines.length,p=blocks[blocks.length-1];
@@ -1620,8 +1628,8 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
     t+=q.shots.slice(0,CAP).map(n=>tile(mid5(n),(kids[mid5(n)]||[]).length||'').replace('data-id=','data-list="bhours" data-id=')).join('');
     if(q.shots.length>CAP)t+='<button class="tile more" data-hour="'+h+'">'+fmt(q.shots.length-CAP)+' more</button>';
     {const c=q.shots.filter(isCam).length,s2=q.shots.length-c;if(s2)says.push(fmt(s2)+(s2==1?' screenshot':' screenshots'));if(c)says.push(fmt(c)+(c==1?' photograph':' photographs'))}
-    t+=q.stories.map(r=>tile(r.id+'.0000','').replace('data-id=','data-list="bhours" data-id=').replace('class="tile"','class="tile vid"')).join('');
-    if(q.stories.length)says.push(q.stories.length+(q.stories.length==1?' phone video':' phone videos'));
+    t+=q.stories.map(r=>r.frames?tile(r.id+'.0000','').replace('data-id=','data-list="bhours" data-id=').replace('class="tile"','class="tile vid"'):'<button class="tile txt" data-list="bhours" data-id="'+esc(r.id)+'.0000">'+(r.kind=='phone call'?'Phone call':'Voice memo')+'<br>'+esc(dur(r.sec))+'</button>').join('');
+    {const nv=q.stories.filter(r=>r.video).length,na=q.stories.length-nv;if(nv)says.push(nv+(nv==1?' video':' videos'));if(na)says.push(na+(na==1?' sound recording':' sound recordings'))}
     hours+='<section class="hr"><b>'+pad(h,2)+'<small>:00</small></b><div class="hx"><span class="note">'+esc(says.join(', '))+'</span>'
       +q.lines.map(id=>'<button class="hq hl" data-id="'+esc(id)+'"><q>'+esc(N[id].text)+'</q><span class="note">written under the call by the caption machine, 2021</span></button>').join('')
       +'<button class="hq" data-hq="'+bl.h0+'" data-hq1="'+bl.h1+'" hidden><q></q><span class="note"></span></button>'+(t?'<div class="hrow">'+t+'</div>':'')+'</div></section>'}
