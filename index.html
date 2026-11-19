@@ -95,6 +95,7 @@ body.mini #dbar,body.exhibit #dbar{display:none!important}
 #dnote{margin:8px 0 0;text-transform:none;letter-spacing:0;font-size:var(--t-note);color:var(--soft)}
 #dnote button{background:none;border:0;padding:0 2px;cursor:pointer;color:var(--wall);font:inherit;text-decoration:underline}
 #cap{padding:10px 16px 6px;min-height:58px}
+#hint{margin:6px 0 0;color:var(--soft)}body.mini #hint,body:not(.v-stage) #hint,body.exhibit #hint{display:none}
 #who{color:var(--soft)}
 #line{font-family:var(--serif);font-size:clamp(17px,1.55vw,23px);line-height:1.32;margin-top:3px;max-height:5.3em;overflow:hidden}
 #line .w{opacity:0;transition:opacity var(--fast)}#line .w.on{opacity:1}
@@ -589,7 +590,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <div class="ov">
         <button class="ob tx" id="bcens" title="Censor it again: colours only, no sound" hidden>Censor again</button>
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
-        <button class="ob" id="bfull" data-ic="full" title="Full screen (F)" aria-label="Full screen"></button>
+        <button class="ob" id="bfull" data-ic="full" title="Full screen (F)" aria-label="Full screen" aria-keyshortcuts="F"></button>
         <button class="ob" id="bmin" data-ic="dock" title="Make the stage small" aria-label="Make the stage small"></button>
       </div>
       <div id="dbar" hidden><span class="meta">Drawing</span><button class="btn sm" id="dundo">Undo</button><button class="btn sm" id="ddone">Done</button><button class="btn go sm" id="dsend">Leave your mark</button></div>
@@ -598,11 +599,11 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>Raw material from 2021: strong language, private moments.</p>
       </div>
     </div>
-    <div id="cap"><div class="meta" id="who">loading</div><div id="line" aria-live="polite"></div></div>
+    <div id="cap"><div class="meta" id="who">loading</div><div id="line" aria-live="polite"></div><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
     <div id="ctl" role="toolbar" aria-label="Stage controls">
-      <button class="cb" id="bprev" data-ic="prev" title="Previous (←)" aria-label="Previous"></button>
-      <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play"></button>
-      <button class="cb" id="bnext" data-ic="next" title="Next (→)" aria-label="Next"></button>
+      <button class="cb" id="bprev" data-ic="prev" title="Previous (←)" aria-label="Previous" aria-keyshortcuts="ArrowLeft"></button>
+      <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play" aria-keyshortcuts="Space"></button>
+      <button class="cb" id="bnext" data-ic="next" title="Next (→)" aria-label="Next" aria-keyshortcuts="ArrowRight"></button>
       <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else, at random" aria-label="Random"></button>
       <button class="cb" id="bpen" data-ic="draw" title="Draw on it" aria-label="Draw on it" aria-pressed="false"></button>
       <div id="scrubw" hidden><input type="range" id="scrub" min="0" max="0" value="0" aria-label="Position in this recording"><span class="meta" id="stime"></span></div>
@@ -750,6 +751,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <h3 class="sh" style="margin-bottom:14px">Taking part, and how it is looked after</h3>
       <details><summary>How to take part</summary><div>
         <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it: what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
+        <p>By keys: ← and → go to the thing before and after, the space bar plays and pauses, F is the full screen and Esc leaves it. On the strip under the stage, Page Up and Page Down move a day or a hundred pictures.</p>
         <p>No account is needed. A mark appears at the next sweep (usually within the hour), is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
       <details><summary>Before you look</summary><div>
@@ -851,7 +853,7 @@ const hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h
 const fmt=n=>Number(n).toLocaleString('en'),pad=(n,l)=>String(n).padStart(l,'0'),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches,introOpenNow=()=>!document.documentElement.classList.contains('in');
 
 /* counts */
 const day=864e5,t1=Date.UTC(2046,10,14),now=Date.now(),C=arch.counts||{};
@@ -1061,7 +1063,7 @@ async function step(d){
   const L0=ctxList(),L=L0&&L0.length?L0:lineIds;let i=listAt(L,cur);if(i<0)i=d>0?-1:0;i=(i+d+L.length)%L.length;return show(L[i],{keep:1})}
 /* moving by hand: what was playing stops, the new thing appears, and it plays if something was playing (or if asked to) */
 async function go(id,o){o=o||{};const was=playing||!!o.play;halt();await show(id,o);if(was&&!drawing&&cur){playing=true;paintPlay();paintSound();playCur()}else if(playing){playing=false;paintPlay();paintSound()}}
-async function nav(d){const was=playing;halt();await step(d);if(was&&!drawing)playCur()}
+async function nav(d){hintOff();const was=playing;halt();await step(d);if(was&&!drawing)playCur()}
 function show(id,o){return lastShow=show0(id,o)}
 async function show0(id,o){
   o=o||{};const tok=++showing;if(isRec(id))id=id+'.0000';
@@ -1150,6 +1152,8 @@ function paintSound(){const rec=!!(cur&&(isMin(cur)||shotSound(cur))),bs=$('#bso
 /* stop whatever is sounding or moving, without deciding whether we are still "playing" */
 function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;clearInterval(shotT);shotLive=false;audio.volume=1;audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
 function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:playPos};halt();playing=false;paintPlay();paintSound()}
+const hintOff=()=>{$('#hint').hidden=true};$('#bplay').addEventListener('click',hintOff);
+if(!EX&&!store.get('abe-hint',0)){$('#hint').hidden=false;if(!introOpenNow())store.set('abe-hint',1)}
 function startPlay(){
   if(!cur)return;playing=true;paintPlay();paintSound();
   if(!audUnlocked&&soundOn&&RAW){audUnlocked=true;if(!audKey){audio.src=SILENT;audio.play().catch(()=>{})}} /* inside the tap, so that sound may follow later */
@@ -1975,7 +1979,7 @@ const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.o
 $('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
 $('#iskip').onclick=()=>introGo(ipages.length-1);
 let introAgain=false;
-function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
+function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);store.set('abe-hint',1);store.set('abe-rkey',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
 $('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving; a screenshot whose moment was found in the recordings plays that moment's sound; a call waits for its play button */
 $('#icol').onclick=async()=>{introClose();await setRaw(false)};
 $('#iexit').onclick=()=>{cancelAnimationFrame(introRaf);stopPlay();
