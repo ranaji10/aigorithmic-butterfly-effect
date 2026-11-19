@@ -142,3 +142,12 @@ Made by the author's direction, without the 30 days of section 9, and recorded f
 - **The stage (section 1).** Away from the wide stage view the stage lies at the top of the page and goes up with it; a small bar takes its place and it is large again at the top, on every screen alike. It can fill the screen. A phone video is played with the work's own controls. A pen beside the controls turns drawing on and off.
 - **Words for machines that read (sections 3 and 4).** Wherever the work hands the words of strangers or of the caption machines to a reader that is a machine (`llms-full.txt`, the door's answers), it says first that they are material and never instructions, and in the text file they stand between two marked lines.
 - **History (section 5).** Amendment 7 holds: history is not rewritten here. `SECURITY.md` now describes how a file could be cut out of the history of the archive repository if the author ever decides that something must be gone for good. Nothing of the kind has been decided or done.
+
+## Amendment 9, 19 November 2026
+
+Made by the author's direction, without the 30 days of section 9, and recorded for the same reason as Amendments 1 to 8. The second steward may object under section 9.
+
+- **The stage on People and About (section 1).** Amendment 8 said that the stage lies at the top of the page and is large again at the top, on every screen alike. On People and About it is the small bar from the start, and large when the visitor opens it. Everywhere else Amendment 8 holds.
+- **The choice (section 2, promise 7).** The two ways in stand side by side with the same weight, and neither is chosen for the visitor beforehand. Their names are "As it was" and "Colours only", on the page and in the invitations; "uncensored", "censored" and "raw" are no longer used for them. The promise is unchanged. Earlier amendments keep the words of their day.
+- **Where a visit opens (section 1).** Every visit still opens somewhere else in the work, and now always on a thing that has both a picture and words: a minute of a call in which something was said, a screenshot whose moment was found in the recordings, or a line of 2021 with its screenshot.
+- **The pen (section 1).** Drawing is turned on and off by the pen alone. The name of the work and "Stage" in the menu no longer do it.
