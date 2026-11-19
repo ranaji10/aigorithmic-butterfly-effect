@@ -18,7 +18,7 @@ AIgorithmic Butterfly Effect is an artwork, not a service. It began in 2021 as w
 
 - Everything that is always open, in one text file: https://ranaji10.github.io/aigorithmic-butterfly-effect/llms-full.txt
 - What is waiting for an answer: https://ranaji10.github.io/aigorithmic-butterfly-effect/data/open.json
-- Pictures, sound and the words of the recordings are raw and personal. Open them only if you have decided to (see "Before you look" in the invitation).
+- Pictures, sound and the words of the recordings are given as they were, and are personal. Open them only if you have decided to (see "Before you look" in the invitation).
 
 ## Answer
 

@@ -566,10 +566,10 @@ body.mini .ov,body.exhibit .ov{display:none}
     </div></section>
     <section class="ip" id="ichoose"><div>
       <p class="meta">Before you go in</p>
-      <p class="it" id="ichoosep" tabindex="-1">This is raw material: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
+      <p class="it" id="ichoosep" tabindex="-1">This is the material as it was: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
       <div class="ibtns">
-        <button class="btn" id="iraw">Enter uncensored<small>Pictures and sound as they were</small></button>
-        <button class="btn" id="icol">Enter censored<small>Colours only, no sound</small></button>
+        <button class="btn" id="iraw">As it was<small>Pictures and sound</small></button>
+        <button class="btn" id="icol">Colours only<small>No pictures, no sound</small></button>
         <button class="btn" id="iexit">Exit<small>Leave without looking</small></button>
       </div>
     </div></section>
@@ -594,15 +594,15 @@ body.mini .ov,body.exhibit .ov{display:none}
       <button class="meta" id="idtag" title="Copy a link to this"></button>
       <button class="edge l" id="eprev" aria-label="Previous">‹</button><button class="edge r" id="enext" aria-label="Next">›</button>
       <div class="ov">
-        <button class="ob tx" id="bcens" title="Censor it again: colours only, no sound" hidden>Censor again</button>
+        <button class="ob tx" id="bcens" title="Back to colours only: no pictures, no sound" hidden>Colours only</button>
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
         <button class="ob" id="bfull" data-ic="full" title="Full screen (F)" aria-label="Full screen" aria-keyshortcuts="F"></button>
         <button class="ob" id="bmin" data-ic="dock" title="Make the stage small" aria-label="Make the stage small"></button>
       </div>
       <div id="dbar" hidden><span class="meta">Drawing</span><button class="btn sm" id="dundo">Undo</button><button class="btn sm" id="ddone">Done</button><button class="btn go sm" id="dsend">Leave your mark</button></div>
       <div id="gate" hidden>
-        <button class="btn go" id="unc">Show uncensored</button>
-        <p>Raw material from 2021: strong language, private moments.</p>
+        <button class="btn go" id="unc">Show it as it was</button>
+        <p>From 2021, as it was: strong language, private moments.</p>
       </div>
     </div>
     <div id="cap"><div class="meta" id="who">Opening the work…</div><div id="line" aria-live="polite"></div><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
@@ -693,7 +693,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <div class="tts" id="tsubj"></div>
         <p class="trow"><button class="btn sm" id="tany">Take me somewhere</button><button class="btn sm" id="tnew">Start a theme of your own</button></p>
         <h3 class="sh" id="tcareh" hidden>Spoken of with care</h3>
-        <p class="note" id="tcaren" hidden>These two are listed by name only. What is inside is as raw as the rest.</p>
+        <p class="note" id="tcaren" hidden>These two are listed by name only. What is inside is shown as it was, like the rest.</p>
         <div class="tts sm" id="tcare"></div>
         <h3 class="sh" id="tarchh">What the archive itself is made of</h3>
         <div class="tts" id="tarch"></div>
@@ -763,7 +763,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>No account is needed. A mark appears at the next sweep (usually within the hour), is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
       <details><summary>Before you look</summary><div>
-        <p>The raw material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is shown only as its colours and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, a screenshot of the call plays the sound of the moment it was taken at, wherever that moment could be found in the recordings, and its words light up as they are said. No machine reads anything aloud. The speaker button on the stage turns the sound off.</p>
+        <p>The material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show it as it was", every picture is shown only as its colours and no sound plays. "Colours only", in the corner of the stage, takes you back. Once it is shown as it was, a screenshot of the call plays the sound of the moment it was taken at, wherever that moment could be found in the recordings, and its words light up as they are said. No machine reads anything aloud. The speaker button on the stage turns the sound off.</p>
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
@@ -874,7 +874,7 @@ if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#m
   if(pol&&miss.length)console.warn('AIgorithmic Butterfly Effect: the Content-Security-Policy line at the top of index.html does not name '+[...new Set(miss)].join(', ')+'. Add it there, or the browser will refuse to load from it.');
   addEventListener('securitypolicyviolation',e=>console.warn('Refused by the policy at the top of index.html: '+e.blockedURI+' ('+e.violatedDirective+')'))}
 
-/* one press: show uncensored, and it stays */
+/* one press: show it as it was, and it stays */
 let RAW=store.get('abe-raw',false)===true;
 function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;if(!RAW)$('#bsound').hidden=true}
 function setRaw(v){RAW=v;store.set('abe-raw',v);paintRaw();if(!v)stopPlay();try{if(view=='themes'&&openTheme)openT(openTheme)}catch(e){}return cur?show(cur,{quiet:1}):Promise.resolve()}
