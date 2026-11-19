@@ -122,6 +122,9 @@ input[type=range]{accent-color:var(--wall);height:28px;margin:0}
 body.mini #player.rbig #cap,body.mini #player.rbig #ctl,body.exhibit #player.rbig #cap,body.exhibit #player.rbig #ctl{transform:none;box-shadow:none}
 @media (prefers-reduced-motion:reduce){#cap,#ctl{transition:none}}
 #rcv{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* the key of the ruler: under it once for each visitor, and always in About */
+#rkey{margin:0;padding:5px 10px 7px;line-height:1.4}.rk i,#rkey i{display:inline-block;width:9px;height:9px;margin-right:5px;background:#fff;vertical-align:-1px}.rk i.k1,#rkey i.k1{background:var(--wall)}.rk i.k2,#rkey i.k2{background:var(--hood)}
+body.mini #rkey,body.full #rkey,body.exhibit #rkey,body.dock:not(.peek):not(.v-stage) #rkey{display:none}
 #rmark{position:absolute;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px #000,0 0 8px var(--wall);pointer-events:none;border-radius:1px}
 #rwin{position:absolute;top:15px;height:15px;border:1px solid #fff;background:#fff2;pointer-events:none}
 #rlab{position:absolute;right:0;top:0;padding:1px 8px 0 10px;background:var(--bg);color:var(--soft);pointer-events:none;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis}
@@ -616,6 +619,7 @@ body.mini .ov,body.exhibit .ov{display:none}
     <div id="ruler" role="slider" aria-label="Where you are in the whole work" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0" aria-valuetext="Nothing chosen yet" tabindex="0">
       <div id="rin"><canvas id="rcv"></canvas><div id="rwin" hidden></div><div id="rmark" hidden></div><div class="meta" id="rlab"></div><div id="rtip" hidden><img alt="" hidden><span></span></div></div>
     </div>
+    <p class="note" id="rkey" hidden>Above: the 5,909 pictures of the document, in the order they were pasted. Below: the nine weeks; <i class="k1"></i>yellow where the call was recorded, <i class="k2"></i>green a phone video, <i class="k3"></i>white another recording.</p>
   </div></div>
 
   <aside id="side" aria-label="Your mark, and the marks so far">
@@ -741,6 +745,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <section class="afig">
         <h3 class="sh">The weather of 2021</h3>
         <p>What is left of the first attempt is 14,586 files: 209 gigabytes, 506 hours of video. Here all of it is reduced to colour.</p>
+        <p class="note rk">The strip under the stage shows the same two things small, and is the map of the whole work. Above: the 5,909 pictures of the document, in the order they were pasted. Below: the nine weeks; <i class="k1"></i>yellow where the call was recorded, <i class="k2"></i>green a phone video, <i class="k3"></i>white another recording. The arrow keys move along it.</p>
         <p class="note">The document: 5,909 screenshots in the order they were pasted. Pick one to put it on the stage.</p>
         <img class="px" id="atlas" src="data/weather-2021.png" crossorigin="anonymous" alt="A woven-looking grid of 5,909 tiny colour fields, mostly dark grey and white with threads of yellow and green.">
         <p class="note" style="margin-top:26px">The call: every minute it was recording. One row for each day, 14 Nov 2021 at the top, 13 Jan 2022 at the bottom, midnight to midnight, Prague time.</p>
@@ -1152,6 +1157,7 @@ function paintSound(){const rec=!!(cur&&(isMin(cur)||shotSound(cur))),bs=$('#bso
 /* stop whatever is sounding or moving, without deciding whether we are still "playing" */
 function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;clearInterval(shotT);shotLive=false;audio.volume=1;audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
 function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:playPos};halt();playing=false;paintPlay();paintSound()}
+if(!EX&&!store.get('abe-rkey',0)){$('#rkey').hidden=false;if(!introOpenNow())store.set('abe-rkey',1)}
 const hintOff=()=>{$('#hint').hidden=true};$('#bplay').addEventListener('click',hintOff);
 if(!EX&&!store.get('abe-hint',0)){$('#hint').hidden=false;if(!introOpenNow())store.set('abe-hint',1)}
 function startPlay(){
@@ -1326,7 +1332,11 @@ function rulerPos(id){ /* [x, row, words] */
   return null}
 function markRuler(){const m=$('#rmark'),p=cur&&RW?rulerPos(cur):null;if(!p){m.hidden=true;$('#rlab').textContent='';ruler.setAttribute('aria-valuetext',cur?String($('#who').textContent||cur):'Nothing chosen yet');return}
   ruler.setAttribute('aria-valuenow',Math.round(clamp(p[0]/RW,0,1)*1000));ruler.setAttribute('aria-valuetext',(p[1]?'Recordings: ':'Pictures: ')+p[2]);
-  m.hidden=false;m.style.left=p[0]+'px';m.style.top=((p[1]?RG.by:RG.ay)-4)+'px';m.style.height=((p[1]?RG.bh:RG.ah)+8)+'px';$('#rlab').textContent=p[2]}
+  m.hidden=false;m.style.left=p[0]+'px';m.style.top=((p[1]?RG.by:RG.ay)-4)+'px';m.style.height=((p[1]?RG.bh:RG.ah)+8)+'px';$('#rlab').textContent=p[2];rKeyTip()}
+/* by the keyboard there is no pointer to hang the tip on: it stands over the mark while the ruler has the focus */
+function rKeyTip(){const tip=$('#rtip');let kb=false;try{kb=document.activeElement==ruler&&ruler.matches(':focus-visible')}catch(e){}if(!kb||rdrag)return;const p=cur&&RW?rulerPos(cur):null;if(!p){tip.hidden=true;return}
+  tip.firstChild.hidden=true;tip.lastChild.textContent=ruler.getAttribute('aria-valuetext')||p[2];tip.style.left=clamp(p[0],120,Math.max(120,RW-120))+'px';tip.hidden=false;rTipId=''}
+ruler.addEventListener('focus',()=>setTimeout(rKeyTip,0));ruler.addEventListener('blur',()=>{if(!rdrag&&!ruler.classList.contains('big')){$('#rtip').hidden=true;rTipId=''}});
 let rdrag=false,rTarget=null,rRow=-1,rHold=false,rTipId='',rTouch=false,rIdle=0;
 /* Under a mouse the ruler is large while the pointer is over it. Under a finger there is no "over": it grows at the first touch and
    stays large, so that a second and a third touch can aim, until nothing has touched it for a few seconds or the page is scrolled. */
