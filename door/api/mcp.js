@@ -34,7 +34,7 @@ async function look(id, open) {
   }
   const m = /^(r\d{3})(?:\.(\d{4}))?$/.exec(id);
   if (m) {
-    const out = { id, kind: m[2] ? 'one minute of a recording' : 'recording', sensitive: true, note: 'Recordings are raw: a person thinking aloud through hard weeks, with friends who agreed to be shown. The voice layer is a small machine\'s transcription and mishears.', voice: media + 'r/' + m[1] + '/voice.json', frames: media + 'r/' + m[1] + '/f/', minutes: arch.recordings[m[1]], answers, url: SITE + '#' + id };
+    const out = { id, kind: m[2] ? 'one minute of a recording' : 'recording', sensitive: true, note: 'Recordings are given as they were: a person thinking aloud through hard weeks, with friends who agreed to be shown. The voice layer is a small machine\'s transcription and mishears.', voice: media + 'r/' + m[1] + '/voice.json', frames: media + 'r/' + m[1] + '/f/', minutes: arch.recordings[m[1]], answers, url: SITE + '#' + id };
     if (m[2]) out.frame = media + 'r/' + m[1] + '/f/' + ('0000' + Number(m[2])).slice(-5) + '.webp';
     if (!open) out.hint = 'Call again with open_sensitive=true to get the words spoken in it.';
     else { try { const r = await fetch(out.voice); const v = await r.json(); const a = m[2] ? Number(m[2]) * 60 : 0, b = m[2] ? a + 60 : 300; out.heard = v.segs.filter((s) => s[0] >= a && s[0] < b).map((s) => s[2]).join(' ').slice(0, 2500); } catch { out.heard = ''; } }
