@@ -406,7 +406,8 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 #fly{width:100%;aspect-ratio:16/10;display:block;background:#060607;border:1px solid var(--line);border-radius:var(--r-card)}
 .px{image-rendering:pixelated;image-rendering:crisp-edges;width:100%;display:block;border:1px solid var(--line);cursor:crosshair}
 .axis{display:flex;justify-content:space-between}
-.about{max-width:760px}
+/* About on a wide screen: the text keeps its measure, the three pictures that are this work's own take the width of the page */
+.about{max-width:none}.about>details,.about>.cols{max-width:760px}
 .afig{margin:10px 0 0}.afig p{max-width:68ch}
 .about>details{border-top:1px solid var(--line)}
 .about>details:last-of-type{border-bottom:1px solid var(--line)}
