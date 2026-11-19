@@ -74,14 +74,20 @@ for f in sorted(glob.glob(os.path.join(HEARD, 'r*.json'))):
     if not v or not h.get('windows'): continue
     old = v['segs']; drop = set(); new = []; lang = []
     for w in h['windows'].values():
+        fresh = 'new' in (w.get('signs') or [])       # a recording that was never heard: everything the model wrote is taken
         for c in w['chunks']:
             a, b = c['s'], c['e']; tally['pieces'] += 1; secs[c['lang']] += b - a; tally['heard ' + c['lang']] += 1
+            if c.get('skipped'): tally['sweep: English, left alone'] += 1; continue
             if any(veiled.get('%s.%04d' % (rid, m)) for m in range(int(a // 60), int(b // 60) + 1)) or veiled.get(rid): tally['hidden, left alone'] += 1; continue
             inside = [i for i, s in enumerate(old) if a <= (s[0] + s[1]) / 2 < b]
             good = [[r[0], r[1], clean(r[2])] for r in c['segs'] if not loop(r[2]) and not (r[4] > 0.8 and r[3] < -0.6) and r[3] > -1.3]
             good = [g for g in good if len(g[2]) > 1]
             bad_old = [i for i in inside if marked(old[i])]
-            if c['lang'] in ('hi', 'bn'):
+            if fresh:
+                if good:
+                    drop.update(inside); new += good; tally['new recording: ' + c['lang']] += 1
+                    if c['lang'] in ('hi', 'bn'): lang.append([round(a, 1), round(b, 1), c['lang']])
+            elif c['lang'] in ('hi', 'bn'):
                 if good: drop.update(inside); new += good; lang.append([round(a, 1), round(b, 1), c['lang']]); tally['replaced: ' + c['lang']] += 1
                 elif bad_old and all(loop(old[i][2]) for i in bad_old): drop.update(bad_old); tally['loop taken out, nothing heard'] += 1
                 else: tally['kept the first hearing'] += 1
@@ -92,11 +98,16 @@ for f in sorted(glob.glob(os.path.join(HEARD, 'r*.json'))):
             else: tally['kept the first hearing'] += 1
     if not drop and not new: continue
     segs = sorted([s for i, s in enumerate(old) if i not in drop] + new, key=lambda s: (s[0], s[1]))
-    lang.sort(); merged = []
+    lang = sorted([list(l) for l in v.get('lang', []) if not any(l[0] < n[1] and n[0] < l[1] for n in lang)] + lang); merged = []   # what an earlier merge heard as Hindi or Bengali stays
     for l in lang:
         if merged and merged[-1][2] == l[2] and l[0] - merged[-1][1] <= 1.0: merged[-1][1] = l[1]
         else: merged.append(list(l))
     v['segs'] = segs; v['lang'] = merged
+    if not v.get('model') or v.get('model') == h.get('model'):     # heard for the first time, by the larger model alone
+        v['model'] = h.get('model', ''); v['heard_hours'] = list(range(v.get('of_hours') or 1))
+        touched.append(rid); tally['lines out'] += len(drop); tally['lines in'] += len(new)
+        if not DRY: json.dump(v, open(os.path.join(ARCH, 'r', rid, 'voice.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+        continue
     v['model2'] = h.get('model', '')
     v['note'] = ('The voice layer: what machines made of the sound in 2026. First a very small speech model that knows only English (%s). Where its words '
                  'carried no meaning, the sound was heard again by a model that knows Hindi, Bengali and English (%s); Hindi and Bengali are written in the '
@@ -107,7 +118,9 @@ for f in sorted(glob.glob(os.path.join(HEARD, 'r*.json'))):
 if touched and not DRY:
     ip = os.path.join(ARCH, 'r', 'index.json'); idx = json.load(open(ip, encoding='utf-8'))
     for r in idx['recordings']:
-        if r['id'] in touched: r['lines'] = len(voices[r['id']]['segs'])
+        if r['id'] in touched:
+            v = voices[r['id']]; r['lines'] = len(v['segs'])
+            if not r.get('heard') and v.get('heard_hours'): r['heard'] = v['heard_hours']; r['speech_s'] = round(sum(s[1] - s[0] for s in v['segs']))
     json.dump(idx, open(ip, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     ap = os.path.join(ROOT, 'data', 'archive.json'); a = json.load(open(ap, encoding='utf-8'))
     a['counts']['spoken_lines'] = sum(r.get('lines', 0) for r in idx['recordings']); json.dump(a, open(ap, 'w', encoding='utf-8'), ensure_ascii=False)

@@ -7,6 +7,10 @@ tools here need nothing but Python, this one cannot.
   python3 relisten.py --arch ARCHIVE_CLONE --plan relisten_plan.json --out OUTDIR [--shard 0/12] [--only "r004 r011"]
                       [--model large-v3] [--audio https://raw.githubusercontent.com/<archive>/audio/] [--budget 19000]
 
+A window with the sign "sweep" (tools/relisten_sweep.py) is only asked for its language, piece by piece, and written down
+where that is Hindi or Bengali. A window with the sign "new" belongs to a recording that was never heard: all of it is
+written down, in whatever of the three languages it is.
+
 For each marked window (tools/relisten_find.py) it cuts the sound into pieces of at most 28 seconds along the pauses the
 first hearing found, asks the model which language each piece is in, and keeps the answer to English, Hindi or Bengali
 (Urdu, Punjabi, Marathi, Nepali, Gujarati count as Hindi, Assamese as Bengali: to a machine they sound alike, and these
@@ -119,6 +123,8 @@ for rid in mine:
                 if l in FOLD: f[FOLD[l]] += float(p)
             lang = max(f, key=f.get)
             ch = {'s': round(c0, 1), 'e': round(c1, 1), 'lang': lang, 'p': {k: round(v, 3) for k, v in f.items()}, 'said': lang0}
+            if 'sweep' in signs and lang == 'en':     # a sweep only looks for Hindi and Bengali: English stays as the first hearing has it
+                ch['skipped'] = True; ch['segs'] = []; chunks.append(ch); continue
             native, _ = hear(x, lang)
             if lang == 'en': final = native
             else:
