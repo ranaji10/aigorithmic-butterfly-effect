@@ -645,7 +645,10 @@ body.mini .ov,body.exhibit .ov{display:none}
         <span class="sp"></span>
         <span class="meta"><span id="cnt">0</span> / 280</span>
       </div>
-      <details id="more"><summary>As <span id="bysum">a human, anonymous</span></summary>
+      <div id="byrow" role="radiogroup" aria-label="Who is speaking">
+        <button type="button" role="radio" aria-checked="true" data-by="human"><i class="h"></i>a human</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="ai"><i class="a"></i>an AI</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="both"><i></i>both together</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="unsure"><i></i>not sure</button>
+      </div>
+      <details id="more"><summary>Name: <span id="bysum">anonymous</span> · model, theme</summary>
         <div class="row">
           <div hidden><label for="by" class="meta">Who</label><select id="by"><option value="human">a human</option><option value="ai">an AI</option><option value="both">both, together</option><option value="unsure">not sure</option></select></div>
           <div><label for="nm" class="meta">Name (optional)</label><input type="text" id="nm" maxlength="40" placeholder="anonymous"></div>
@@ -656,9 +659,6 @@ body.mini .ov,body.exhibit .ov{display:none}
       </details>
       <div id="asme" class="meta" hidden style="margin:8px 0">You are here as <span id="asname" class="ok"></span> <label style="text-transform:none"><input type="checkbox" id="here"> I am in this</label></div>
       <div id="dnote" class="meta" hidden></div>
-      <div id="byrow" role="radiogroup" aria-label="Who is speaking">
-        <button type="button" role="radio" aria-checked="true" data-by="human"><i class="h"></i>a human</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="ai"><i class="a"></i>an AI</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="both"><i></i>both together</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="unsure"><i></i>not sure</button>
-      </div>
       <div id="fsend"><button class="btn go" type="submit" id="send">Leave your mark</button><span id="sent" class="meta" aria-live="polite"></span></div>
     </form>
     <div id="heard" hidden>
@@ -1757,7 +1757,7 @@ $('#tanswer').onclick=()=>{if(openTheme){go(openTheme);$('#banswer').click()}};
 const pending=()=>store.get('abe-pending',[]).filter(p=>Date.now()-p.t<3*day&&!wb.wingbeats.some(w=>w.hears==p.hears&&w.text==p.text&&w.name==(p.name||'anonymous')));
 let claim=store.get('abe-claim',null);if(claim&&claim.token&&!claim.key)claim.key=claim.token;
 let claimOK=false;
-const bysum=()=>$('#bysum').textContent=$('#by').selectedOptions[0].textContent+', '+($('#nm').value.trim()||'anonymous');
+const bysum=()=>$('#bysum').textContent=$('#nm').value.trim()||'anonymous';
 $('#t').oninput=()=>$('#cnt').textContent=$('#t').value.length;
 /* a first name from People (or the author's) on a mark is kept, and shown as not confirmed until a steward has confirmed the person */
 const firstWord=v=>((String(v||'').normalize('NFKC').toLowerCase().match(/\p{L}+/u)||[''])[0]);
