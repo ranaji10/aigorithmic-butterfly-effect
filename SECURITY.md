@@ -42,7 +42,7 @@ There is no bounty. There is a place in the credits if you want one.
 - **A determined crowd can fill a day.** Three hundred marks from three hundred places pauses the call until a steward reopens it. That is the design: closed and intact rather than open and flooded.
 - **The filter is a short list of patterns**, not a judge. It will miss things, and stewards remove what it misses (charter, section 3).
 - **The history of the archive repository keeps what was taken out.** Hiding, removing or masking a picture or a recording changes what the site and the archive's pages serve. The file as it was stays in the git history of the archive repository, where anyone who knows the commit can still fetch it, and a copy of an original that was sent to the Internet Archive stays there. For most removals that is accepted. For something that must be gone for good, see "Taking something out for good" below; it is a steward's decision, it cannot be undone, and it has not been done so far.
-- **The censoring on the site is a warning, not a lock.** It spares a visitor the uncensored material until they press "Show uncensored". Everything public is in the archive repository and its index for anyone who reads those directly.
+- **The censoring on the site is a warning, not a lock.** It spares a visitor the material as it was until they ask for it. Everything public is in the archive repository and its index for anyone who reads those directly.
 
 Settled since the first review: the door's storage client is on its 2.x line (2.4.0, pinned); the main branch and the archive's branches can no longer be force-pushed or deleted, and a `ring-*` tag can never be moved (repository rules, 16 November 2026).
 

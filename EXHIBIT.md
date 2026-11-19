@@ -25,7 +25,7 @@ Put the QR code (`print/qr.png`) next to the screen, at hand height. That is the
 ## Care for the room
 
 - Nothing in the room is live video and nothing records visitors. Say so on the label if people ask. This matters: the first version recorded everything.
-- Do not show uncensored screenshots or footage from 2021, even if they become available to you. They contain people who never agreed.
+- Do not show screenshots or footage from 2021 as they were, even if they become available to you. They contain people who never agreed.
 - The lines on screen are written by strangers and are only lightly filtered. A steward can take any line back within the day (charter, section 6). For showings to children, run from a local copy and remove what you need to.
 - If someone tells you the work is talking to them in particular, be kind, and get them a glass of water and a person to sit with.
 
