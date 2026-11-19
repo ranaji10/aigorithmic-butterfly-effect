@@ -190,6 +190,15 @@ details.fold{margin:8px 0 0}details.fold>summary{cursor:pointer;color:var(--dim)
 #ftools{display:flex;align-items:center;gap:2px;margin:4px 0 2px -8px}
 #ftools .cb{width:36px;height:36px}
 #fsend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+/* who is speaking: in sight, as the work's second promise asks */
+#byrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+#byrow button{display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--edge);border-radius:var(--r-pill);padding:6px 12px;cursor:pointer;font-size:var(--t-note);color:var(--soft);min-height:34px}
+#byrow button[aria-checked=true]{border-color:var(--ink);color:var(--ink);background:#ffffff0d}
+#byrow i{width:10px;height:10px;background:#fff;flex:none}#byrow i.h{background:var(--wall)}#byrow i.a{background:var(--hood)}
+/* after a mark was taken: the moment the work is built around */
+#heard .hd{font:400 var(--t-head)/1.2 var(--serif);margin:0 0 10px}
+#hfly{width:100%;aspect-ratio:760/460;display:block;background:#060607;border:1px solid var(--line);border-radius:var(--r-card);margin:0 0 10px}
+#heard .trow{margin:10px 0 0}
 h3{font:600 var(--t-label)/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--wall);margin:26px 0 10px}
 .thread{list-style:none;margin:0;padding:0}
 .thread li{padding:8px 0 8px 12px;border-left:2px solid var(--line);cursor:pointer;font-size:var(--t-small);line-height:1.4}
@@ -444,7 +453,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   .cb{width:44px;height:44px}.cb.main{width:46px;height:46px}
   #ruler{height:44px}
   body:not(.v-stage) #side{display:none}
-  body.v-stage #views,body.v-stage footer{display:none}
+  body.v-stage #views,body.v-stage footer,body.v-stage #banswer{display:none}
   #views{padding:0 12px 40px}
   .grid{grid-template-columns:repeat(3,1fr);gap:4px}
   .qlist,.calls{grid-template-columns:1fr}
@@ -511,6 +520,7 @@ body.mini .ov,body.exhibit .ov{display:none}
   footer a{display:inline-block;padding:9px 5px}
   #idtag{padding:10px 8px}
   #brand{padding:15px 0}
+  #byrow button{min-height:44px}
   .ob{width:44px;height:44px}.ob.tx{height:44px}#ftools .cb{width:44px;height:44px}.btn.go{min-height:44px}input[type=range]{height:44px}
 }
 </style>
@@ -561,7 +571,7 @@ body.mini .ov,body.exhibit .ov{display:none}
   <button id="inext" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
 </div>
 <header id="bar">
-  <a id="brand" href="#" title="The stage. Already there? Then this lets you draw on it."><b>AI</b>gorithmic Butterfly Effect</a>
+  <a id="brand" href="#" title="The stage"><b>AI</b>gorithmic Butterfly Effect</a>
   <nav id="tabs" aria-label="Parts of the work">
     <button data-v="stage" class="on" aria-current="page">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
   </nav>
@@ -628,7 +638,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       </div>
       <details id="more"><summary>As <span id="bysum">a human, anonymous</span></summary>
         <div class="row">
-          <div><label for="by" class="meta">Who</label><select id="by"><option value="human">a human</option><option value="ai">an AI</option><option value="both">both, together</option><option value="unsure">not sure</option></select></div>
+          <div hidden><label for="by" class="meta">Who</label><select id="by"><option value="human">a human</option><option value="ai">an AI</option><option value="both">both, together</option><option value="unsure">not sure</option></select></div>
           <div><label for="nm" class="meta">Name (optional)</label><input type="text" id="nm" maxlength="40" placeholder="anonymous"></div>
           <div id="mdl" hidden><label for="md" class="meta">Model (optional)</label><input type="text" id="md" maxlength="60"></div>
         </div>
@@ -637,8 +647,17 @@ body.mini .ov,body.exhibit .ov{display:none}
       </details>
       <div id="asme" class="meta" hidden style="margin:8px 0">You are here as <span id="asname" class="ok"></span> <label style="text-transform:none"><input type="checkbox" id="here"> I am in this</label></div>
       <div id="dnote" class="meta" hidden></div>
+      <div id="byrow" role="radiogroup" aria-label="Who is speaking">
+        <button type="button" role="radio" aria-checked="true" data-by="human"><i class="h"></i>a human</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="ai"><i class="a"></i>an AI</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="both"><i></i>both together</button><button type="button" role="radio" aria-checked="false" tabindex="-1" data-by="unsure"><i></i>not sure</button>
+      </div>
       <div id="fsend"><button class="btn go" type="submit" id="send">Leave your mark</button><span id="sent" class="meta" aria-live="polite"></span></div>
     </form>
+    <div id="heard" hidden>
+      <p class="hd" id="heardh" tabindex="-1" aria-live="polite">Heard.</p>
+      <canvas id="hfly" width="760" height="460" role="img" aria-label="The butterfly, dim, with the path your mark bends drawn bright."></canvas>
+      <p class="note" aria-live="polite" id="heardn">It appears here within the hour, usually.</p>
+      <p class="trow"><button type="button" class="btn sm" id="hshuf">Somewhere else</button><button type="button" class="btn sm" id="hall">See every mark</button><button type="button" class="lk" id="hmore">Leave another here</button></p>
+    </div>
     <h3 id="thh">Marks so far</h3>
     <ul class="thread" id="thread"></ul>
     <div id="recbox" hidden>
@@ -1048,7 +1067,7 @@ async function show0(id,o){
   const chain=[];let x=id;while(N[x]){chain.unshift(N[x]);x=N[x].hears;if(!x)break}
   if(!chain.length&&!isMedia(id)&&!isTheme(id))return;
   if(!o.keep)inferCtx(id);
-  if(cur!=id){strokes=drafts[id]||[];pausePos=null}
+  if(cur!=id){strokes=drafts[id]||[];pausePos=null;heardHide()}
   const prev=cur;cur=id;
   const rootId=x||chain[0].id,depth=chain.length-(x?0:1);
   $('#idtag').textContent=id;paintDraw();
@@ -1065,7 +1084,7 @@ async function show0(id,o){
   $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
   $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></li>').join('')
     +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands at the next sweep</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
-    +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">None yet.</li>');
+    +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">Nobody has answered this yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
   markRuler();markTiles();syncClip();paintSound();if(RAW&&!sndP&&!isMin(id))needSound();
@@ -1274,7 +1293,7 @@ function drawRuler(){
   if(OTHERS.length){rx.fillStyle='#3d3d46';rx.fillRect(RG.pad+wd+4,RG.ay,RW-2*RG.pad-wd-4,RG.ah)}
   rx.fillStyle='#1a1a1e';rx.fillRect(RG.pad,RG.by,RW-2*RG.pad,RG.bh);
   for(let t=T0+36e5,i=0;t<=T1;t+=day,i++){const x=xTime(t-36e5);rx.fillStyle=i%7==0?'#55555e':'#2c2c33';rx.fillRect(x,RG.by,1,RG.bh+(i%7==0?4:0));
-    if(i%7==0&&RW>520||i%14==0){const dd=new Date(t);rx.fillStyle='#8f8b83';rx.fillText((i==0&&!big?'CALLS · ':'')+dd.getUTCDate()+' '+MON[dd.getUTCMonth()],x+3,RG.by+RG.bh+1)}}
+    if(i%7==0&&RW>520||i%14==0){const dd=new Date(t);rx.fillStyle='#8f8b83';rx.fillText(i==0&&!big&&RW<=520?'CALLS':(i==0&&!big?'CALLS · ':'')+dd.getUTCDate()+' '+MON[dd.getUTCMonth()],x+3,RG.by+RG.bh+1)}}
   if(recs)for(const r of recs){if(!r.t0)continue;const x=xTime(r.t0),w=Math.max(1.5,r.sec*1e3/(T1-T0)*(RW-2*RG.pad));rx.fillStyle=r.kind=='call'?'#e3c34d':r.kind=='story'?'#6dbb72':'#fff';rx.globalAlpha=r.kind=='call'?.85:.9;rx.fillRect(x,r.kind=='call'?RG.by:RG.by+RG.bh-4,w,r.kind=='call'?RG.bh:4);rx.globalAlpha=1}
 
   /* where the open theme lives */
@@ -1341,8 +1360,7 @@ function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view;vie
   if(v=='browse')bInit();if(v=='themes')tInit();if(v=='people')pInit();if(v=='about'){drawFly()}
   syncDock();if(was!=v){if(v=='people'||v=='about'){viewSmall=true;peek=false;hold=false;holdAway=false;dockSync()}else setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
   requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
-/* pressing "stage" while already on it is not nothing: it turns drawing on (or off again) */
-function tabTo(v){if(v=='stage'&&view=='stage'&&!mini&&!EX){setDraw(!drawing);return}setView(v)}
+function tabTo(v){if(v=='stage'&&view=='stage'&&!EX){if(mini)dockOpen();scrollTo(0,0);return}setView(v)}
 $$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>{const was=view;tabTo(b.dataset.v);if(view!=was)focusHead()});
 $('#skip').onclick=e=>{e.preventDefault();focusHead()};
 $('#brand').onclick=e=>{e.preventDefault();tabTo('stage')};
@@ -1707,9 +1725,26 @@ $('#t').oninput=()=>$('#cnt').textContent=$('#t').value.length;
 const firstWord=v=>((String(v||'').normalize('NFKC').toLowerCase().match(/\p{L}+/u)||[''])[0]);
 function nmNote(){const ws=(String($('#nm').value).normalize('NFKC').toLowerCase().match(/\p{L}+/gu)||[]),mine=new Set(ws.concat(ws.join(''))),el=$('#nmnote'),hit=ws.length&&!mine.has('anonymous')&&(Object.values(P).find(p=>mine.has(firstWord(p.name)))||(mine.has('rana')||mine.has('ranaji'))&&{name:'Rana',id:''}),own=hit&&hit.id&&claim&&claimOK&&claim.person==hit.id;
   el.hidden=!hit||!!own;if(hit&&!own)el.textContent='“'+hit.name+'” is the first name of someone from the calls. Your mark is kept, with “name not confirmed” beside the name'+(hit.id?'. If you are '+hit.name+': People, then “This is me”.':'.')}
-$('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum()};$('#nm').oninput=()=>{bysum();nmNote()};
+$('#by').onchange=()=>{$('#mdl').hidden=!/ai|both/.test($('#by').value);bysum();for(const b of $$('#byrow button')){const on=b.dataset.by==$('#by').value;b.setAttribute('aria-checked',on?'true':'false');b.tabIndex=on?0:-1}};
+$('#byrow').onclick=e=>{const b=e.target.closest('button[data-by]');if(!b)return;$('#by').value=b.dataset.by;$('#by').onchange();if(/ai|both/.test(b.dataset.by))$('#more').open=true};
+$('#byrow').onkeydown=e=>{const L=$$('#byrow button'),i=L.findIndex(b=>b.getAttribute('aria-checked')=='true'),d=e.key=='ArrowRight'||e.key=='ArrowDown'?1:e.key=='ArrowLeft'||e.key=='ArrowUp'?-1:0;if(!d)return;e.preventDefault();const b=L[(i+d+L.length)%L.length];b.click();b.focus()};$('#nm').oninput=()=>{bysum();nmNote()};
 {const me=store.get('abe-me',null);if(me){if(me.by)$('#by').value=me.by;if(me.name)$('#nm').value=me.name;$('#by').onchange()}}
 
+/* "Heard.": in the form's place, the butterfly dim and the path this mark bends in the colour of who left it. The mark has no
+   number until the next sweep, so its own path cannot be known yet: it starts where the path of what it answers ends (or, for a
+   picture or a minute, at a place taken from its own letters), as it will then. No count, no streak, no "come back". */
+function heardShow(q,done){const c=$('#hfly'),x=c.getContext('2d'),W=c.width,H=c.height,sx=W/52,sy=H/56;if(!paths)buildFly();
+  x.fillStyle='#060607';x.fillRect(0,0,W,H);x.lineJoin=x.lineCap='round';
+  const line=(p,col,lw)=>{x.beginPath();for(let i=0;i<p.length;i+=2){const X=W/2+p[i]*sx,Y=H-3*sy-p[i+1]*sy;i?x.lineTo(X,Y):x.moveTo(X,Y)}x.strokeStyle=col;x.lineWidth=lw;x.stroke()};
+  x.globalAlpha=.35;for(const n of Object.values(N))if(paths[n.id])line(paths[n.id].pts,n.at=='2021'?'#6f7480':colour(n),n.at=='2021'?.8:1.4);x.globalAlpha=1;
+  const h=hash((q.hears||'')+(q.text||'')+(q.mark||'')),par=q.hears&&paths[q.hears];let st;
+  if(par){const e=par.end;st=[e[0]+((h&255)-128)/4e3,e[1]+((h>>>8&255)-128)/4e3,e[2]+((h>>>16&255)-128)/4e3];x.globalAlpha=.9;line(par.pts,'#fff',1.6);x.globalAlpha=1}
+  else{st=[((h&1023)/1023-.5)*24,((h>>>10&1023)/1023-.5)*24,8+(h>>>20&1023)/1023*30];[,st]=run(st,300)}
+  const[pts]=run(st,STEPS*2);line(pts,colour({by:q.by,at:'now'}),3);
+  $('#heardh').textContent=done>1?'Heard. '+done+' marks.':'Heard.';$('#heardn').textContent=(done>1?'They appear':'It appears')+' here within the hour, usually.';
+  $('#f').hidden=true;$('#heard').hidden=false;try{$('#heardh').focus({preventScroll:true})}catch(e){}}
+function heardHide(){if($('#heard').hidden)return;$('#heard').hidden=true;$('#f').hidden=false}
+$('#hshuf').onclick=()=>$('#bshuf').click();$('#hall').onclick=()=>$('#nmarks').click();$('#hmore').onclick=()=>{heardHide();try{$('#t').focus()}catch(e){}};
 async function post(p){if(FRAMED)return{ok:false,problems:[ownTab()]};const r=await fetch(DOOR+'/api/say',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return r.json()}
 /* the door takes one mark every eight seconds from one place, and five a day: several marks go through one after another */
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1728,19 +1763,19 @@ async function leave(){
   if(!jobs.length){sent.textContent='Write something, or draw.';return false}
   if(!DOOR){open(REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''}),'_blank','noopener');return false}
   store.set('abe-me',{by:p.by,name:p.name||''});
-  leaving=true;$('#send').disabled=$('#dsend').disabled=true;let done=0,why='';
+  leaving=true;$('#send').disabled=$('#dsend').disabled=true;$('#send').setAttribute('aria-busy','true');let done=0,why='';
   for(let k=0;k<jobs.length;k++){const q=jobs[k];
-    sent.textContent=jobs.length>1?'Saving '+(k+1)+' of '+jobs.length+' … (the door takes one every few seconds)':'…';
+    sent.textContent=jobs.length>1?'Sending '+(k+1)+' of '+jobs.length+'… (one every few seconds)':'Sending…';
     let o;try{o=await postSlow(q)}catch(err){why='net';break}
     if(o.ok){done++;const pq=store.get('abe-pending',[]);pq.push({t:Date.now(),door:o.door,hears:q.hears,text:q.text,name:q.name});store.set('abe-pending',pq.slice(-40));
       delete drafts[q.hears];store.set('abe-drafts',drafts);
       if(q.hears==here0){$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;$('#th').value='';if(cur==here0)strokes=[]}}
     else{why=(o.problems||['Not accepted.']).join(' ');if(/enough for one day|paused|storage|its own tab|door is full/i.test(why)||k==0&&q===p)break;why=''} /* a mark the door will not take stays on this device; the others still go */
   }
-  leaving=false;$('#send').disabled=$('#dsend').disabled=false;
+  leaving=false;$('#send').disabled=$('#dsend').disabled=false;$('#send').removeAttribute('aria-busy');
   const left=draftIds().length,all=done==jobs.length;
   if(why=='net')sent.innerHTML='<span class="warn">'+(done?done+' saved. ':'')+'The door could not be reached. '+(done?'The rest is kept on this device.':'<a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''})+'">Leave it through GitHub</a>')+'</span>';
-  else if(all)sent.innerHTML='<span class="ok">Heard. '+(done>1?done+' marks land':'It lands')+' here at the next sweep, usually within the hour.</span>';
+  else if(all){sent.textContent='';heardShow(jobs[0],done)}
   else sent.innerHTML='<span class="warn">'+esc((done?done+' saved. ':'')+why+(left?' '+left+(left==1?' drawing is':' drawings are')+' kept on this device; press again later.':''))+'</span>';
   if(all)setDraw(false);if(done&&cur)show(cur,{quiet:1,keep:1});else paintDraw();
   return all}
