@@ -157,6 +157,11 @@ body.mini #ctl>#bplay,body.mini #ctl>#bexp{display:inline-grid!important;flex:no
 body.mini #bplay{width:40px;height:40px}
 body.mini #ruler,body.mini .edge,body.mini #gate,body.mini #idtag{display:none!important}
 
+/* Browse, Themes, People, About: while the stage lies in the page it is a strip, without the ruler and the scrubber; both
+   come back when it is opened large over the page or to the full screen (19 Nov 2026) */
+body.dock:not(.peek):not(.full):not(.mini):not(.v-stage) #ruler,body.dock:not(.peek):not(.full):not(.mini):not(.v-stage) #scrubw{display:none}
+#bbody:empty{min-height:60vh}#bbody:empty::before{content:"Loading the days…";display:block;padding-top:14px;color:var(--dim);font-size:var(--t-small)}
+
 /* buttons, forms */
 .btn{border:1px solid #fff8;background:none;padding:8px 15px;border-radius:var(--r-pill);cursor:pointer;text-decoration:none;color:inherit;display:inline-block;font-size:var(--t-small)}
 .btn:hover{border-color:#fff;color:inherit}.btn.go{background:var(--wall);border-color:var(--wall);color:var(--on-wall);font-weight:600}
@@ -407,10 +412,16 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   body.v-stage #stage{flex:1}
   body.v-stage #side{overflow:auto;border-left:1px solid var(--line)}
   body.v-stage #views,body.v-stage footer,body.v-stage #banswer{display:none}
-  body:not(.v-stage) #stage{height:31vh;height:31svh}
+  body:not(.v-stage) #stage{height:20vh;height:20svh}
+  body.peek:not(.v-stage) #stage{height:31vh;height:31svh}
   body:not(.v-stage) #side{display:none}
   body:not(.v-stage) #cap{min-height:0;padding:6px 16px 0}
   body:not(.v-stage) #line{max-height:1.4em;white-space:nowrap;text-overflow:ellipsis;font-size:var(--t-body)}
+  /* in the page, away from the stage view: the words and the controls share one row under the strip */
+  body.dock:not(.mini):not(.peek):not(.full):not(.v-stage) #pin{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+  body.dock:not(.mini):not(.peek):not(.full):not(.v-stage) #stage{grid-column:1/-1}
+  body.dock:not(.mini):not(.peek):not(.full):not(.v-stage) #cap{padding:4px 16px}
+  body.dock:not(.mini):not(.peek):not(.full):not(.v-stage) #ctl{flex-wrap:nowrap}body.dock:not(.mini):not(.peek):not(.full):not(.v-stage) #ctl .sp{display:none}
 }
 /* phones and narrow windows */
 @media (max-width:899px){
@@ -420,8 +431,11 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   #tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:var(--z-bar);height:calc(var(--tab) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid var(--line)}
   #tabbar button{flex:1;padding:0;font-size:var(--t-label);letter-spacing:.08em}
   #stage{height:min(62vw,40vh);height:min(62vw,40svh)}
-  body:not(.v-stage) #stage{height:min(54vw,27vh);height:min(54vw,27svh)}
+  body:not(.v-stage) #stage{height:min(40vw,18vh);height:min(40vw,18svh)}
+  body.peek:not(.v-stage) #stage{height:min(54vw,27vh);height:min(54vw,27svh)}
   body:not(.v-stage) #cap{display:none}
+  /* away from the stage "Leave your mark" keeps its place in the row of controls, as its sign alone */
+  body:not(.v-stage) #banswer{width:44px;padding:0;justify-content:center}body:not(.v-stage) #banswer span{display:none}body:not(.v-stage) #banswer svg{display:block}
   #gate{padding:26px 12px 10px}#gate p{font-size:var(--t-note);margin-top:6px}
   #views h2{font-size:var(--t-head);margin-bottom:6px}#views .lead{font-size:var(--t-small);line-height:1.45}
   #cap{padding:8px 12px 2px;min-height:0}
@@ -1325,7 +1339,7 @@ function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view;vie
   document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
   $$('#tabs button,#tabbar button').forEach(b=>{const on=b.dataset.v==v;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});setTitle();
   if(v=='browse')bInit();if(v=='themes')tInit();if(v=='people')pInit();if(v=='about'){drawFly()}
-  syncDock();if(was!=v){setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
+  syncDock();if(was!=v){if(v=='people'||v=='about'){viewSmall=true;peek=false;hold=false;holdAway=false;dockSync()}else setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
   requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
 /* pressing "stage" while already on it is not nothing: it turns drawing on (or off again) */
 function tabTo(v){if(v=='stage'&&view=='stage'&&!mini&&!EX){setDraw(!drawing);return}setView(v)}
@@ -1339,21 +1353,23 @@ $('#banswer').onclick=()=>{setView('stage');const t=$('#t');if(!wide.matches)t.s
    again. Its place in the page keeps its height all the while, so nothing jumps. On top of that a visitor can do two things:
    open it large over the page (a tap on the small bar, or choosing something), which lasts until the page is scrolled on; and
    keep it small with the button in its corner, which lasts until the page has been away from the top and come back. */
-const wide=matchMedia('(min-width:900px)'),pin=$('#pin'),BC=document.body.classList;let mini=false,peek=false,peekAt=0,hold=false,holdAway=false,full=false,pfull=0;
+const wide=matchMedia('(min-width:900px)'),pin=$('#pin'),BC=document.body.classList;let mini=false,peek=false,peekAt=0,hold=false,holdAway=false,full=false,pfull=0,viewSmall=false;
+/* People and About open with the stage as its small bar (Amendment 9): it stays small there, whatever the page does, until the
+   visitor opens it, and is small again the next time one of the two views is opened. */
 const dockable=()=>!EX&&!(wide.matches&&view=='stage');
 const dockTh=()=>Math.max(24,pfull-72); /* how far the page has to go up before only a small bar's worth of the stage would be left */
 function dockSync(){const d=dockable(),y=Math.max(0,scrollY);let m=false,p=false;
   if(d&&!full){const th=dockTh();
     if(hold){if(y>60)holdAway=true;else if(y<=0&&holdAway){hold=false;holdAway=false}}
-    if(hold)m=true;
+    if(hold||viewSmall)m=true;
     else if(drawing)p=y>th;
     else{if(peek&&(Math.abs(y-peekAt)>56||y<=th))peek=false;p=peek;m=!p&&y>th}}
-  else{peek=false;if(!d){hold=false;holdAway=false}}
+  else{peek=false;if(!d){hold=false;holdAway=false;viewSmall=false}}
   if(!p)peek=false;
-  const ch=m!=mini||p!=BC.contains('peek')||d!=BC.contains('dock')||(m&&hold)!=BC.contains('hold');mini=m;
-  BC.toggle('dock',d);BC.toggle('mini',m);BC.toggle('peek',p);BC.toggle('hold',m&&hold);
+  const hd=m&&(hold||viewSmall),ch=m!=mini||p!=BC.contains('peek')||d!=BC.contains('dock')||hd!=BC.contains('hold');mini=m;
+  BC.toggle('dock',d);BC.toggle('mini',m);BC.toggle('peek',p);BC.toggle('hold',hd);
   if(ch)requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
-function dockOpen(){hold=false;holdAway=false;if(dockable()&&scrollY>dockTh()){peek=true;peekAt=scrollY}dockSync()}
+function dockOpen(){viewSmall=false;hold=false;holdAway=false;if(dockable()&&scrollY>dockTh()){peek=true;peekAt=scrollY}dockSync()}
 function dockHold(){peek=false;if(scrollY<=dockTh()){hold=true;holdAway=scrollY>60}dockSync()}
 function setMini(v,keep){if(!v)dockOpen();else if(keep)dockHold();else{peek=false;dockSync()}}
 const syncDock=dockSync;
