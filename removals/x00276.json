@@ -2,7 +2,9 @@
  "n": 276,
  "id": "m00005",
  "why": "private information",
- "state": "veiled",
+ "state": "removed",
  "via": "steward: the author's review of 17 Nov (part H): a chat window or a list of other people",
- "at": "2026-11-17"
+ "at": "2026-11-17",
+ "resolved_at": "2026-11-19",
+ "note": "removed for good: the author's last word on the review page of 19 Nov (UNPUBLISHED decisions.csv)"
 }
