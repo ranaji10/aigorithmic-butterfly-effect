@@ -602,7 +602,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>Raw material from 2021: strong language, private moments.</p>
       </div>
     </div>
-    <div id="cap"><div class="meta" id="who">loading</div><div id="line" aria-live="polite"></div><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
+    <div id="cap"><div class="meta" id="who">Opening the work…</div><div id="line" aria-live="polite"></div><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
     <div id="ctl" role="toolbar" aria-label="Stage controls">
       <button class="cb" id="bprev" data-ic="prev" title="Previous (←)" aria-label="Previous" aria-keyshortcuts="ArrowLeft"></button>
       <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play" aria-keyshortcuts="Space"></button>
@@ -755,7 +755,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       </section>
       <h3 class="sh" style="margin-bottom:14px">Taking part, and how it is looked after</h3>
       <details><summary>How to take part</summary><div>
-        <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it: what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
+        <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it (the charter calls a mark a wingbeat): what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
         <p>By keys: ← and → go to the thing before and after, the space bar plays and pauses, F is the full screen and Esc leaves it. On the strip under the stage, Page Up and Page Down move a day or a hundred pictures.</p>
         <p>No account is needed. A mark appears at the next sweep (usually within the hour), is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
       </div></details>
@@ -808,8 +808,8 @@ body.mini .ov,body.exhibit .ov{display:none}
   <h2 style="font-size:var(--t-head)" id="rmh">Ask for removal</h2>
   <p>Hide <b id="rmid"></b> at the next sweep (usually within the hour), until a steward has looked. You do not have to explain.</p>
   <label for="rmwhy" class="meta" style="display:block;margin:0 0 4px">Why</label>
-  <select id="rmwhy"><option>i am in it</option><option>someone i know is in it</option><option>private information</option><option>hurtful</option><option>copyright</option><option>other</option></select>
-  <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg" aria-live="polite"></span></p>
+  <select id="rmwhy"><option value="i am in it">I am in it</option><option value="someone i know is in it">Someone I know is in it</option><option value="private information">Private information</option><option value="hurtful">It hurts</option><option value="copyright">Copyright</option><option value="other">Something else</option></select>
+  <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask for removal</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg" aria-live="polite"></span></p>
 </dialog>
 
 <script>
@@ -844,7 +844,7 @@ const ic=n=>'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'+I
 $$('[data-ic]').forEach(b=>b.insertAdjacentHTML('afterbegin',ic(b.dataset.ic)));
 
 let seeds=[],wb={wingbeats:[]};
-try{[seeds,wb]=await Promise.all([j('data/seeds-2021.json'),j('data/wingbeats.json')])}catch(e){document.documentElement.classList.add('in');$('#who').textContent='could not be reached; try again later';return}
+try{[seeds,wb]=await Promise.all([j('data/seeds-2021.json'),j('data/wingbeats.json')])}catch(e){document.documentElement.classList.add('in');$('#who').textContent='The work could not be opened just now. Try again in a minute.';return}
 const [cfg,arch,themesJ,peopleJ,veiledJ]=await Promise.all([jq('data/config.json',{}),jq('data/archive.json',{images:[],recordings:{},counts:{}}),jq('data/themes.json',{themes:[]}),jq('data/people.json',{people:[]}),jq('data/veiled.json',{ids:{}})]);
 const DOOR=(cfg.door||'').replace(/\/$/,''),MEDIA=(LOCAL&&QS.get('media'))||arch.media||'',AUD=(LOCAL&&QS.get('audio'))||arch.audio||'',IA=(LOCAL&&QS.get('ia'))||arch.ia||'',gone=veiledJ.ids||{};
 const IMGS=(arch.images||[]).filter(n=>!gone['m'+String(n).padStart(5,'0')]),IMG=new Set(IMGS),T={},P={};
@@ -863,7 +863,7 @@ const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches,introOpenNow
 /* counts */
 const day=864e5,t1=Date.UTC(2046,10,14),now=Date.now(),C=arch.counts||{};
 $('#n2').textContent=fmt(wb.wingbeats.length);$('#n3').textContent=fmt(Math.max(0,Math.ceil((t1-now)/day)));$('#n4').textContent=fmt(C.spoken_lines||0);
-if(C.pictures){$('#c1').textContent=fmt(C.pictures);$('#c2').textContent=fmt(C.recorded_hours)}
+if(C.pictures){$('#c1').textContent=fmt(IMGS.length||C.pictures);$('#c2').textContent=fmt(C.recorded_hours)}
 if(C.pictures_held_for_review||C.recordings_held_for_review)$('#held').textContent=fmt(C.pictures_held_for_review||0)+' more pictures and '+fmt(C.recordings_held_for_review||0)+' recordings are held back: they show details of people who were never in the calls.'+(Object.keys(gone).length?' '+fmt(Object.keys(gone).filter(k=>/^m/.test(k)).length)+' pictures and '+fmt(Object.keys(gone).filter(k=>/^r/.test(k)).length)+' recordings or minutes of recordings are hidden until someone has looked at them.':'');
 if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#mcpurl').innerHTML='<code>'+esc(DOOR)+'/mcp</code>'}
 /* the fence in this page's head names the places it may reach; if the work's own files point somewhere else, say so where a steward will look */
@@ -1091,7 +1091,7 @@ async function show0(id,o){
   const air=pending().filter(p=>p.hears==id),nk=(kids[id]||[]).length+air.length;
   $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
   $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></li>').join('')
-    +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · lands at the next sweep</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
+    +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · appears within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">Nobody has answered this yet.</li>');
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
@@ -1099,7 +1099,7 @@ async function show0(id,o){
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
   const mid=isImg(id)?id:(N[rootId]&&N[rootId].shot&&IMG.has(N[rootId].shot)?'m'+pad(N[rootId].shot,5):'');
   /* what a machine read in the picture: in the side panel, and in the ticker whenever the picture has no caption line of its own */
-  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec')){const w=t.split(' ').filter(Boolean);say(w.slice(0,40).join(' ')+(w.length>40?' …':''),true)}}); /* the first forty words; all of it is in the side panel */else{$('#ocrbox').hidden=true;tickP=null}
+  if(mid&&RAW)tickP=needText().then(tx=>{if(tok!=showing)return;const t=tx[mid]||'';$('#ocrbox').hidden=!t;$('#ocrbox').open=ocrOpen;$('#ocr').textContent=t;if(t&&isImg(id)&&!txt&&!(playing&&playMode=='rec')){const w=t.split(' ').filter(Boolean);say(w.slice(0,40).join(' ')+(w.length>40?' …':''),true);const wh=$('#who');if(!/read by a machine$/.test(wh.textContent))wh.textContent+=' · read by a machine'}}); /* the first forty words; all of it is in the side panel */else{$('#ocrbox').hidden=true;tickP=null}
   docBox(mid,tok);
   if(document.body.classList.contains('v-about'))drawFly();
   /* have the neighbours ready, so that moving on is instant */
@@ -1284,6 +1284,7 @@ let seekAt=null;
 async function syncRec(id,tok){
   const rid=id.slice(0,4),min=+id.slice(5);await needRecs();const r=recById[rid];if(!r||tok!=showing)return;
   const sw=$('#scrubw'),own=r.kind=='story'&&r.clip&&RAW&&!drawing;sw.hidden=own?r.sec<15:r.kind!='call'||r.sec<120;$('#scrub').max=Math.max(0,r.sec-1);
+  if(!sw.hidden&&cur==id){const w=$('#who');w.textContent=w.textContent.replace(/ · [\d:]+ of [\d:]+$/,'')}
   if(!(playing&&playMode=='rec')){const at=seekAt&&seekAt.id==id?seekAt.sec:min*60;$('#scrub').value=Math.floor(at);$('#stime').textContent=stime(at,r)}
   const v=await voice(rid);if(tok!=showing)return;
   const a=(min-2)*60,b=(min+4)*60,rows=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>[s[0],'',s[2]]).concat((v.chat||[]).filter(c=>c[0]>=a&&c[0]<b).map(c=>[c[0],c[1],c[2]])).sort((p,q)=>p[0]-q[0]);
@@ -1669,7 +1670,7 @@ function mcard(w,isNew){const root=rootOf(w.id),mid=N[root]&&N[root].shot?(IMG.h
 function marksHTML(){const W=liveMarks().slice().reverse(),air=pending(),k=freshCount();
   $('#bhead').textContent=fmt(W.length)+(W.length==1?' mark':' marks')+' left since 14 Nov 2026, newest first'+(k?' · '+k+' new since you were last here':'');
   let h='<p class="lead" style="margin:10px 0 0">Every mark anyone has left, human or machine: words, drawings, themes. <span style="color:var(--wall)">▍</span>human <span style="color:var(--hood)">▍</span>AI <span style="color:#fff">▍</span>both, or not sure. Tap one to put it on the stage with what it answers.</p>';
-  if(air.length)h+='<p class="meta day">Yours, in the air · lands at the next sweep</p><ul class="thread">'+air.map(p=>'<li class="air">'+esc(p.text||'[a mark without words]')+' <span class="meta" style="display:inline">· answers '+esc(p.hears)+'</span></li>').join('')+'</ul>';
+  if(air.length)h+='<p class="meta day">Yours, in the air · they appear within the hour</p><ul class="thread">'+air.map(p=>'<li class="air">'+esc(p.text||'[a mark without words]')+' <span class="meta" style="display:inline">· answers '+esc(p.hears)+'</span></li>').join('')+'</ul>';
   h+='<div id="bm">';let d='';
   for(const w of W){if(w.at!=d){if(d)h+='</div>';d=w.at;const ms=Date.parse(w.at+'T11:00:00Z');h+='<p class="meta day">'+(ms?niceDay(ms):esc(w.at))+'</p><div class="qlist">'}
     h+=mcard(w,seenId!=null&&w.id>seenId)}
@@ -1804,7 +1805,7 @@ async function leave(){
   }
   leaving=false;$('#send').disabled=$('#dsend').disabled=false;$('#send').removeAttribute('aria-busy');
   const left=draftIds().length,all=done==jobs.length;
-  if(why=='net')sent.innerHTML='<span class="warn">'+(done?done+' saved. ':'')+'The door could not be reached. '+(done?'The rest is kept on this device.':'<a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''})+'">Leave it through GitHub</a>')+'</span>';
+  if(why=='net')sent.innerHTML='<span class="warn">'+(done?done+' saved. ':'')+'It could not be sent just now. '+(done?'The rest is kept on this device. Try again in a minute.':'Your words are still in the box. Try again in a minute, or <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''})+'">leave it through GitHub</a>.')+'</span>';
   else if(all){sent.textContent='';heardShow(jobs[0],done)}
   else sent.innerHTML='<span class="warn">'+esc((done?done+' saved. ':'')+why+(left?' '+left+(left==1?' drawing is':' drawings are')+' kept on this device; press again later.':''))+'</span>';
   if(all)setDraw(false);if(done&&cur)show(cur,{quiet:1,keep:1});else paintDraw();
@@ -1819,7 +1820,7 @@ $('#brm').onclick=e=>{e.stopPropagation();$('#rmid').textContent=cur;$('#rmmsg')
 $('#rmyes').onclick=async()=>{if(FRAMED){$('#rmmsg').textContent=ownTab();return}if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+cur),'_blank','noopener');$('#rmd').close();return}
   try{const r=await fetch(DOOR+'/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:cur,why:$('#rmwhy').value})}),o=await r.json();
     $('#rmmsg').textContent=o.ok?'Asked. Hidden at the next sweep, usually within the hour.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
-  catch(e){$('#rmmsg').innerHTML='The door could not be reached. <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">Ask on GitHub instead.</a>'}};
+  catch(e){$('#rmmsg').innerHTML='It could not be sent just now. Try again in a minute, or <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">ask on GitHub instead</a>.'}};
 
 /* people: tap your name, "This is me", a steward confirms */
 /* What a machine tied to each first name: the pictures where it read the name on screen, the calls where it read it on a name tag.
@@ -1893,12 +1894,12 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;setT
       try{proof=await seal(a)}catch(e){return msg('This browser could not seal your answer. Try another browser, or ask the author for a private link.')}}
     const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
     try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({person:id,lock,display:$('#dn').value.trim()},proof?{proof}:{}))}),o=await r.json();
-      if(o.ok){claim={person:id,key,asked:Date.now()};myLock=lock;store.set('abe-claim',claim);await pInit()}else msg((o.problems||['Could not ask.']).join(' '))}catch(e){msg('The door could not be reached. Try again later.')}};
-  if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows at the next sweep.':(o.problems||[]).join(' '))}catch(e){msg('The door could not be reached.')}};
+      if(o.ok){claim={person:id,key,asked:Date.now()};myLock=lock;store.set('abe-claim',claim);await pInit()}else msg((o.problems||['Could not ask.']).join(' '))}catch(e){msg('It could not be sent just now. Try again in a minute.')}};
+  if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows at the next sweep.':(o.problems||[]).join(' '))}catch(e){msg('It could not be sent just now. Try again in a minute.')}};
   if($('#pforget'))$('#pforget').onclick=()=>{store.set('abe-claim',null);claim=null;myLock='';claimOK=false;pInit()};
   if(o.scroll)$('#popen').scrollIntoView({block:'start'})}
 $('#bhere').onclick=async()=>{if(!claimOK||!cur)return;const b=$('#bhere');b.disabled=true;try{const o=await post({hears:cur,text:'',by:'human',name:P[claim.person].name,person:claim.person,token:claim.key,here:true});
-    $('#who').textContent=o.ok?'Marked: you are in this.':(o.problems||['Could not mark it.']).join(' ');b.classList.toggle('on',!!o.ok)}catch(e){$('#who').textContent='The door could not be reached.'}b.disabled=false};
+    $('#who').textContent=o.ok?'Marked: you are in this.':(o.problems||['Could not mark it.']).join(' ');b.classList.toggle('on',!!o.ok)}catch(e){$('#who').textContent='It could not be sent just now. Try again in a minute.'}b.disabled=false};
 {const m=/^#claim=(p-[a-z0-9-]+)\.([\w-]{10,80})$/.exec(location.hash); /* a private link from the author still works */
   if(m){history.replaceState(null,'','#people/'+m[1]);if(DOOR){try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:m[1],token:m[2],check:true})}),o=await r.json();
       if(o.ok){claim={person:m[1],key:m[2]};store.set('abe-claim',claim);fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:m[1],token:m[2]})}).catch(()=>{})}}catch(e){}}}}
@@ -1955,7 +1956,7 @@ paintPlay();
 const intro=$('#intro'),isc=$('#iscroll'),icv=$('#icv'),ipages=$$('#intro .ip');let introRaf=0,introT0=0,introDraw=null;
 const introOpen=()=>!document.documentElement.classList.contains('in');
 function introStart(){
-  if(C.pictures){$('#ic1').textContent=fmt(C.pictures);$('#ic2').textContent=fmt(C.recorded_hours)}
+  if(C.pictures){$('#ic1').textContent=fmt(IMGS.length||C.pictures);$('#ic2').textContent=fmt(C.recorded_hours)}
   $('#ic3').textContent=' · '+fmt(seeds.length)+' lines, '+fmt(liveMarks().length)+(liveMarks().length==1?' mark':' marks')+' so far';
   $('#idots').innerHTML=ipages.map(()=>'<i></i>').join('');
   if(!paths)buildFly();
