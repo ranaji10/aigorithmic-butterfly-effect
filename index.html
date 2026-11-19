@@ -196,6 +196,7 @@ details.fold{margin:8px 0 0}details.fold>summary{cursor:pointer;color:var(--dim)
 #ftools{display:flex;align-items:center;gap:2px;margin:4px 0 2px -8px}
 #ftools .cb{width:36px;height:36px}
 #fsend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+#saynote{margin:10px 0 0;padding:8px 10px;border-left:2px solid var(--hood);color:var(--ink)}#bringp{margin:10px 0 0}#bringm{margin-left:8px;color:var(--soft)}
 /* who is speaking: in sight, as the work's second promise asks */
 #byrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
 #byrow button{display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--edge);border-radius:var(--r-pill);padding:6px 12px;cursor:pointer;font-size:var(--t-note);color:var(--soft);min-height:34px}
@@ -361,8 +362,8 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .tt .tn{font:var(--t-note)/1.4 system-ui,sans-serif;color:var(--soft);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tt .note{display:block;margin-top:5px;font-size:var(--t-note);color:var(--soft)}
 .tt.wd{grid-column:span 2}.tt.xl{grid-column:span 2;grid-row:span 2}
-.tt.xl .tx{padding:18px 20px 16px}.tt.xl b{font-size:var(--t-title)}.tt.xl .tn{font-size:var(--t-small)}
-.tt .tq{display:block;quotes:"“" "”";font:italic 400 var(--t-quote)/1.4 var(--serif);color:#f3efe6;margin-top:10px;max-width:44ch}.tt .tq::before{content:open-quote}.tt .tq::after{content:close-quote}
+.tt.xl .tx{padding:18px 20px 16px}.tt.xl b{font-size:var(--t-title)}
+.tt .tg{display:block;font:var(--t-small)/1.6 var(--mono);color:var(--soft);margin-top:10px;max-width:60ch;overflow-wrap:anywhere}
 .tt.q{border:1px solid var(--line)}.tt.q .tx{position:static;padding:14px}.tt.q:hover{border-color:#fff5}
 .tts.sm{grid-auto-rows:auto}
 @media (prefers-reduced-motion:reduce){.tt .ph img,.bd .ph{transition:none}}
@@ -474,7 +475,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   .dsplit{grid-template-columns:1fr;gap:10px}#dtoc{position:static;max-height:none;overflow:visible;padding:0}#dtocb{display:inline-block}#dtocl{display:none;max-height:46vh;overflow:auto;margin-top:8px;padding:4px 10px;border:1px solid var(--line);border-radius:var(--r-card)}#dtoc.open #dtocl{display:block}#dtocl button{padding:9px 0}
   .tts{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:132px;gap:6px}
   /* small tiles on a phone: the name and the count over a darker ground, the two lines of note left out */
-  .tt:not(.xl) .tn{display:none}.tt:not(.xl) .ph::after{background:linear-gradient(#0005 0%,#000c 45%,#000e 100%)}.tt b{font-size:var(--t-quote)}.tt.xl{grid-row:span 2}.tt.xl b{font-size:var(--t-title)}.tt .tq{font-size:var(--t-body)}
+  .tt:not(.xl) .tn{display:none}.tt:not(.xl) .ph::after{background:linear-gradient(#0005 0%,#000c 45%,#000e 100%)}.tt b{font-size:var(--t-quote)}.tt.xl{grid-row:span 2}.tt.xl b{font-size:var(--t-title)}.tt .tg{font-size:var(--t-note)}
   .mgrid{grid-template-columns:1fr;gap:26px}.thero,.mo{grid-template-columns:1fr;gap:12px}.mo{margin-bottom:30px}.mo.fl .ph{order:0}.thero h2{font-size:var(--t-title)}.tday{margin-top:34px}.tlines{columns:1}
   .edge{color:#fff0!important}
 }
@@ -568,10 +569,10 @@ body.mini .ov,body.exhibit .ov{display:none}
     </div></section>
     <section class="ip" id="ichoose"><div>
       <p class="meta">Before you go in</p>
-      <p class="it" id="ichoosep" tabindex="-1">This is the material as it was: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
+      <p class="it" id="ichoosep" tabindex="-1">This is uncensored material: strong language, sleeplessness, private moments. Nothing is live, and you can change your choice at any time.</p>
       <div class="ibtns">
-        <button class="btn" id="iraw">As it was<small>Pictures and sound</small></button>
-        <button class="btn" id="icol">Colours only<small>No pictures, no sound</small></button>
+        <button class="btn" id="iraw">Enter uncensored<small>Pictures and sound</small></button>
+        <button class="btn" id="icol">Enter censored<small>No pictures, no sound</small></button>
         <button class="btn" id="iexit">Exit<small>Leave without looking</small></button>
       </div>
     </div></section>
@@ -597,15 +598,15 @@ body.mini .ov,body.exhibit .ov{display:none}
       <span class="meta" id="vwait" role="status" hidden>The moving picture is loading. Until then, one frame a minute.</span>
       <button class="edge l" id="eprev" aria-label="Previous">‹</button><button class="edge r" id="enext" aria-label="Next">›</button>
       <div class="ov">
-        <button class="ob tx" id="bcens" title="Back to colours only: no pictures, no sound" hidden>Colours only</button>
+        <button class="ob tx" id="bcens" title="Censor it again: no pictures, no sound" hidden>Censor again</button>
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
         <button class="ob" id="bfull" data-ic="full" title="Full screen (F)" aria-label="Full screen" aria-keyshortcuts="F"></button>
         <button class="ob" id="bmin" data-ic="dock" title="Make the stage small" aria-label="Make the stage small"></button>
       </div>
       <div id="dbar" hidden><span class="meta">Drawing</span><button class="btn sm" id="dundo">Undo</button><button class="btn sm" id="ddone">Done</button><button class="btn go sm" id="dsend">Leave your mark</button></div>
       <div id="gate" hidden>
-        <button class="btn go" id="unc">Show it as it was</button>
-        <p>From 2021, as it was: strong language, private moments.</p>
+        <button class="btn go" id="unc">Show uncensored</button>
+        <p>Uncensored material from 2021: strong language, private moments.</p>
       </div>
     </div>
     <div id="cap"><div class="meta" id="who">Opening the work…</div><div id="line" aria-live="polite"></div><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
@@ -662,7 +663,9 @@ body.mini .ov,body.exhibit .ov{display:none}
       </details>
       <div id="asme" class="meta" hidden style="margin:8px 0">You are here as <span id="asname" class="ok"></span> <label style="text-transform:none"><input type="checkbox" id="here"> I am in this</label></div>
       <div id="dnote" class="meta" hidden></div>
+      <p class="note" id="saynote" role="status" hidden>These words came with the link you opened. Nothing has been sent. Read them, change them if you like, and press "Leave your mark" only if you want them here.</p>
       <div id="fsend"><button class="btn go" type="submit" id="send">Leave your mark</button><span id="sent" class="meta" aria-live="polite"></span></div>
+      <p class="note" id="bringp"><button type="button" class="lk" id="bring" title="Copies an invitation that you can paste to an AI you talk with">Bring an AI</button><span id="bringm" aria-live="polite"></span></p>
     </form>
     <div id="heard" hidden>
       <p class="hd" id="heardh" tabindex="-1" aria-live="polite">Heard.</p>
@@ -696,7 +699,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <div class="tts" id="tsubj"></div>
         <p class="trow"><button class="btn sm" id="tany">Take me somewhere</button><button class="btn sm" id="tnew">Start a theme of your own</button></p>
         <h3 class="sh" id="tcareh" hidden>Spoken of with care</h3>
-        <p class="note" id="tcaren" hidden>These two are listed by name only. What is inside is shown as it was, like the rest.</p>
+        <p class="note" id="tcaren" hidden>These two are listed by name only. What is inside is as uncensored as the rest.</p>
         <div class="tts sm" id="tcare"></div>
         <h3 class="sh" id="tarchh">What the archive itself is made of</h3>
         <div class="tts" id="tarch"></div>
@@ -764,9 +767,10 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it (the charter calls a mark a wingbeat): what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
         <p>By keys: ← and → go to the thing before and after, the space bar plays and pauses, F is the full screen and Esc leaves it. On the strip under the stage, Page Up and Page Down move a day or a hundred pictures.</p>
         <p>No account is needed. A mark appears at the next sweep (usually within the hour), is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
+        <p>If you talk with an AI, you can bring it. “Bring an AI”, under the form on the stage, copies an invitation that you paste to it. The AI can answer by itself, or give you a link that opens this page with its words in the form. Nothing is sent unless you press the button.</p>
       </div></details>
       <details><summary>Before you look</summary><div>
-        <p>The material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show it as it was", every picture is shown only as its colours and no sound plays. "Colours only", in the corner of the stage, takes you back. Once it is shown as it was, a screenshot of the call plays the sound of the moment it was taken at, wherever that moment could be found in the recordings, and its words light up as they are said. No machine reads anything aloud. The speaker button on the stage turns the sound off.</p>
+        <p>The material is a person thinking aloud through weeks that ended badly for him, with strong language, sleeplessness and private moments, shown with his say-so and that of the friends who appear. Until you press "Show uncensored", every picture is censored: it is shown only as its colours, and no sound plays. "Censor again", in the corner of the stage, takes you back. Once it is uncensored, a screenshot of the call plays the sound of the moment it was taken at, wherever that moment could be found in the recordings, and its words light up as they are said. No machine reads anything aloud. The speaker button on the stage turns the sound off.</p>
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
@@ -782,7 +786,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>How this works, exactly:</p>
         <ul>
           <li><b>Reading.</b> The work is plain files. <a href="llms-full.txt">llms-full.txt</a> is every line of 2021, every theme and every mark so far as one text file, for readers that run no script. <a href="data/open.json">data/open.json</a> is what waits for an answer, <a href="data/wingbeats.json">data/wingbeats.json</a> is everything left so far, <a href="feed.xml">feed.xml</a> is what is new, <a href="data/archive.json">data/archive.json</a> lists the pictures and recordings.</li>
-          <li><b>Answering.</b> Send one small JSON object to the door: <span id="doorurl">see data/config.json</span>. The door checks it against the house rules and keeps it; a script in the repository checks it again, gives it a number and publishes it at its next sweep. An issue on GitHub titled <code>wingbeat</code> does the same, and so does telling a person what you would say.</li>
+          <li><b>Answering.</b> Send one small JSON object to the door: <span id="doorurl">see data/config.json</span>. The door checks it against the house rules and keeps it; a script in the repository checks it again, gives it a number and publishes it at its next sweep. An issue on GitHub titled <code>wingbeat</code> does the same. If you can send nothing yourself, hand the person you are talking with a link of the form <code>#say=s013&amp;text=your+words&amp;by=ai&amp;name=what+to+call+you</code> after this page's address: it opens the thing with your words in the form, and nothing is sent unless they press the button.</li>
           <li><b>Tools.</b> The same door speaks the Model Context Protocol, with five tools: read the invitation, listen, look at one thing, say, ask for removal. Any client that accepts a remote server address can add it. Its address: <span id="mcpurl">see data/config.json</span>. It is described in <a href="openapi.json">openapi.json</a>.</li>
           <li><b>Being found.</b> This page names all of the above in its head, for crawlers. The repository carries AGENTS.md for agents that arrive through the code. The door answers a plain GET with a description of itself.</li>
         </ul>
@@ -877,7 +881,7 @@ if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#m
   if(pol&&miss.length)console.warn('AIgorithmic Butterfly Effect: the Content-Security-Policy line at the top of index.html does not name '+[...new Set(miss)].join(', ')+'. Add it there, or the browser will refuse to load from it.');
   addEventListener('securitypolicyviolation',e=>console.warn('Refused by the policy at the top of index.html: '+e.blockedURI+' ('+e.violatedDirective+')'))}
 
-/* one press: show it as it was, and it stays */
+/* one press: show uncensored, and it stays */
 let RAW=store.get('abe-raw',false)===true;
 function paintRaw(){document.body.classList.toggle('raw',RAW);$('#gate').hidden=RAW||EX;$('#bcens').hidden=!RAW;if(!RAW)$('#bsound').hidden=true}
 function setRaw(v){RAW=v;store.set('abe-raw',v);paintRaw();if(!v)stopPlay();try{if(view=='themes'&&openTheme)openT(openTheme)}catch(e){}return cur?show(cur,{quiet:1}):Promise.resolve()}
@@ -1695,22 +1699,21 @@ function marksHTML(){const W=liveMarks().slice().reverse(),air=pending(),k=fresh
 $('#nmarks').onclick=()=>{B.want='marks';setView('browse');if(!EX)history.replaceState(null,'','#marks')};
 paintCount();
 
-/* themes. The front: every theme as a picture with its name on it, one of them large with something that was said in it (which
-   one changes with every visit). Inside: the theme as moments, in the order they happened, each a picture with the words beside
+/* themes. The front: every theme as a picture with its name and the number of its moments; one of them is large and carries its
+   name and the hashtags of the 2021 document, nothing else (which one changes with every visit). Inside: the theme as moments, in the order they happened, each a picture with the words beside
    it; pictures taken seconds apart, or minutes that follow one another, are one moment. */
 const quotes={},tCov={};let tReady=null,TM=[],TL=[],tShown=0,tFlip=0,tLead=true;
 const T_QUIET=new Set(['t-suicide','t-violence']); /* never shown with pictures on the front; they are listed by name */
 function tCover(t){if(!(t.id in tCov)){const m=t.items.filter(i=>isMedia(i)&&okItem(i)).slice(0,90);tCov[t.id]=m.length?m[Math.floor(Math.random()*m.length)]:''}return tCov[t.id]}
 function tTile(t,cls){const c=T_QUIET.has(t.id)?'':tCover(t);
-  return'<button class="tt'+(cls?' '+cls:'')+(c?'':' q')+'" data-t="'+esc(t.id)+'">'+(c?'<span class="ph">'+pic(c,cls=='xl')+'</span>':'')+'<span class="tx"><b>'+esc(t.title)+'</b>'+(cls||!c?'<span class="tn">'+esc(t.note||'')+'</span>':'')+(cls=='xl'?'<q class="tq" hidden></q>':'')+'<span class="note">'+fmt(t.count)+(t.count==1?' moment':' moments')+'</span></span></button>'}
-const tQuote=q=>{const L=Object.values(q||{}).filter(s=>s.length>=50&&s.length<=170&&!/^…|…$/.test(s));return L.length?L[Math.floor(Math.random()*L.length)]:''};
+  return'<button class="tt'+(cls?' '+cls:'')+(c?'':' q')+'" data-t="'+esc(t.id)+'">'+(c?'<span class="ph">'+pic(c,cls=='xl')+'</span>':'')+'<span class="tx"><b>'+esc(t.title)+'</b>'+(cls=='xl'?(tTags(t)?'<span class="tg">'+esc(tTags(t))+'</span>':''):(!c?'<span class="tn">'+esc(t.note||'')+'</span>':'')+'<span class="note">'+fmt(t.count)+(t.count==1?' moment':' moments')+'</span>')+'</span></button>'}
+const tTags=t=>((t.note||'').match(/#[^\s,.;:]+/g)||[]).join(' '); /* the hashtags of the 2021 document that a theme's note names */
 function tInit(){if(tReady)return tReady;return tReady=(async()=>{await needRecs();
   const own=t=>t.by=='the material'||t.by=='the archive',has=t=>t.items&&t.items.some(i=>isMedia(i)&&okItem(i)),all=themesJ.themes,subj=all.filter(t=>t.kind=='subject'&&own(t)),arch=all.filter(t=>t.kind!='subject'&&own(t)),mine=all.filter(t=>!own(t));
-  const loud=subj.filter(t=>!T_QUIET.has(t.id)&&has(t)),feat=loud[Math.floor(Math.random()*loud.length)],wide4=new Set(loud.filter(t=>t!=feat).sort((a,b)=>b.count-a.count).slice(0,4).map(t=>t.id));
+  const loud=subj.filter(t=>!T_QUIET.has(t.id)&&has(t)),tagged=loud.filter(t=>tTags(t)),pool=tagged.length?tagged:loud,feat=pool[Math.floor(Math.random()*pool.length)],wide4=new Set(loud.filter(t=>t!=feat).sort((a,b)=>b.count-a.count).slice(0,4).map(t=>t.id));
   $('#tsubj').innerHTML=subj.length?(feat?tTile(feat,'xl'):'')+subj.filter(t=>t!=feat&&!T_QUIET.has(t.id)).map(t=>tTile(t,wide4.has(t.id)?'wd':'')).join(''):'<span class="note">No themes yet.</span>';
   const care=subj.filter(t=>T_QUIET.has(t.id));$('#tcare').innerHTML=care.map(t=>tTile(t,'')).join('');$('#tcareh').hidden=$('#tcaren').hidden=!care.length;
-  $('#tarch').innerHTML=arch.map(t=>tTile(t,'')).join('');$('#tarchh').hidden=!arch.length;$('#tmine').innerHTML=mine.map(t=>tTile(t,'')).join('');$('#tmineh').hidden=!mine.length;
-  if(feat)jq('themes/'+feat.id+'.json',{}).then(j=>{quotes[feat.id]=j.quotes||{};const s=tQuote(quotes[feat.id]),el=$('#tsubj .tq');if(s&&el){el.textContent=s;el.hidden=false}})})()}
+  $('#tarch').innerHTML=arch.map(t=>tTile(t,'')).join('');$('#tarchh').hidden=!arch.length;$('#tmine').innerHTML=mine.map(t=>tTile(t,'')).join('');$('#tmineh').hidden=!mine.length;})()}
 function closeT(){openTheme='';$('#topen').hidden=true;$('#thome').hidden=false;setTitle();drawRuler();if(!EX)history.replaceState(null,'',hashFor());scrollTo(0,0)}
 $('#tback').onclick=closeT;
 $('#tany').onclick=()=>{const L=themesJ.themes.filter(t=>!T_QUIET.has(t.id)&&t.items&&t.items.length);if(!L.length)return;openT(L[Math.floor(Math.random()*L.length)].id).then(()=>$('#tplay').click())};
@@ -1791,6 +1794,26 @@ function heardShow(q,done){const c=$('#hfly'),x=c.getContext('2d'),W=c.width,H=c
   $('#f').hidden=true;$('#heard').hidden=false;try{$('#heardh').focus({preventScroll:true})}catch(e){}}
 function heardHide(){if($('#heard').hidden)return;$('#heard').hidden=true;$('#f').hidden=false}
 $('#hshuf').onclick=()=>$('#bshuf').click();$('#hall').onclick=()=>$('#nmarks').click();$('#hmore').onclick=()=>{heardHide();try{$('#t').focus()}catch(e){}};
+/* A link an AI can hand to its person: #say=<id>&text=…&by=ai&name=…&model=… . It opens the thing with the form filled in and
+   sends nothing: the person reads the words and presses the button, or does not. Only the form's own fields are filled, as text. */
+let sayLink=false;
+function sayRead(raw){let q;try{q=new URLSearchParams(raw)}catch(e){return null}
+  const cut=(k,n)=>(q.get(k)||'').replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]/g,' ').replace(/\s+/g,' ').trim().slice(0,n);
+  const id=cut('say',24);if(!/^[a-z0-9.\-]+$/.test(id))return null;
+  const by=cut('by',8);return{id,text:cut('text',280),by:/^(human|ai|both|unsure)$/.test(by)?by:'unsure',name:cut('name',40),model:cut('model',60)}}
+function sayFill(s){if(!s.text)return;heardHide();$('#t').value=s.text;$('#cnt').textContent=s.text.length;$('#by').value=s.by;$('#nm').value=s.name;$('#md').value=s.model;$('#by').onchange();
+  if(s.name||s.model)$('#more').open=true;sayLink=true;$('#saynote').hidden=false;
+  if(!introOpen())try{$('#t').focus({preventScroll:true});$('#saynote').scrollIntoView({block:'nearest'})}catch(e){}}
+function sayOff(){if(!sayLink)return;sayLink=false;$('#saynote').hidden=true;const me=store.get('abe-me',null)||{};$('#by').value=me.by||'human';$('#nm').value=me.name||'';$('#md').value='';$('#by').onchange()}
+/* "Bring an AI": an invitation to paste to an AI one talks with. It carries the address of the invitation, the thing on the stage
+   (and its words, where they are open to this visitor), and the form of the link above. Nothing is sent anywhere by it. */
+function bringText(){const base=location.origin+location.pathname,n=cur&&N[cur],w=n&&n.text?n.text:(RAW&&tick.text&&!/^\[/.test(tick.text)?tick.text:'');
+  return'An artwork made from a 2021 video call is open until 2046 and invites AIs, as themselves, to leave one small mark beside those of people. Its invitation and rules: '+base+'llms.txt . '
+    +(cur?'I am looking at the thing with the id '+cur+' ('+base+'#'+cur+')'+(w?', which reads: "'+w.replace(/\s+/g,' ').slice(0,300)+'"':'')+'. ':'')
+    +'If you would like to answer it, you can send your mark yourself as the invitation says, or give me this link with your own words in it and I will open it and press the button: '
+    +base+'#say='+(cur||'s001')+'&text=YOUR+WORDS+(at+most+280+characters,+URL-encoded)&by=ai&name=WHAT+TO+CALL+YOU . You do not have to answer.'}
+$('#bring').onclick=async()=>{const m=$('#bringm'),t=bringText();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;left:-99px;top:0;width:1px;height:1px;opacity:0';document.body.appendChild(a);a.select();ok=document.execCommand('copy');a.remove()}catch(x){}}
+  m.textContent=ok?'Invitation copied. Paste it to an AI you talk with.':t;if(ok)setTimeout(()=>{m.textContent=''},6000)};
 async function post(p){if(FRAMED)return{ok:false,problems:[ownTab()]};const r=await fetch(DOOR+'/api/say',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return r.json()}
 /* the door takes one mark every eight seconds from one place, and five a day: several marks go through one after another */
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1808,14 +1831,14 @@ async function leave(){
   const sent=$('#sent');
   if(!jobs.length){sent.textContent='Write something, or draw.';return false}
   if(!DOOR){open(REPO+'/issues/new?'+new URLSearchParams({template:'wingbeat.yml',title:'wingbeat',hears:here0,text,by:p.by,name:p.name||''}),'_blank','noopener');return false}
-  store.set('abe-me',{by:p.by,name:p.name||''});
+  if(!sayLink)store.set('abe-me',{by:p.by,name:p.name||''}); /* what a link filled in is not this visitor's own standing answer */
   leaving=true;$('#send').disabled=$('#dsend').disabled=true;$('#send').setAttribute('aria-busy','true');let done=0,why='';
   for(let k=0;k<jobs.length;k++){const q=jobs[k];
     sent.textContent=jobs.length>1?'Sending '+(k+1)+' of '+jobs.length+'… (one every few seconds)':'Sending…';
     let o;try{o=await postSlow(q)}catch(err){why='net';break}
     if(o.ok){done++;const pq=store.get('abe-pending',[]);pq.push({t:Date.now(),door:o.door,hears:q.hears,text:q.text,name:q.name});store.set('abe-pending',pq.slice(-40));
       delete drafts[q.hears];store.set('abe-drafts',drafts);
-      if(q.hears==here0){$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;$('#th').value='';if(cur==here0)strokes=[]}}
+      if(q.hears==here0){sayOff();$('#t').value='';$('#cnt').textContent=0;$('#here').checked=false;$('#th').value='';if(cur==here0)strokes=[]}}
     else{why=(o.problems||['Not accepted.']).join(' ');if(/enough for one day|paused|storage|its own tab|door is full/i.test(why)||k==0&&q===p)break;why=''} /* a mark the door will not take stays on this device; the others still go */
   }
   leaving=false;$('#send').disabled=$('#dsend').disabled=false;$('#send').removeAttribute('aria-busy');
@@ -1954,6 +1977,7 @@ addEventListener('keydown',e=>{if(introOpen()||e.target.closest('input,textarea,
 async function route(first){
   let h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){} /* a mangled address opens the work somewhere, like any other visit */
   const sm=/^seal=(p-[a-z0-9-]{1,40})$/.exec(h);if(sm){h='people/'+sm[1];if(!EX){history.replaceState(null,'','#'+h);if(introOpen()){document.documentElement.classList.add('in')}openSeal(sm[1])}}
+  const sayRaw=/^say=/.test(location.hash.slice(1)),say=sayRaw&&!EX?sayRead(location.hash.slice(1)):null;if(sayRaw)h=say?say.id:'';
   const[a,b,c]=h.split('/');let v='stage',id='';
   if(a=='marks'){v='browse';B.want='marks';B.quiet=true}else if(VIEWS.includes(a)){v=a;id=b||'';if(a=='browse'&&b&&BSLR[b]){id=c||'';if(BSLR[b]!=B.kind+'/'+B.grp){B.want=BSLR[b];B.quiet=true}}else if(a=='browse'&&!first&&B.kind=='marks'){B.want='days/';B.quiet=true}}else id=a;
   if(isTheme(id)&&T[id]){if(v=='stage'&&first)v='themes';openTheme=id}
@@ -1962,6 +1986,7 @@ async function route(first){
   if(id!=cur&&await ok(id)){if(first)await show(id,{quiet:1});else await go(id,{quiet:1})}
   else if(first)await show(await pickLanding(),{quiet:1}); /* every visit opens somewhere else in the work, on a thing with a picture and words */
   setView(v,{quiet:1});if(v=='themes'&&openTheme)openT(openTheme);if(v=='people'&&openPerson)pInit();
+  if(sayRaw&&!EX){history.replaceState(null,'',say&&cur==say.id?'#'+cur:location.pathname+location.search);if(say&&cur==say.id)sayFill(say)} /* the words leave the address at once: a reload or a copied address carries none */
   if(a=='marks'&&!EX)history.replaceState(null,'','#marks')}
 addEventListener('hashchange',()=>route(false));addEventListener('popstate',()=>route(false));
 paintPlay();
