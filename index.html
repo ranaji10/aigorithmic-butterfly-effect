@@ -120,6 +120,7 @@ body.v-stage:not(.mini):not(.exhibit) #line.open{max-height:none;-webkit-mask-im
 .cb.main{background:var(--wall);color:var(--on-wall);width:46px;height:46px}.cb.main:hover{background:var(--wall-hi);border-color:transparent}
 .cb.txt{width:auto;padding:0 14px;gap:7px;display:inline-flex;align-items:center;font:var(--t-label)/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
 .cb[disabled]{opacity:.35;cursor:default}
+#bthen{display:none}@media (min-width:900px){body.v-stage #bthen{display:inline-flex}}
 #scrubw{order:-1;flex:1 1 100%;display:flex;align-items:center;gap:10px;padding:0 6px}
 #scrub{flex:1;min-width:60px}
 #stime{white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -660,6 +661,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play" aria-keyshortcuts="Space"></button>
       <button class="cb" id="bnext" data-ic="next" title="Next (→)" aria-label="Next" aria-keyshortcuts="ArrowRight"></button>
       <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else, at random" aria-label="Random"></button>
+      <button class="cb txt" id="bthen" title="What was being recorded at this day and hour of 2021" hidden>This hour in 2021</button>
       <button class="cb" id="bpen" data-ic="draw" title="Draw on it" aria-label="Draw on it" aria-pressed="false"></button>
       <div id="scrubw" hidden><input type="range" id="scrub" min="0" max="0" value="0" aria-label="Position in this recording"><span class="meta" id="stime"></span></div>
       <span class="sp"></span>
@@ -1147,6 +1149,7 @@ async function show0(id,o){
   if(!chain.length&&!isMedia(id)&&!isTheme(id))return;
   if(!o.keep)inferCtx(id);
   if(cur!=id){strokes=drafts[id]||[];pausePos=null;heardHide()}
+  if(thenNote&&id!=thenNote){thenNote='';$('#hint').hidden=true;$('#hint').textContent=HINT0} /* the sentence of "This hour in 2021" is said once */
   const prev=cur;cur=id;
   const rootId=x||chain[0].id,depth=chain.length-(x?0:1);
   $('#idtag').textContent=id;paintDraw();
@@ -1199,6 +1202,24 @@ async function pickLanding(){
   }catch(e){}
   return line()}
 $('#bshuf').onclick=()=>go(pick(),{play:RAW});
+/* "This hour in 2021" (Amendment 11): between 14 November and 13 January, a way to what was being recorded at the same day and
+   hour of the first winter. Prague's date and time now, with the year set to 2021 (2022 for 1 to 13 January); the recording
+   that was running then, or else the nearest recorded minute of that day, with one sentence that says so. Nothing is live:
+   it is a way in to the same things, and where a visit opens is unchanged. */
+const HINT0=$('#hint').textContent,NUMW=['no','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty','twenty-one','twenty-two','twenty-three','twenty-four','twenty-five'];let thenNote='';
+function thenFind(){if(!recs||!recs.length)return null;const p=new Date(Date.now()+36e5),m=p.getUTCMonth(),d=p.getUTCDate();
+  if(!((m==10&&d>=14)||m==11||(m==0&&d<=13)))return null;
+  const y=m==0?2022:2021,t=Date.UTC(y,m,d,p.getUTCHours(),p.getUTCMinutes())-36e5,d0=Date.UTC(y,m,d)-36e5,d1=d0+day,ok=id=>!gone[id]&&!gone[id.slice(0,4)];
+  let best=null,bd=1e18,hit=null;
+  for(const r of recs){if(!r.t0||!r.min)continue;const a=Math.max(r.t0,d0),b=Math.min(r.t0+r.min*6e4,d1);if(b<=a)continue; /* the stretch of this recording that falls in that day */
+    const tt=clamp(t,a,b-6e4),mm=clamp(Math.floor((tt-r.t0)/6e4),0,r.min-1),id=r.id+'.'+pad(mm,4);if(!ok(id))continue;
+    const dist=Math.abs(tt-t);if(t>=a&&t<b&&(!hit||(r.kind=='call'&&hit.r.kind!='call')))hit={r,id};
+    if(dist<bd){bd=dist;best={r,id,ms:r.t0+mm*6e4}}}
+  if(hit)return{id:hit.id,near:false};
+  return best?{id:best.id,near:true,hm:prague(best.ms).slice(11),years:p.getUTCFullYear()-y}:null}
+async function thenGo(){await needRecs();const f=thenFind();if(!f)return;setMini(false,false);if(view!='stage'){setView('stage');focusHead()}ctx={kind:'rec'};await go(f.id,{keep:1,play:RAW});
+  if(f.near&&cur==f.id){const h=$('#hint');h.textContent='Nothing was being recorded at this hour '+(NUMW[f.years]||f.years)+' years ago. This is from '+f.hm+' that day.';h.hidden=false;thenNote=f.id}}
+$('#bthen').onclick=thenGo;
 $('#bprev').onclick=$('#eprev').onclick=()=>nav(-1);$('#bnext').onclick=$('#enext').onclick=()=>nav(1);
 $('#idtag').onclick=async e=>{e.stopPropagation();if(!cur)return;const id=cur,t=$('#idtag');try{await navigator.clipboard.writeText(location.origin+location.pathname+'#'+id);t.textContent='link copied'}catch(x){t.textContent='#'+id}setTimeout(()=>{if(cur)t.textContent=cur},1400)};
 
@@ -1696,7 +1717,7 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
     hours+='<section class="hr"><b>'+pad(h,2)+'<small>:00</small></b><div class="hx"><span class="note">'+esc(says.join(', '))+'</span>'
       +q.lines.map(id=>'<button class="hq hl" data-id="'+esc(id)+'"><q>'+esc(N[id].text)+'</q><span class="note">written under the call by the caption machine, 2021</span></button>').join('')
       +'<button class="hq" data-hq="'+bl.h0+'" data-hq1="'+bl.h1+'" hidden><q></q><span class="note"></span></button>'+(t?'<div class="hrow">'+t+'</div>':'')+'</div></section>'}
-  el.innerHTML='<div class="bdh">'+nav(i-1,'←','The day before')+'<h3>'+esc(longDay(d0+432e5))+'</h3>'+nav(i+1,'→','The day after')+'<span class="sp"></span><button class="btn go sm" id="bdplay">Play this day</button></div>'
+  el.innerHTML='<div class="bdh">'+nav(i-1,'←','The day before')+'<h3>'+esc(longDay(d0+432e5))+'</h3>'+nav(i+1,'→','The day after')+'<span class="sp"></span>'+(thenFind()?'<button class="btn sm" id="bdthen" title="What was being recorded at this day and hour of 2021">This hour in 2021</button>':'')+'<button class="btn go sm" id="bdplay">Play this day</button></div>'
     +band+'<p class="facts">'+f.map(a=>'<span><b>'+a[1]+'</b>'+a[0]+'</span>').join('')+'</p>'
     +'<div id="bhours">'+hours+'</div>'
     +(x.pics.length?'<h3 class="sh">Photographed or saved this day</h3><p class="note">Their hour is not known.</p><div class="jg" id="bdp">'+x.pics.map(n=>jTile(n,'bdp')).join('')+'</div>':'');
@@ -1727,6 +1748,7 @@ $('#bbody').addEventListener('click',e=>{const d=e.target.closest('[data-day]'),
   if(d&&d.dataset.day){bDay(d.dataset.day,!!d.closest('.bdh')?0:1);return}
   if(g){bDaySel=g.dataset.goday;bSet('days','').then(()=>{const el=$('#bday');if(el)scrollTo(0,Math.max(0,el.getBoundingClientRect().top+scrollY-140))});return}
   if(hr&&bHours[+hr.dataset.hour]){const h=+hr.dataset.hour;bSet('pics','#',bHours[h].shots.slice(),'Screenshots of '+longDay(dayStart(bDaySel)+432e5)+', '+pad(h,2)+':00 to '+pad(h+1,2)+':00');scrollTo(0,0);return}
+  if(e.target.closest('#bdthen')){thenGo();return}
   if(e.target.closest('#bdplay')){const L=$$('#bhours [data-id]').map(b=>b.dataset.id);if(L.length){setMini(false,false);ctx={kind:'list',list:L};go(L[0],{keep:1,play:1})}return}
   if(e.target.closest('#dtocb')){const t=$('#dtoc'),o=t.classList.toggle('open');$('#dtocb').setAttribute('aria-expanded',o?'true':'false');return}
   if(tc){$('#dtoc').classList.remove('open');bJump(+tc.dataset.toc,1);return}
@@ -2102,7 +2124,7 @@ intro.addEventListener('keydown',e=>{if(e.key=='ArrowDown'||e.key=='PageDown'){i
 if(introOpen())introStart();
 
 await route(true);
-needRecs().then(drawRuler);
+needRecs().then(()=>{drawRuler();$('#bthen').hidden=!thenFind()});
 if(EX){document.body.appendChild(fly);let k=0;setInterval(()=>{k++;if(k%6==5){drawFly();fly.classList.add('full');setTimeout(()=>fly.classList.remove('full'),2e4)}show(pick(),{quiet:1})},24e3);setTimeout(()=>location.reload(),36e5)}
 })();
 </script>
