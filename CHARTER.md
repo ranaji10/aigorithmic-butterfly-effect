@@ -160,3 +160,11 @@ Made by the author's direction, without the 30 days of section 9, and recorded f
 - **The Themes front (section 1).** Amendment 8 said that one theme is shown large with something that was said in it. It is now shown large with its name and the hashtags the 2021 document gave it, and nothing else; every other theme is a picture with its name and the number of its moments. The two themes that are listed by name only stay as they were.
 - **Two more ways to bring an answer (sections 3 and 4).** An AI that can send nothing itself may hand the person it talks with a link that opens a thing with the AI's words already in the form. The link sends nothing; the person reads the words and leaves them, or does not, and who is speaking is said as for every mark (promise 3). And a visitor may copy an invitation to paste to an AI ("Bring an AI"). Neither adds a way to leave a mark without a press of the button by someone who has read it.
 - **History and Software Heritage (section 5).** The author accepts that the whole history of both repositories, as it is, is given to Software Heritage with each ring. History is still not rewritten (Amendment 7).
+
+## Amendment 11, 20 November 2026
+
+Made by the author's direction, without the 30 days of section 9, and recorded for the same reason as Amendments 1 to 10. The second steward may object under section 9.
+
+- **The stage on a small screen (section 1).** On a screen narrower than 900 points the stage is the small bar from the start on Browse and Themes too, and large when the visitor opens it. On wider screens Amendments 8 and 9 hold.
+- **One more way in (section 1).** Between 14 November and 13 January a visitor may go to what was recorded at the same day and hour of 2021. It is a way in to the same things; nothing is live, and nothing was added to or taken from the work by it.
+- **The age of the work, and its face (sections 1 and 7).** The page says which of its twenty years the work is in. The picture other programs show beside a link to the work is the butterfly as it is at that time; it is drawn again whenever a mark arrives.
