@@ -758,9 +758,9 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>What is left of the first attempt is 14,586 files: 209 gigabytes, 506 hours of video. Here all of it is reduced to colour.</p>
         <p class="note rk">The strip under the stage shows the same two things small, and is the map of the whole work. Above: the 5,909 pictures of the document, in the order they were pasted. Below: the nine weeks; <i class="k1"></i>yellow where the call was recorded, <i class="k2"></i>green a phone video, <i class="k3"></i>white another recording. The arrow keys move along it.</p>
         <p class="note">The document: 5,909 screenshots in the order they were pasted. Pick one to put it on the stage.</p>
-        <img class="px" id="atlas" src="data/weather-2021.png" crossorigin="anonymous" alt="A woven-looking grid of 5,909 tiny colour fields, mostly dark grey and white with threads of yellow and green.">
+        <img class="px" id="atlas" src="data/weather-2021.png" crossorigin="anonymous" loading="lazy" decoding="async" alt="A woven-looking grid of 5,909 tiny colour fields, mostly dark grey and white with threads of yellow and green.">
         <p class="note" style="margin-top:26px">The call: every minute it was recording. One row for each day, 14 Nov 2021 at the top, 13 Jan 2022 at the bottom, midnight to midnight, Prague time.</p>
-        <img class="px" src="data/call-2021.png" style="cursor:default" alt="A dark chart with broken horizontal bands of colour: the hours of each day when the call was being recorded. The bands run through most nights.">
+        <img class="px" src="data/call-2021.png" loading="lazy" decoding="async" style="cursor:default" alt="A dark chart with broken horizontal bands of colour: the hours of each day when the call was being recorded. The bands run through most nights.">
         <div class="meta axis"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
         <p style="margin-top:14px"><span id="hrs">324</span> distinct hours across 32 days. The dark is when nothing was being recorded.</p>
       </section>
@@ -1390,7 +1390,7 @@ async function rJump(k){await needRecs();const p=cur&&RW?rulerPos(cur):null,row=
     else{let i=p?IMGS.indexOf(picAtX(p[0])):0;i=clamp(i+d*100,0,IMGS.length-1);id='m'+pad(IMGS[i],5)}}
   if(id&&id!=cur){ctx={kind:isImg(id)?'pics':'rec'};go(id,{keep:1})}}
 ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){nav(-1);e.preventDefault()}else if(e.key=='ArrowRight'){nav(1);e.preventDefault()}else if(['PageUp','PageDown','Home','End'].includes(e.key)){rJump(e.key);e.preventDefault()}});
-{const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=96;c.height=62;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(im,0,0,96,62);const d=x.getImageData(0,0,96,62).data;atlasCols=[];for(let i=0;i<DOCN;i++)atlasCols.push([d[i*4],d[i*4+1],d[i*4+2]]);drawRuler()}catch(e){}};im.src='data/weather-2021.png'}
+{const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=96;c.height=62;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(im,0,0,96,62);const d=x.getImageData(0,0,96,62).data;atlasCols=[];for(let i=0;i<DOCN;i++)atlasCols.push([d[i*4],d[i*4+1],d[i*4+2]]);drawRuler()}catch(e){}};im.crossOrigin='anonymous';im.src='data/weather-2021.png'} /* asked for as About's picture asks for it, so that the browser downloads it once */
 
 /* views */
 const VIEWS=['stage','browse','themes','people','about'];let view='stage',openTheme='',openPerson='';
