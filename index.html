@@ -44,7 +44,7 @@ try{if(localStorage.getItem('abe-in')||/[?&]exhibit\b/.test(location.search))doc
 --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
 --bar:48px;--tab:0px;
 /* one scale (19 Nov 2026): three levels of text on a screen, label, reading text, one large thing */
---t-label:11px;--t-note:13px;--t-small:15px;--t-body:16px;--t-quote:19px;--t-head:22px;--t-title:clamp(26px,3.4vw,40px);--t-display:clamp(30px,5vw,54px);
+--t-label:11px;--t-note:13px;--t-small:15px;--t-body:16px;--t-quote:19px;--t-head:22px;--t-line:clamp(19px,1.7vw,26px);--t-title:clamp(26px,3.4vw,40px);--t-display:clamp(30px,5vw,54px);
 --soft:#cfcbc2;--edge-2:#3a3a41;--wall-hi:#f3d869;--on-wall:#151204;--scrim:#0009;--scrim-2:#000c;
 --r-pic:4px;--r-card:8px;--r-sheet:14px;--r-pill:999px;--fast:150ms;--slow:700ms;
 --z-dock:12;--z-ruler:16;--z-bar:20;--z-full:60;--z-intro:100}
@@ -101,9 +101,13 @@ body.mini #dbar,body.exhibit #dbar{display:none!important}
 #cap{padding:10px 16px 6px;min-height:58px}
 #hint{margin:6px 0 0;color:var(--soft)}body.mini #hint,body:not(.v-stage) #hint,body.exhibit #hint{display:none}
 #who{color:var(--soft)}
-#line{font-family:var(--serif);font-size:clamp(17px,1.55vw,23px);line-height:1.32;margin-top:3px;max-height:5.3em;overflow:hidden}
+/* the caption is the thing read on the stage: reading size, never cut without a sign, the lit word always in sight */
+#line{font-family:var(--serif);font-size:var(--t-line);line-height:1.3;margin-top:3px;max-height:3.9em;overflow:hidden;position:relative}
+body.v-stage:not(.mini):not(.exhibit) #line.clip{-webkit-mask-image:linear-gradient(#000 calc(100% - 1.3em),#0000);mask-image:linear-gradient(#000 calc(100% - 1.3em),#0000)}
+body.v-stage:not(.mini):not(.exhibit) #line.open{max-height:none;-webkit-mask-image:none;mask-image:none}
+#lmore{margin-top:2px}body.mini #lmore,body:not(.v-stage) #lmore,body.exhibit #lmore{display:none}
 #line .w{opacity:0;transition:opacity var(--fast)}#line .w.on{opacity:1}
-#line.sm{font-size:var(--t-small);color:var(--soft)}
+#line.sm{font-size:var(--t-quote);color:var(--soft)}
 #ctl{display:flex;align-items:center;gap:4px;padding:4px 10px;flex-wrap:wrap}
 .cb{width:40px;height:40px;display:inline-grid;place-items:center;background:none;border:1px solid transparent;border-radius:var(--r-pill);cursor:pointer;color:var(--ink);padding:0;flex:none}
 .cb:hover{border-color:#fff5}.cb.on{color:var(--wall);border-color:var(--wall)}
@@ -458,7 +462,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   #gate{padding:26px 12px 10px}#gate p{font-size:var(--t-note);margin-top:6px}
   #views h2{font-size:var(--t-head);margin-bottom:6px}#views .lead{font-size:var(--t-small);line-height:1.45}
   #cap{padding:8px 12px 2px;min-height:0}
-  #line{font-size:var(--t-body);max-height:4em}
+  #line{font-size:18px;max-height:5.2em}#line.sm{font-size:17px}
   #ctl{padding:2px 6px;gap:0}
   .cb{width:44px;height:44px}.cb.main{width:46px;height:46px}
   #ruler{height:44px}
@@ -611,7 +615,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p>From 2021, as it was: strong language, private moments.</p>
       </div>
     </div>
-    <div id="cap"><div class="meta" id="who">Opening the work…</div><div id="line" aria-live="polite"></div><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
+    <div id="cap"><div class="meta" id="who">Opening the work…</div><div id="line" aria-live="polite"></div><button type="button" class="lk" id="lmore" aria-expanded="false" aria-controls="line" hidden>Read all of it</button><p class="note" id="hint" hidden>Press play, or ← and →. Then say what you make of it.</p></div>
     <div id="ctl" role="toolbar" aria-label="Stage controls">
       <button class="cb" id="bprev" data-ic="prev" title="Previous (←)" aria-label="Previous" aria-keyshortcuts="ArrowLeft"></button>
       <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play" aria-keyshortcuts="Space"></button>
@@ -960,7 +964,7 @@ function paint(){
   for(const m of stageMarks)for(const s of m.strokes)pen(s,m.col,2.5);
   for(const s of strokes)pen(s,PEN,3.2);
 }
-new ResizeObserver(()=>{if(sizeStage())paint();drawRuler()}).observe(stage);
+new ResizeObserver(()=>{if(sizeStage())paint();drawRuler();lineFit()}).observe(stage);
 const PEN='#ff2e7e'; /* the line being drawn: a colour that is in none of the pictures, clear on light and on dark */
 const parseMark=s=>String(s||'').split(';').map(t=>t.trim().split(/\s+/).map(p=>p.split(',').map(Number)).filter(p=>p.length==2&&p.every(n=>n>=0&&n<=999))).filter(t=>t.length>1);
 const colour=n=>n.at=='2021'?'rgba(111,116,128,.34)':n.by=='human'?'#e3c34d':n.by=='ai'?'#6dbb72':'#ffffff';
@@ -993,14 +997,20 @@ const markString=L=>L.map(s=>s.map(p=>p.join(',')).join(' ')).join(';');
 /* captions arrive word by word, the way they did */
 let timer,tick={text:'',small:false,ws:[]};
 function say(text,small,hold){
-  clearInterval(timer);const el=$('#line');el.removeAttribute('lang');el.innerHTML='';el.classList.toggle('sm',!!small);tick={text:String(text||''),small:!!small,ws:[]};if(!text)return;
+  clearInterval(timer);const el=$('#line');el.removeAttribute('lang');el.innerHTML='';el.classList.toggle('sm',!!small);el.classList.remove('clip','open');el.scrollTop=0;$('#lmore').hidden=true;tick={text:String(text||''),small:!!small,ws:[]};if(!text)return;
   const ws=tick.ws=String(text).split(' ').filter(Boolean).slice(0,90).map(t=>{const s=document.createElement('span');s.className='w';s.textContent=t+' ';el.appendChild(s);return s});
-  if(hold)return; /* the recorded sound lights the words as they are said */
-  if(reduced||ws.length>60){ws.forEach(s=>s.classList.add('on'));return}
-  let i=0;const stepW=()=>{if(i<ws.length)ws[i++].classList.add('on');else clearInterval(timer)};
-  stepW();timer=setInterval(stepW,110);
+  if(hold){lineFit();return} /* the recorded sound lights the words as they are said */
+  if(reduced||ws.length>60){ws.forEach(s=>s.classList.add('on'));lineFit();return}
+  let i=0;const stepW=()=>{if(i<ws.length){const w=ws[i++];w.classList.add('on');if(playing)lineSee(w)}else clearInterval(timer)};
+  stepW();timer=setInterval(stepW,110);lineFit();
 }
-function sayNow(text,lang){clearInterval(timer);const el=$('#line');el.classList.remove('sm');if(lang)el.lang=lang;else el.removeAttribute('lang');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text;tick={text:'',small:false,ws:[]}}
+/* a caption longer than its box: while it plays, the box follows the word being said; at rest it fades at its foot and a button
+   opens all of it. Away from the stage view and in the small bar the caption is one line, as before. */
+function lineSee(w){const el=$('#line');if(w&&!el.classList.contains('open'))el.scrollTop=Math.max(0,w.offsetTop+w.offsetHeight-el.clientHeight)}
+function lineFit(){const el=$('#line'),b=$('#lmore'),open=el.classList.contains('open'),over=open||el.scrollHeight>el.clientHeight+2,rest=!playing||!tick.ws.length;
+  el.classList.toggle('clip',!open&&over&&rest&&el.scrollHeight-el.scrollTop-el.clientHeight>8);b.hidden=!(over&&rest);b.textContent=open?'Less':'Read all of it';b.setAttribute('aria-expanded',open?'true':'false')}
+$('#lmore').onclick=()=>{const el=$('#line');if(el.classList.toggle('open'))el.scrollTop=0;lineFit()};
+function sayNow(text,lang){clearInterval(timer);const el=$('#line');el.classList.remove('sm','clip','open');el.scrollTop=0;if(lang)el.lang=lang;else el.removeAttribute('lang');el.innerHTML='<span class="w on"></span>';el.firstChild.textContent=text;tick={text:'',small:false,ws:[]};lineFit()}
 const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(n.model?', '+n.model.toUpperCase():'')+')'+(n.as&&P[n.as]?' · ✓ '+P[n.as].name.toUpperCase()+', WHO WAS THERE':'')+(n.name_unconfirmed?' · NAME NOT CONFIRMED':'');
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
@@ -1168,7 +1178,7 @@ function shotSound(id){ /* [recording, start, end, [[word, second], ...], words 
   const n=N[id];return n&&n.at=='2021'&&sndJ.lines[id]||null}
 const MS=navigator.mediaSession||null;
 function msSync(){if(!MS)return;try{MS.playbackState=playing?'playing':'paused';if(window.MediaMetadata)MS.metadata=new MediaMetadata({title:($('#who').textContent||'').slice(0,90)||'AIgorithmic Butterfly Effect',artist:'AIgorithmic Butterfly Effect',album:cur||''})}catch(e){}}
-function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play');msSync()}
+function paintPlay(){$('#bplay').innerHTML=ic(playing?'pause':'play');$('#bplay').setAttribute('aria-label',playing?'Pause':'Play');msSync();lineFit()}
 function paintSound(){const rec=!!(cur&&(isMin(cur)||shotSound(cur))),bs=$('#bsound');
   bs.hidden=!RAW||!rec;bs.innerHTML=ic(soundOn?'sound':'mute');bs.classList.toggle('on',soundOn&&playing);bs.setAttribute('aria-label',soundOn?'The recorded sound is on':'The recorded sound is off');}
 /* stop whatever is sounding or moving, without deciding whether we are still "playing" */
@@ -1207,7 +1217,7 @@ async function playShot(my,e,done,timed){
   if(!(await loadChunk(rid,chunk)))return live()&&timed();if(!live())return;
   const sync=!!(an&&tick.ws.length);if(sync)say(tick.text,tick.small,true); /* the words wait, and come as they are said */
   const ws=tick.ws;let shown=0,over=false,turning=false;
-  const reveal=k=>{k=Math.min(k,ws.length);while(shown<k)ws[shown++].classList.add('on')};
+  const reveal=k=>{k=Math.min(k,ws.length);const was=shown;while(shown<k)ws[shown++].classList.add('on');if(shown>was)lineSee(ws[shown-1])};
   const reached=t=>{ /* how many words the caption has got to at second t of the recording */
     if(t<=an[0][1])return 0;
     for(let i=1;i<an.length;i++)if(t<=an[i][1]){const[a,ta]=an[i-1],[b,tb]=an[i];return a+(b-a)*(tb>ta?(t-ta)/(tb-ta):1)}
