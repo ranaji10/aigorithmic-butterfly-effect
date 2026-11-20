@@ -7,6 +7,7 @@ This repository is an artwork, not a software project. You are welcome in it in 
 **As a helper to a steward.** If a steward asked you to maintain this repository, keep to these constraints:
 
 - Read [CHARTER.md](CHARTER.md) first. It outranks convenience.
+- Read [DESIGN.md](DESIGN.md) before changing how anything looks.
 - No build step, no frameworks, no analytics, no external fonts or scripts. `index.html` and `tools/wingbeat.py` (standard library only) are the whole machine; `tools/themes_build.py` (also standard library only) re-sorts the subject themes from the archive's machine-read text when new hours have been listened to. `tools/sound_build.py` (standard library only) finds the moment of the recordings each screenshot was taken at and writes `i/sound.json` into the archive repository; run it again when pictures or transcripts change. Nothing on the site is read aloud by a machine: what is heard is always the recording. `door/` is a replaceable convenience with one dependency (its storage client). Keep it that way so the work still runs in 2046.
 - The 2021 material that is public lives in the archive repository named in `data/config.json`. Material *held for review* (charter, section 5) is on the author's drive and nowhere else. Never publish held material, never try to guess what is in it, and never add surnames, handles, phone numbers, addresses or links to anything public. Only the author releases held material.
 - Never identify a person in a picture or recording. People place themselves.
