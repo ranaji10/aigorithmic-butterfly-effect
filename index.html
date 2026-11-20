@@ -408,8 +408,18 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .num{font:400 var(--t-title)/1.1 var(--serif);color:var(--ink)}
 #nmarks{display:block;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer;color:inherit}
 #nmarks .num,#nmarks .meta{display:block}#nmarks u{color:var(--wall);text-underline-offset:2px}#nmarks:hover .num{color:var(--wall)}
-.mcard{border-left-width:3px}.mcard .heard{display:block;margin-top:4px;font-size:var(--t-note);line-height:1.35;color:var(--dim);max-height:2.7em;overflow:hidden}
-.mcard .new{color:var(--hood)}
+/* the marks, to be read: one column of rows with a hairline between them; the label of each wears the colour of who spoke */
+#bm{max-width:820px;margin:14px 0 0}
+.mcard{display:grid;grid-template-columns:104px minmax(0,1fr);gap:0 16px;align-items:start;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:14px 0;text-align:left;cursor:pointer;color:inherit;font:inherit}
+.mcard:first-child{border-top:0}
+.mcard .ph{aspect-ratio:16/10;border-radius:var(--r-pic);margin-top:3px}
+.mcard .mx{display:block;min-width:0}
+.mcard .by{display:block;font:var(--t-label)/1.45 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--by,var(--dim));overflow-wrap:anywhere}
+.mcard q{quotes:none;font:400 var(--t-quote)/1.35 var(--serif);color:var(--ink);margin:3px 0 0;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.mcard .heard{display:block;margin-top:4px;font-size:var(--t-note);line-height:1.35;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mcard .new{color:var(--ink);font-weight:600}
+.mcard:hover q{color:#fff}
+.mkey span{white-space:nowrap}.mkey i{display:inline-block;width:9px;height:9px;margin:0 5px 0 8px;background:#fff;vertical-align:-1px}.mkey i.k1{background:var(--wall)}.mkey i.k2{background:var(--hood)}
 .about ul{margin:0 0 1em;padding-left:20px;max-width:68ch}.about li{margin:0 0 .45em}.about code{font:var(--t-note)/1.4 var(--mono);color:var(--soft);overflow-wrap:anywhere}
 .quote{border-left:2px solid var(--wall);padding:2px 0 2px 16px;color:var(--soft);font-family:var(--serif);font-style:italic;font-size:var(--t-quote)}
 #fly{width:100%;aspect-ratio:16/10;display:block;background:#060607;border:1px solid var(--line);border-radius:var(--r-card)}
@@ -471,6 +481,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   #views{padding:0 12px 40px}
   .grid{grid-template-columns:repeat(3,1fr);gap:4px}
   .qlist,.calls{grid-template-columns:1fr}
+  .mcard{grid-template-columns:72px minmax(0,1fr);gap:0 12px}
   .tgrid,.pgrid{grid-template-columns:repeat(2,1fr)}
   .doors{grid-template-columns:1fr}.bd{aspect-ratio:1;min-height:40px}.bd b{left:4px;top:4px;font-size:var(--t-note)}.bd em{right:3px;top:4px;font-size:var(--t-label)}#bcal{gap:3px}
   #bkinds{flex-wrap:nowrap;overflow-x:auto;margin:0 -12px 12px;padding:0 12px 4px;scrollbar-width:none}#bkinds .btn{flex:none}
@@ -1123,7 +1134,7 @@ async function show0(id,o){
   $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
   $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></li>').join('')
     +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · appears within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
-    +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">Nobody has answered this yet.</li>');
+    +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">Nobody has answered this yet.</li>'+(liveMarks().length?'<li style="cursor:default;border:0;padding:0"><button type="button" class="lk" id="tmarks">See the marks left elsewhere</button></li>':''));
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
   markRuler();markTiles();syncClip();paintSound();if(RAW&&!sndP&&!isMin(id))needSound();
@@ -1137,7 +1148,7 @@ async function show0(id,o){
   if(isImg(id)){const L=picIds(),i=L.indexOf(+id.slice(1));for(const d of[1,-1]){const n=L[i+d];if(n)loadImg(RAW?bigUrl('m'+pad(n,5)):thumbUrl('m'+pad(n,5)))}}
   else if(isMin(id)){const rid=id.slice(0,4),m=+id.slice(5),r=recById[rid];if(r&&r.frames&&m+1<r.min)loadImg(RAW?frameUrl(rid,m+1):frameUrl(rid,m+1,1))}
 }
-$('#thread').addEventListener('click',e=>{const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)});
+$('#thread').addEventListener('click',e=>{if(e.target.closest('#tmarks')){$('#nmarks').click();return}const li=e.target.closest('li[data-id]');if(li)go(li.dataset.id)});
 $('#thread').addEventListener('keydown',e=>{if(e.key=='Enter'||e.key==' '){const li=e.target.closest('li[data-id]');if(li){e.preventDefault();go(li.dataset.id)}}});
 function pick(){const r=Math.random();
   if(recs&&recs.length&&r<.3){const calls=recs.filter(x=>x.kind=='call'&&x.lines),c=calls[Math.floor(Math.random()*calls.length)];if(c){const v=voiceCache[c.id];const m=v&&v.segs.length?Math.floor(v.segs[Math.floor(Math.random()*v.segs.length)][0]/60):Math.floor(Math.random()*Math.min(c.min,60*(c.heard||[0]).length||c.min));return c.id+'.'+pad(m,4)}}
@@ -1416,7 +1427,7 @@ const bSlug=()=>BSL[B.kind+'/'+B.grp]||'';
 function hashFor(){const sub=view=='themes'?openTheme:view=='people'?openPerson:'';if(view=='browse'&&(B.kind=='marks'||B.want=='marks'))return'#marks';if(view=='browse'){const s=bSlug();return'#browse'+(s?'/'+s:'')+(cur?'/'+cur:'')}return view=='stage'?location.pathname+location.search:'#'+view+(sub?'/'+sub:'')}
 const TITLE0=document.title,WORK='AIgorithmic Butterfly Effect';
 /* the title of the tab says where one is; the bare address keeps the long title */
-function setTitle(){const p=view=='themes'?[openTheme&&T[openTheme]?T[openTheme].title:'','Themes']:view=='people'?[openPerson&&P[openPerson]?P[openPerson].name:'','People']:view=='browse'?['Browse']:view=='about'?['About']:[];document.title=p.length?p.filter(Boolean).concat(WORK).join(' · '):TITLE0}
+function setTitle(){const p=view=='themes'?[openTheme&&T[openTheme]?T[openTheme].title:'','Themes']:view=='people'?[openPerson&&P[openPerson]?P[openPerson].name:'','People']:view=='browse'?[B.kind=='marks'||B.want=='marks'?'Marks':'Browse']:view=='about'?['About']:[];document.title=p.length?p.filter(Boolean).concat(WORK).join(' · '):TITLE0}
 /* after a change of view the keyboard carries on from the new place: its heading takes the focus (and shows no ring) */
 function focusHead(tries){const el=view=='stage'?$('#bplay'):view=='themes'&&openTheme?$('#ttitle'):$('#v-'+view+' h2');
   if(el&&el.offsetParent){if(!el.hasAttribute('tabindex')&&el.tagName=='H2')el.tabIndex=-1;try{el.focus({preventScroll:true})}catch(e){}}else if((tries||0)<40)setTimeout(()=>focusHead((tries||0)+1),60)}
@@ -1495,7 +1506,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]
 
 /* browse: the nine weeks day by day, and everything by what it is. Pictures first, words beside them. */
 const B={kind:'',grp:'',list:[],a:0,b:0,ready:false,secs:false,title:'',want:''};const BN=120;
-const KINDS=[['days','','Day by day'],['pics','d','The document'],['calls','','Calls'],['pics','p','Camera roll'],['stories','','Phone videos'],['pics','s','Screenshots'],['pics','x','Made in 2026'],['lines','','Lines'],['marks','','Marks since 2026'],['pics','','Every picture']];
+const KINDS=[['days','','Day by day'],['marks','','Marks since 2026'],['pics','d','The document'],['calls','','Calls'],['pics','p','Camera roll'],['stories','','Phone videos'],['pics','s','Screenshots'],['pics','x','Made in 2026'],['lines','','Lines'],['pics','','Every picture']]; /* the marks second: they are a place of their own, not the ninth way of browsing 2021 */
 const KINFO={'pics/d':['The document','The shared document of November 2021. Every screenshot of the call was pasted into it, in order, under headings and hashtags written by whoever was there. The strip beside each heading shows the colours of the screenshots under it.'],
   'calls/':['The calls','The call itself, recording by recording. Each strip runs from the start of a recording to its end, and its length follows the length of the recording. Pick any frame to start there. The words were heard by a small speech model in 2026, and it mishears.'],
   'pics/p':['Camera roll','What the camera saw away from the screen: the floor, the sky, the snow.'],
@@ -1533,7 +1544,7 @@ async function bSet(kind,grp,list,title){
   else{await needRecs();await needImgs();if(tok!=bTok)return;B.list=[];const L=recOrder.filter(r=>kind=='calls'?r.kind!='story':r.kind=='story');
     $('#bhead').textContent=kind=='calls'?fmt(L.length)+' recordings':fmt(L.length)+' videos';
     body.innerHTML=kind=='stories'?khead('stories','')+bStories(L):khead('calls','')+bCalls(L)}
-  if(!EX&&view=='browse'){const s=bSlug()||kind;if(B.hist&&s!=B.slug&&!B.quiet)history.pushState(null,'',hashFor());else history.replaceState(null,'',hashFor());B.slug=s;B.hist=true}B.quiet=false;
+  if(!EX&&view=='browse'){const s=bSlug()||kind;if(B.hist&&s!=B.slug&&!B.quiet)history.pushState(null,'',hashFor());else history.replaceState(null,'',hashFor());B.slug=s;B.hist=true}B.quiet=false;setTitle();
   markTiles()}
 /* things that carry a day, gathered under their days */
 function byDay(L,keyOf){const by={},keys=[];for(const x of L){const k=keyOf(x)||'';if(!by[k]){by[k]=[];keys.push(k)}by[k].push(x)}keys.sort((a,b)=>a==''?1:b==''?-1:a<b?-1:1);return keys.map(k=>[k,by[k]])}
@@ -1700,17 +1711,15 @@ function paintCount(){const k=freshCount();$('#n2new').textContent=k?' · '+k+' 
 const rootOf=id=>{let x=id,g=0;while(N[x]&&N[x].hears&&g++<500)x=N[x].hears;return x};
 function mcard(w,isNew){const root=rootOf(w.id),mid=N[root]&&N[root].shot?(IMG.has(N[root].shot)?'m'+pad(N[root].shot,5):''):isMedia(root)?(isRec(root)?root+'.0000':root):isTheme(root)&&T[root]?(T[root].items.find(i=>!gone[i]&&isMedia(i))||''):'';
   const par=N[w.hears],heard=par?(par.removed?'[this was taken back]':par.text||'[a mark without words]'):isImg(w.hears)?'a picture':isMin(w.hears)?'minute '+(+w.hears.slice(5)+1)+' of a recording':isTheme(w.hears)&&T[w.hears]?'the theme “'+T[w.hears].title+'”':w.hears;
-  const thumb=mid&&!gone[mid]&&!gone[mid.slice(0,4)]?thumbUrl(mid):'';
-  return'<button class="qcard mcard" data-id="'+esc(w.id)+'" data-list="bm" style="border-left-color:'+colour(w)+'">'+(thumb?'<span class="tile"><img loading="lazy" decoding="async" src="'+esc(thumb)+'" alt=""></span>':'')
-    +'<span><q>'+esc(lineText(w))+'</q><span class="meta">'+(isNew?'<span class="new">new · </span>':'')+esc(who(w))+' · '+esc(w.id)+'</span><span class="heard">answers '+esc(w.hears)+(par?': “'+esc(heard.slice(0,140))+'”':', '+esc(heard))+'</span></span></button>'}
+  const thumb=mid&&!gone[mid]&&!gone[mid.slice(0,4)]?thumbUrl(mid):'',f=N[root]&&/^[0-9a-f]{6}/i.test(N[root].field||'')?' style="background:#'+N[root].field.slice(0,6)+'"':'';
+  /* a row: the picture of what it answers; who, in the speaker's colour; the mark's words; what it answers, as one quiet line */
+  return'<button class="mcard" data-id="'+esc(w.id)+'" data-list="bm" style="--by:'+(w.by=='human'?'var(--wall)':w.by=='ai'?'var(--hood)':'#fff')+'"><span class="ph"'+f+'>'+(thumb?'<img loading="lazy" decoding="async" src="'+esc(thumb)+'" alt="">':'')+'</span>'
+    +'<span class="mx"><span class="by">'+(isNew?'<span class="new">new · </span>':'')+esc(who(w))+' · '+esc(w.at)+' · '+esc(w.id)+'</span><q>'+esc(lineText(w))+'</q><span class="heard">answers '+esc(w.hears)+(par?': “'+esc(heard.slice(0,140))+'”':', '+esc(heard))+'</span></span></button>'}
 function marksHTML(){const W=liveMarks().slice().reverse(),air=pending(),k=freshCount();
   $('#bhead').textContent=fmt(W.length)+(W.length==1?' mark':' marks')+' left since 14 Nov 2026, newest first'+(k?' · '+k+' new since you were last here':'');
-  let h='<p class="lead" style="margin:10px 0 0">Every mark anyone has left, human or machine: words, drawings, themes. <span style="color:var(--wall)">▍</span>human <span style="color:var(--hood)">▍</span>AI <span style="color:#fff">▍</span>both, or not sure. Tap one to put it on the stage with what it answers.</p>';
+  let h='<p class="lead mkey" style="margin:10px 0 0">Every mark anyone has left, human or machine: words, drawings, themes. <span><i class="k1"></i>a human</span> <span><i class="k2"></i>an AI</span> <span><i></i>both, or not sure.</span> Pick one to put it on the stage with what it answers.</p>';
   if(air.length)h+='<p class="meta day">Yours, in the air · they appear within the hour</p><ul class="thread">'+air.map(p=>'<li class="air">'+esc(p.text||'[a mark without words]')+' <span class="meta" style="display:inline">· answers '+esc(p.hears)+'</span></li>').join('')+'</ul>';
-  h+='<div id="bm">';let d='';
-  for(const w of W){if(w.at!=d){if(d)h+='</div>';d=w.at;const ms=Date.parse(w.at+'T11:00:00Z');h+='<p class="meta day">'+(ms?niceDay(ms):esc(w.at))+'</p><div class="qlist">'}
-    h+=mcard(w,seenId!=null&&w.id>seenId)}
-  h+=(d?'</div>':'<p class="meta" style="margin-top:14px">None yet. Yours could be the first.</p>')+'</div>';
+  h+='<div id="bm">'+(W.length?W.map(w=>mcard(w,seenId!=null&&w.id>seenId)).join(''):'<p class="meta" style="margin-top:14px">None yet. Yours could be the first.</p>')+'</div>';
   /* looked at: from now on only later marks are new */
   seenId=lastId();store.set('abe-seen',seenId);setTimeout(paintCount,0);return h}
 $('#nmarks').onclick=()=>{B.want='marks';setView('browse');if(!EX)history.replaceState(null,'','#marks')};
