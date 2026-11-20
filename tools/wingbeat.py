@@ -517,6 +517,12 @@ def build():
             f"<updated>{day}T00:00:00Z</updated>" + "".join(entries) + "</feed>\n")
     with open(path("feed.xml"), "w", encoding="utf-8") as f:
         f.write(feed)
+    # the picture other programs show beside a link to the work: the butterfly as it is now (tools/og_build.py)
+    try:
+        import og_build
+        og_build.build(ROOT)
+    except Exception as e:  # the picture must never stop a sweep
+        print("link picture not drawn:", e)
     print(f"built: {len(S)} seeds, {len(W)} wingbeats, {len(T)} themes, {len(ppl)} people, {len(gone)} hidden")
     return nodes
 
