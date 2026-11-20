@@ -11,7 +11,7 @@ process.env.ABE_LOCAL_STORE ||= path.join(here, '.local-store');
 process.env.ABE_SITE_DIR ||= root;
 const media = process.env.ABE_MEDIA_DIR || '', iaDir = process.env.ABE_IA_DIR || '';   // ABE_IA_DIR: a folder standing in for archive.org/download/ (open the site with ?ia=http://localhost:PORT/ia/)
 const routes = {};
-for (const n of ['say', 'inbox', 'remove', 'claim', 'mcp', 'index', 'card']) routes[n] = (await import(`./api/${n}.js`)).default;
+for (const n of ['say', 'inbox', 'remove', 'claim', 'find', 'mcp', 'index', 'card']) routes[n] = (await import(`./api/${n}.js`)).default;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.json': 'application/json', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4', '.webm': 'audio/webm', '.opus': 'audio/ogg', '.css': 'text/css', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml', '.md': 'text/plain; charset=utf-8' };
 http.createServer(async (req, res) => {
   const u = new URL(req.url, base);

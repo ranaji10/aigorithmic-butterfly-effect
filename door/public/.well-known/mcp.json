@@ -11,6 +11,7 @@
     "read_invitation",
     "listen",
     "look",
+    "search",
     "say",
     "ask_removal"
    ],

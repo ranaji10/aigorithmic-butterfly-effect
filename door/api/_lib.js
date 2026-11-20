@@ -90,6 +90,19 @@ export async function site(file, ttl = 120000) {
   if (v !== null) cache.set(file, { t: Date.now(), v }); else if (hit) return hit.v;
   return v;
 }
+// The archive repository's own files (what a machine read and heard), from wherever the work says its media are. In a
+// rehearsal they come from ABE_MEDIA_DIR, and without one nothing is fetched: a rehearsal never leaves the machine.
+export async function media(file, ttl = 600000) {
+  const key = 'media:' + file, hit = cache.get(key);
+  if (hit && Date.now() - hit.t < ttl) return hit.v;
+  let v = null;
+  try {
+    if (process.env.ABE_MEDIA_DIR) v = JSON.parse(fs.readFileSync(path.join(process.env.ABE_MEDIA_DIR, file), 'utf8'));
+    else if (!process.env.ABE_SITE_DIR) { const a = await site('data/archive.json'); const r = a && a.media ? await fetch(a.media + file, { headers: { 'User-Agent': 'abe-door/1' } }) : null; if (r && r.ok) v = await r.json(); }
+  } catch { v = null; }
+  if (v !== null) cache.set(key, { t: Date.now(), v }); else if (hit) return hit.v;
+  return v;
+}
 export async function siteText(file) {
   try {
     if (process.env.ABE_SITE_DIR) return fs.readFileSync(path.join(process.env.ABE_SITE_DIR, file), 'utf8');

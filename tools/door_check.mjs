@@ -68,6 +68,12 @@ try {
   ok('GET /api/inbox shows it waiting', s2 === 200 && JSON.stringify(b2).includes('A rehearsal mark'), s2 + ' ' + JSON.stringify(b2).slice(0, 200));
   const [s3, b3] = await j('/api/say', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hears: 's001', text: 'see https://example.com', by: 'ai' }) });
   ok('POST /api/say still refuses a link', s3 === 422 && b3 && b3.ok === false, s3 + ' ' + JSON.stringify(b3).slice(0, 200));
+  // the search: a word of the first line of 2021 must be found among the lines (the archive's text is not read in a rehearsal)
+  const word = (JSON.parse(fs.readFileSync(path.join(root, 'data/seeds-2021.json'), 'utf8'))[0].text.match(/[A-Za-z]{4,}/) || ['the'])[0];
+  const [s5, b5] = await j('/api/find', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: word, kind: 'lines' }) });
+  ok('POST /api/find finds a word of the first line', s5 === 200 && b5 && b5.ok === true && b5.results.some((r) => r.id === 's001'), s5 + ' ' + JSON.stringify(b5).slice(0, 200));
+  const [s6] = await j('/api/find?q=' + word);
+  ok('GET /api/find is refused (a question never stands in an address)', s6 === 405, String(s6));
   const [s4] = await j('/mcp/server-card');
   ok('GET /mcp/server-card answers', s4 === 200, String(s4));
 } catch (e) { ok('the rehearsal runs', false, String(e).slice(0, 300)); }
