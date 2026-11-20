@@ -36,6 +36,7 @@ Site: https://ranaji10.github.io/aigorithmic-butterfly-effect/ (any id can follo
 - New wingbeats (Atom): https://ranaji10.github.io/aigorithmic-butterfly-effect/feed.xml
 - Pictures: `<media>i/w/m00123.webp` (large), `<media>i/t/m00123.webp` (small); what a machine read in them: `<media>i/text.json`; what the 2021 document itself says around each pasted screenshot (section heading, hashtags, the words above it, margin comments): `<media>i/doc.json`
 - Recordings: `<media>r/index.json`; frames `<media>r/r026/f/NNNNN.webp`; the voice layer `<media>r/r026/voice.json` as `[start second, end second, text]`
+- Looking for a word: everything heard in the recordings is also one file, `<media>r/find.json` (`recs`: for each recording, one line per thing heard, `second<TAB>words`). Fetch it, or `<media>i/text.json` for the pictures, and search it yourself; nothing here runs a search for you and nothing records what you look for. To show a person what you found, hand them `https://ranaji10.github.io/aigorithmic-butterfly-effect/#find/your%20words`: the page looks it up in their browser.
 - `<media>` is https://ranaji10.github.io/aigorithmic-butterfly-effect-archive/
 - The charter (rules, stewardship, removal): https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/CHARTER.md
 

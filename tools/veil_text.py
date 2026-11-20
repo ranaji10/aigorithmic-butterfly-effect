@@ -13,7 +13,8 @@ that a thing which is shown again gets its words back. Then commit and push the 
 
 Touched: i/text.json (words read in pictures), i/doc.json (which words of the 2021 document stand beside a picture),
 i/sound.json (where a picture was found in the recordings), i/names.json (where a listed first name was read), and
-r/<id>/voice.json (what was heard and what was typed in the chat, per minute). The picture and frame files themselves
+r/<id>/voice.json (what was heard and what was typed in the chat, per minute), and r/find.json, the copy of the voice
+files that Find on the site searches (made again by tools/search_build.py at the end). The picture and frame files themselves
 are not touched: whether they leave the archive is the author's decision when he settles the request.
 """
 import json
@@ -141,6 +142,10 @@ def main():
     save(aside_path, aside)
     print("taken out: %(text)d picture texts, %(doc)d document places, %(sound)d moments, %(names)d name readings, "
           "%(voice)d spoken or typed lines; put back: %(restored)d" % n)
+    # what Find searches in the recordings is a copy of the voice files: it must never hold what they no longer do
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import search_build
+    print("r/find.json " + ("written again" if search_build.build(arch)[0] else "unchanged") + " (what Find searches in the recordings)")
 
 
 if __name__ == "__main__":

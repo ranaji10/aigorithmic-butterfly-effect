@@ -61,7 +61,9 @@ Motion: `--fast` 150 ms for a state and for the change of a view, `--slow` 700 m
 | Round icon | `.cb` (40 px, 44 on phones), `.ob` on a picture (32 px, 44 under a finger) | the stage's controls; each has a name for screen readers. A control that needs words is `.cb.txt` |
 | Text button | `.lk` | an action inside a sentence, underlined |
 | Who is speaking | `#byrow` buttons | a radio group; each with the square of its colour |
-| A row | `.mcard`, `.ln` | something to be read that opens on the stage: a hairline above, no card ground |
+| A row | `.mcard`, `.ln` | something to be read that opens on the stage: a hairline above, no card ground. What Find finds is such rows; the word that was looked for is lifted (`--tint`, white, a hairline under it), never coloured |
+| A field to look for a word | `#fq` | one on the page, in Find: a pill like everything pressed, the border of anything typed into (`--edge`) |
+| Bars of the nine weeks | `#tspark`, `#fspark` | when a theme, or a word, came up, day by day; a bar is pressed to go to its day |
 
 States for all: hover (a brighter border or brighter words), focus (2 px yellow ring, 2 px away), chosen (yellow border or `aria-current`, never colour alone), disabled (35% and no pointer), busy (`aria-busy`, the label says what is happening). Nothing pressed is smaller than 24 px in either direction, and 44 under a finger. A row of many small things (a strip of frames, the calendar, an hour's pictures) is one stop for the Tab key; the arrows move inside it.
 
@@ -73,7 +75,7 @@ A picture of the work is shown whole (`object-fit:contain` on the stage) and nev
 
 ## The work's own two objects
 
-**The butterfly** (the Lorenz drawing): thin grey for each line of 2021, thicker yellow, green or white for each mark. It is the picture of the whole (in About it fits one screen with its legend), what stands on the stage while the work opens, and the work's face to the outside (`data/og.png`, drawn again by `tools/og_build.py` whenever a mark arrives; `img/touch-icon.png`). **The ruler**: every picture's colour above, the nine weeks below. Nothing else on the page is drawn.
+**The butterfly** (the Lorenz drawing): thin grey for each line of 2021, thicker yellow, green or white for each mark. It is the picture of the whole (in About it fits one screen with its legend), what stands on the stage while the work opens, and the work's face to the outside (`data/og.png`, drawn again by `tools/og_build.py` whenever a mark arrives). **The icon** is the butterfly too, reduced to what a small square can hold: one turn round each wing, the left in a human's yellow, the right in an AI's green, on `--pit`. In a tab (`favicon.ico` at 16, 32 and 48 px, `img/icon.svg`) it is those two turns alone, each size with its own stroke; on a home screen (`img/touch-icon.png`, `img/icon-192.png`, `img/icon-512.png`, `img/icon-mask-512.png`) they lie over the grey paths of the 98 lines. `tools/icons_build.py` drew them; they are kept by hand. **The ruler**: every picture's colour above, the nine weeks below. Nothing else on the page is drawn.
 
 ## Time
 
