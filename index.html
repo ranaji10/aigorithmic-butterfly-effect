@@ -67,6 +67,11 @@ button{-webkit-tap-highlight-color:transparent}
 #bar{position:sticky;top:0;z-index:var(--z-bar);height:var(--bar);display:flex;align-items:center;gap:18px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--line)}
 #brand{font:600 var(--t-note)/1 var(--mono);letter-spacing:.06em;color:var(--ink);text-decoration:none;white-space:nowrap;padding:17px 0}
 #brand b{color:var(--wall);font-weight:600}
+/* which of its twenty years the work is in; and under the bar a yellow hairline as long as the time that has passed (--gone,
+   set once by the script). It counts nothing a visitor does, and it never moves. */
+#yr{white-space:nowrap}
+#bar::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:calc(var(--gone,0)*100%);background:var(--wall)}
+.nar{display:none}
 #tabs{display:flex;gap:2px;margin-left:auto}
 #tabs button,#tabbar button{background:none;border:0;cursor:pointer;font:var(--t-label)/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:10px 12px;border-radius:var(--r-pic)}
 #tabs button:hover{color:var(--ink)}
@@ -469,7 +474,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
 @media (max-width:899px){
   :root{--bar:44px;--tab:56px}
   body{padding-bottom:calc(var(--tab) + env(safe-area-inset-bottom))}
-  #tabs{display:none}#bar{gap:8px;padding:0 12px}#brand{font-size:var(--t-note);overflow:hidden;text-overflow:ellipsis;flex:1;padding:15px 0}
+  #tabs,#yr,.wid{display:none}.nar{display:inline}#bar{gap:8px;padding:0 12px}#brand{font-size:var(--t-note);overflow:hidden;text-overflow:ellipsis;flex:1;padding:15px 0}
   #tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:var(--z-bar);height:calc(var(--tab) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid var(--line)}
   #tabbar button{flex:1;padding:0;font-size:var(--t-label);letter-spacing:.08em}
   #stage{height:min(62vw,40vh);height:min(62vw,40svh)}
@@ -622,6 +627,7 @@ body.mini .ov,body.exhibit .ov{display:none}
 </div>
 <header id="bar">
   <a id="brand" href="#" title="The stage"><b>AI</b>gorithmic Butterfly Effect</a>
+  <span class="meta" id="yr" title="Open since 14 November 2026, until at least 14 November 2046.">Year 1 of 20</span>
   <nav id="tabs" aria-label="Parts of the work">
     <button data-v="stage" class="on" aria-current="page">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="about">About</button>
   </nav>
@@ -782,7 +788,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <div><div class="num" id="n1">98</div><div class="meta">lines from the 2021 caption machine</div></div>
         <div><div class="num" id="n4">82,250</div><div class="meta">lines heard again in 2026</div></div>
         <div><button type="button" id="nmarks" title="See every mark left since 2026, together"><span class="num" id="n2">…</span><span class="meta">marks left since · <u>see them all</u><span id="n2new" class="ok"></span></span></button></div>
-        <div><div class="num" id="n3">…</div><div class="meta">days until 14 Nov 2046</div></div>
+        <div><div class="num" id="n3">…</div><div class="meta"><span class="wid">days until 14 Nov 2046</span><span class="nar">days to go · <span id="yr2">year 1 of 20</span></span></div></div>
       </div>
       <section class="afig" id="dfly">
         <h3 class="sh">The butterfly</h3>
@@ -914,6 +920,10 @@ const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches,introOpenNow
 const day=864e5,t1=Date.UTC(2046,10,14),now=Date.now(),C=arch.counts||{};
 $('#n2').textContent=fmt(wb.wingbeats.length);$('#n3').textContent=fmt(Math.max(0,Math.ceil((t1-now)/day)));$('#n4').textContent=fmt(C.spoken_lines||0);
 if(C.pictures){$('#c1').textContent=fmt(IMGS.length||C.pictures);$('#c2').textContent=fmt(C.recorded_hours)}
+/* which of its twenty years the work is in, by the calendar (UTC): the year turns on 14 November. After the twentieth it reads
+   "Year 21", and so on. The hairline under the bar: the days since 14 November 2026 out of 7,305, set once, never animated. */
+{const d=new Date(now),y=Math.max(1,d.getUTCFullYear()-2026+(d.getUTCMonth()>10||(d.getUTCMonth()==10&&d.getUTCDate()>=14)?1:0)),txt=y<=20?'Year '+y+' of 20':'Year '+y;
+  $('#yr').textContent=txt;$('#yr2').textContent=txt.toLowerCase();$('#bar').style.setProperty('--gone',clamp((now-Date.UTC(2026,10,14))/day/7305,0,1).toFixed(5))}
 if(C.pictures_held_for_review||C.recordings_held_for_review)$('#held').textContent=fmt(C.pictures_held_for_review||0)+' more pictures and '+fmt(C.recordings_held_for_review||0)+' recordings are held back: they show details of people who were never in the calls.'+(Object.keys(gone).length?' '+fmt(Object.keys(gone).filter(k=>/^m/.test(k)).length)+' pictures and '+fmt(Object.keys(gone).filter(k=>/^r/.test(k)).length)+' recordings or minutes of recordings are hidden until someone has looked at them.':'');
 if(DOOR){$('#doorurl').innerHTML='<code>POST '+esc(DOOR)+'/api/say</code>';$('#mcpurl').innerHTML='<code>'+esc(DOOR)+'/mcp</code>'}
 /* the fence in this page's head names the places it may reach; if the work's own files point somewhere else, say so where a steward will look */
