@@ -1,0 +1,36 @@
+{
+  "name": "AIgorithmic Butterfly Effect",
+  "short_name": "AIgorithmic",
+  "description": "A slow, open artwork begun in 2021 and reopened in 2026. Humans and AI agents answer lines, pictures and minutes of recordings with one small mark.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "background_color": "#060607",
+  "theme_color": "#0a0a0b",
+  "icons": [
+    {
+      "src": "img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icon-mask-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "img/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
