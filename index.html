@@ -409,6 +409,9 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel)}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:22px}
 .num{font:400 var(--t-title)/1.1 var(--serif);color:var(--ink)}
+/* About's four figures stand in a ruled grid: a hairline above and below, one between each two */
+#afigs{gap:0;grid-template-columns:repeat(4,minmax(0,1fr));margin:26px 0 30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#afigs>div{padding:14px 18px;border-left:1px solid var(--line);min-width:0}#afigs>div:first-child{border-left:0;padding-left:0}
 #nmarks{display:block;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer;color:inherit}
 #nmarks .num,#nmarks .meta{display:block}#nmarks u{color:var(--wall);text-underline-offset:2px}#nmarks:hover .num{color:var(--wall)}
 /* the marks, to be read: one column of rows with a hairline between them; the label of each wears the colour of who spoke */
@@ -426,6 +429,9 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .about ul{margin:0 0 1em;padding-left:20px;max-width:68ch}.about li{margin:0 0 .45em}.about code{font:var(--t-note)/1.4 var(--mono);color:var(--soft);overflow-wrap:anywhere}
 .quote{border-left:2px solid var(--wall);padding:2px 0 2px 16px;color:var(--soft);font-family:var(--serif);font-style:italic;font-size:var(--t-quote)}
 #fly{width:100%;aspect-ratio:16/10;display:block;background:#060607;border:1px solid var(--line);border-radius:var(--r-card)}
+/* the butterfly whole on one screen, with its legend, under the small bar */
+body:not(.exhibit) #fly{width:auto;max-width:100%;max-height:calc(100vh - var(--bar) - 190px);max-height:calc(100svh - var(--bar) - 190px);margin-inline:auto}
+#aend{margin:26px 0 0}
 .px{image-rendering:pixelated;image-rendering:crisp-edges;width:100%;display:block;border:1px solid var(--line);cursor:crosshair}
 .axis{display:flex;justify-content:space-between}
 /* About on a wide screen: the text keeps its measure, the three pictures that are this work's own take the width of the page */
@@ -484,6 +490,7 @@ dialog{background:#141418;color:var(--ink);border:1px solid var(--edge);border-r
   #views{padding:0 12px 40px}
   .grid{grid-template-columns:repeat(3,1fr);gap:4px}
   .qlist,.calls{grid-template-columns:1fr}
+  #afigs{grid-template-columns:repeat(2,minmax(0,1fr))}#afigs>div{padding:12px 14px}#afigs>div:nth-child(odd){border-left:0;padding-left:0}#afigs>div:nth-child(n+3){border-top:1px solid var(--line)}
   .mcard{grid-template-columns:72px minmax(0,1fr);gap:0 12px}
   .tgrid,.pgrid{grid-template-columns:repeat(2,1fr)}
   .doors{grid-template-columns:1fr}.bd{aspect-ratio:1;min-height:40px}.bd b{left:4px;top:4px;font-size:var(--t-note)}.bd em{right:3px;top:4px;font-size:var(--t-label)}#bcal{gap:3px}
@@ -763,7 +770,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <p>In November 2026 he asked a language model to read the whole archive and find a form for it. The friends in the calls had agreed to be seen, and the author asked for the material itself to be shown. So it is here: <span id="c1">thousands of</span> pictures, <span id="c2">hundreds of</span> hours of calls, and the speech of those calls written down by a second, smaller machine five years after the first.</p>
       <p>The call is open again, slowly this time. Nothing is live. Nobody is watching you.</p>
       <p><button type="button" class="btn sm" id="iagain">Show the introduction again</button></p>
-      <div class="cols" style="margin:26px 0 30px">
+      <div class="cols" id="afigs">
         <div><div class="num" id="n1">98</div><div class="meta">lines from the 2021 caption machine</div></div>
         <div><div class="num" id="n4">82,250</div><div class="meta">lines heard again in 2026</div></div>
         <div><button type="button" id="nmarks" title="See every mark left since 2026, together"><span class="num" id="n2">…</span><span class="meta">marks left since · <u>see them all</u><span id="n2new" class="ok"></span></span></button></div>
@@ -819,6 +826,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <details><summary>Keeping it</summary><div>
         <p>The work is plain files in two public git repositories (<a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">the work</a> and <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect-archive">its pictures, frames and sound</a>), with the full-length originals going to the Internet Archive. Every 14 November it is sealed as a year ring. How it is looked after, and how to copy it if this address ever dies: <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/CHARTER.md">the charter</a>. To show it in a room: <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect/blob/main/EXHIBIT.md">exhibition notes</a>, or <a href="?exhibit">exhibition mode</a>.</p>
       </div></details>
+      <p class="trow" id="aend"><button type="button" class="btn go" id="ago">Somewhere in the work</button><button type="button" class="btn" id="aall">See every mark</button></p>
     </section>
   </main>
 </div>
@@ -1726,6 +1734,8 @@ function marksHTML(){const W=liveMarks().slice().reverse(),air=pending(),k=fresh
   /* looked at: from now on only later marks are new */
   seenId=lastId();store.set('abe-seen',seenId);setTimeout(paintCount,0);return h}
 $('#nmarks').onclick=()=>{B.want='marks';setView('browse');if(!EX)history.replaceState(null,'','#marks')};
+/* About ends with a way into the work: somewhere, as a visit to the bare address opens, or the marks */
+$('#ago').onclick=async()=>{setView('stage');focusHead();go(await pickLanding(),{play:RAW})};$('#aall').onclick=()=>$('#nmarks').click();
 paintCount();
 
 /* themes. The front: every theme as a picture with its name and the number of its moments; one of them is large and carries its
