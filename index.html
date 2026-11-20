@@ -247,6 +247,10 @@ body.v-browse #v-browse,body.v-themes #v-themes,body.v-people #v-people,body.v-a
 h2{font-family:var(--serif);font-weight:400;font-size:var(--t-title);line-height:1.12;margin:0 0 12px}
 p{margin:0 0 1em;max-width:68ch}
 .lead{color:var(--soft)}
+/* type: headings and single sentences are balanced, paragraphs avoid a lone last word, figures in labels stand in columns */
+p,.lead{text-wrap:pretty}
+.ip h1,.ip .it,h2,h3.sh,.bsec b,#f .q,.thero h2{text-wrap:balance}
+.meta,#who{font-variant-numeric:tabular-nums}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
 .chips .btn .meta{margin-left:4px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;margin:12px 0}
@@ -421,7 +425,7 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 #sdb .quote{margin:10px 0;overflow-wrap:anywhere}#sdkey{min-height:64px;font:var(--t-note)/1.4 var(--mono)}
 .box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel)}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:22px}
-.num{font:400 var(--t-title)/1.1 var(--serif);color:var(--ink)}
+.num{font:400 var(--t-title)/1.1 var(--serif);color:var(--ink);font-variant-numeric:tabular-nums}
 /* About's four figures stand in a ruled grid: a hairline above and below, one between each two */
 #afigs{gap:0;grid-template-columns:repeat(4,minmax(0,1fr));margin:26px 0 30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 #afigs>div{padding:14px 18px;border-left:1px solid var(--line);min-width:0}#afigs>div:first-child{border-left:0;padding-left:0}
@@ -667,7 +671,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <button class="cb" id="bprev" data-ic="prev" title="Previous (←)" aria-label="Previous" aria-keyshortcuts="ArrowLeft"></button>
       <button class="cb main" id="bplay" data-ic="play" title="Play / pause (space)" aria-label="Play" aria-keyshortcuts="Space"></button>
       <button class="cb" id="bnext" data-ic="next" title="Next (→)" aria-label="Next" aria-keyshortcuts="ArrowRight"></button>
-      <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else, at random" aria-label="Random"></button>
+      <button class="cb" id="bshuf" data-ic="shuffle" title="Somewhere else in the work" aria-label="Random"></button>
       <button class="cb txt" id="bthen" title="What was being recorded at this day and hour of 2021" hidden>This hour in 2021</button>
       <button class="cb" id="bpen" data-ic="draw" title="Draw on it" aria-label="Draw on it" aria-pressed="false"></button>
       <div id="scrubw" hidden><input type="range" id="scrub" min="0" max="0" value="0" aria-label="Position in this recording"><span class="meta" id="stime"></span></div>
@@ -780,7 +784,7 @@ body.mini .ov,body.exhibit .ov{display:none}
 
     <section id="v-people">
       <h2>Who was in the calls</h2>
-      <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all. Is one of them you? Tap your name.</p>
+      <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all. Is one of them you? Choose your name.</p>
       <div class="pgrid" id="plist"></div>
       <div id="popen" hidden></div>
     </section>
@@ -820,7 +824,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <details><summary>How to take part</summary><div>
         <p>Put anything on the stage: a line, a picture, a minute of a call, a theme. Then leave your mark on it (the charter calls a mark a wingbeat): what you make of it, the feeling it left, a mishearing, a translation, a joke. You can also draw on it: tap the picture and a dot is left where you tapped; drag to draw a line. Draw on as many things as you like, then press “Leave your mark” once. Some day someone answers yours.</p>
         <p>By keys: ← and → go to the thing before and after, the space bar plays and pauses, F is the full screen and Esc leaves it. On the strip under the stage, Page Up and Page Down move a day or a hundred pictures.</p>
-        <p>No account is needed. A mark appears at the next sweep (usually within the hour), is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
+        <p>No account is needed. A mark appears here within the hour, usually, is public domain (CC0), and can be taken back. No links, no @names, nobody else's private life. <a id="ghway" href="https://github.com/ranaji10/aigorithmic-butterfly-effect/issues/new?template=wingbeat.yml&title=wingbeat">A mark can also be left through GitHub.</a></p>
         <p>If you talk with an AI, you can bring it. “Bring an AI”, under the form on the stage, copies an invitation that you paste to it. The AI can answer by itself, or give you a link that opens this page with its words in the form. Nothing is sent unless you press the button.</p>
       </div></details>
       <details><summary>Before you look</summary><div>
@@ -828,7 +832,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
-        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden at the next sweep (usually within the hour) and stays hidden until a steward has looked. You do not have to explain.</p>
+        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden within the hour, usually, and stays hidden until a steward has looked. You do not have to explain.</p>
       </div></details>
       <details><summary>House rules</summary><div>
         <p class="quote">This is an experimental space for anyone to write / draw / delete / confess / rant / create magic. Please stay respectful and open towards the fact that there might be people from diverse cultures reading what you write here. And have fun \o-0/</p>
@@ -871,7 +875,7 @@ body.mini .ov,body.exhibit .ov{display:none}
 </dialog>
 <dialog id="rmd" aria-labelledby="rmh">
   <h2 style="font-size:var(--t-head)" id="rmh">Ask for removal</h2>
-  <p>Hide <b id="rmid"></b> at the next sweep (usually within the hour), until a steward has looked. You do not have to explain.</p>
+  <p>Hide <b id="rmid"></b> within the hour, usually, until a steward has looked. You do not have to explain.</p>
   <label for="rmwhy" class="meta" style="display:block;margin:0 0 4px">Why</label>
   <select id="rmwhy"><option value="i am in it">I am in it</option><option value="someone i know is in it">Someone I know is in it</option><option value="private information">Private information</option><option value="hurtful">It hurts</option><option value="copyright">Copyright</option><option value="other">Something else</option></select>
   <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask for removal</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg" aria-live="polite"></span></p>
@@ -1948,7 +1952,7 @@ $('#lvsave').onclick=async()=>{$('#lvmsg').textContent='Saving …';const ok=awa
 $('#brm').onclick=e=>{e.stopPropagation();$('#rmid').textContent=cur;$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
 $('#rmyes').onclick=async()=>{if(FRAMED){$('#rmmsg').textContent=ownTab();return}if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+cur),'_blank','noopener');$('#rmd').close();return}
   try{const r=await fetch(DOOR+'/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:cur,why:$('#rmwhy').value})}),o=await r.json();
-    $('#rmmsg').textContent=o.ok?'Asked. Hidden at the next sweep, usually within the hour.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
+    $('#rmmsg').textContent=o.ok?'Asked. Hidden within the hour, usually.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
   catch(e){$('#rmmsg').innerHTML='It could not be sent just now. Try again in a minute, or <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">ask on GitHub instead</a>.'}};
 
 /* people: tap your name, "This is me", a steward confirms */
@@ -2024,7 +2028,7 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;openPerson=id;setT
     const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
     try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({person:id,lock,display:$('#dn').value.trim()},proof?{proof}:{}))}),o=await r.json();
       if(o.ok){claim={person:id,key,asked:Date.now()};myLock=lock;store.set('abe-claim',claim);await pInit()}else msg((o.problems||['Could not ask.']).join(' '))}catch(e){msg('It could not be sent just now. Try again in a minute.')}};
-  if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows at the next sweep.':(o.problems||[]).join(' '))}catch(e){msg('It could not be sent just now. Try again in a minute.')}};
+  if($('#pname'))$('#pname').onclick=async()=>{if(FRAMED)return msg(ownTab());try{const r=await fetch(DOOR+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:id,token:claim.key,display:$('#dn').value.trim()})}),o=await r.json();msg(o.ok?'Changed. It shows within the hour, usually.':(o.problems||[]).join(' '))}catch(e){msg('It could not be sent just now. Try again in a minute.')}};
   if($('#pforget'))$('#pforget').onclick=()=>{store.set('abe-claim',null);claim=null;myLock='';claimOK=false;pInit()};
   if(o.scroll)$('#popen').scrollIntoView({block:'start'})}
 $('#bhere').onclick=async()=>{if(!claimOK||!cur)return;const b=$('#bhere');b.disabled=true;try{const o=await post({hears:cur,text:'',by:'human',name:P[claim.person].name,person:claim.person,token:claim.key,here:true});
