@@ -60,7 +60,10 @@ try{if(localStorage.getItem('abe-in')||/[?&]exhibit\b/.test(location.search))doc
 --pit:#060607;--line-2:#2a2a30;--rim:#fff8;--rim-2:#fff5;--wall-dim:#1d1a0c;--clear:#fff0;--tint:#ffffff0d;--on-pic:#fffc}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:var(--t-body)/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overscroll-behavior-y:none}
+body{margin:0;background:var(--bg);color:var(--ink);font:var(--t-body)/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overscroll-behavior-y:none;overflow-wrap:break-word}
+/* Words here come from strangers and from machines that loop: a mark may be 280 letters without a space, a machine once heard
+   "popopopopo…" for a whole line. Wherever such words are shown they break rather than push the page wider than the screen. */
+#thread .meta,#thread .tx,.ln .meta,.ln q,#ttitle,#tnote,#tcount,.hq q,.tline,.qcard q,.tt b,.tt .tn,.tcard b,#heard,.khead h2,#popen h2,#fstat,.care{overflow-wrap:anywhere}
 a{color:var(--wall)}a:hover{color:#fff}
 button,select,input,textarea{font:inherit;color:inherit}
 button{-webkit-tap-highlight-color:transparent}
@@ -210,11 +213,11 @@ textarea{min-height:84px;resize:vertical;font-family:var(--serif);font-size:var(
 #dtext{margin:8px 0 0;font:var(--t-small)/1.45 var(--serif);color:var(--soft);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #dtext.open{display:block}
 #dmore{margin-top:4px}
-details.fold{margin:8px 0 0}details.fold>summary{cursor:pointer;color:var(--dim);font-size:var(--t-note)}
+details.fold{margin:8px 0 0}details.fold>summary{cursor:pointer;color:var(--dim);font-size:var(--t-note);padding:2px 0;min-height:24px}
 #dcomb{margin:6px 0 0;padding:0;list-style:none}
 #dcomb li{padding:6px 0 6px 10px;border-left:2px solid var(--line);font-size:var(--t-small);line-height:1.4;color:var(--soft);overflow-wrap:anywhere;margin-bottom:6px}
 #f .q{display:block;font-family:var(--serif);font-size:var(--t-head);line-height:1.2;margin:0 0 8px}
-#f details{margin:8px 0}#f summary{cursor:pointer;color:var(--dim);font-size:var(--t-note)}
+#f details{margin:8px 0}#f summary{cursor:pointer;color:var(--dim);font-size:var(--t-note);padding:2px 0;min-height:24px}
 #ftools{display:flex;align-items:center;gap:2px;margin:4px 0 2px -8px}
 #ftools .cb{width:36px;height:36px}
 #fsend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
@@ -297,7 +300,7 @@ button.door{cursor:pointer}.door:hover{border-color:var(--rim-2)}
 .door .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:auto}
 .door .said{font:var(--t-small)/1.35 var(--serif);color:var(--soft);padding:12px 14px 0;display:block}
 .trow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px;max-width:none}
-#truled{margin:0 0 12px;color:var(--dim);font-size:var(--t-note)}#truled summary{cursor:pointer}#trule{font:var(--t-note)/1.5 var(--mono);overflow-wrap:anywhere;margin:6px 0 0;max-width:80ch}
+#truled{margin:0 0 12px;color:var(--dim);font-size:var(--t-note)}#truled summary{cursor:pointer;padding:2px 0;min-height:24px}#trule{font:var(--t-note)/1.5 var(--mono);overflow-wrap:anywhere;margin:6px 0 0;max-width:80ch}
 /* ---- browse and themes, their second form (18 Nov 2026): the picture first, the words beside it ---- */
 .note{font:var(--t-note)/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--dim);letter-spacing:0;text-transform:none;max-width:none}
 .ph{position:relative;overflow:hidden;background:var(--panel);display:block}
@@ -307,7 +310,7 @@ body.raw .ph img{filter:none;transform:none}
    inside a theme, and the introduction, whose pages are read one at a time on any screen */
 h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-transform:none;color:var(--ink);margin:44px 0 8px}
 .khead{margin:8px 0 20px}.khead h2{margin-bottom:8px}.khead .lead{margin:0}
-.lk{background:none;border:0;padding:0;color:var(--wall);cursor:pointer;font:var(--t-note)/1.4 system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px}.lk:hover{color:#fff}
+.lk{background:none;border:0;padding:0;min-height:24px;color:var(--wall);cursor:pointer;font:var(--t-note)/1.4 system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px}.lk:hover{color:#fff}
 #views .cur{outline:2px solid var(--wall);outline-offset:1px}
 #views .cs.cur,#views .mo.cur,#views .mc.cur,#views .ln.cur,#views .hq.cur,#views .tline.cur,#dtocl .cur{outline:0}
 /* the nine weeks */
@@ -404,8 +407,8 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .thero .ph{aspect-ratio:16/9;border-radius:var(--r-card)}
 .thero h2{font-size:var(--t-display);margin:0 0 10px}.thero .lead{margin:0 0 14px}.thero .trow{margin:0}
 #tspark,#fspark{display:flex;align-items:flex-end;gap:1px;height:56px;margin:8px 0 0;border-bottom:1px solid var(--line)}
-#tspark button,#fspark button{flex:1;min-width:0;background:var(--wall);border:0;padding:0;cursor:pointer;opacity:.8;border-radius:1px 1px 0 0}
-#tspark button:hover,#fspark button:hover{opacity:1;background:#fff}#tspark button[disabled],#fspark button[disabled]{background:var(--line-2);cursor:default;opacity:1}
+#tspark button,#fspark button{flex:1;min-width:0;height:100%;--c:var(--wall);background:linear-gradient(to top,var(--c) var(--h,2%),transparent var(--h,2%));border:0;padding:0;cursor:pointer;opacity:.8} /* the whole column is the button; its bar is drawn --h high */
+#tspark button:hover,#fspark button:hover{opacity:1;--c:#fff}#tspark button[disabled],#fspark button[disabled]{--c:var(--line-2);cursor:default;opacity:1}
 .tday{font:400 var(--t-head)/1.2 var(--serif);letter-spacing:0;text-transform:none;color:var(--ink);margin:46px 0 18px;padding-top:14px;border-top:1px solid var(--line)}
 .mo{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,5fr);gap:30px;align-items:center;width:100%;background:none;border:0;padding:0;margin:0 0 34px;text-align:left;cursor:pointer;color:inherit;font:inherit}
 .mo .ph{aspect-ratio:16/10;border-radius:var(--r-pic)}
@@ -452,7 +455,7 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 #ff{display:flex;gap:8px;max-width:640px;margin:0 0 10px}
 #fq{flex:1;min-width:0;background:#000;border:1px solid var(--edge);border-radius:var(--r-pill);padding:10px 16px;font-size:var(--t-body);color:var(--ink);-webkit-appearance:none;appearance:none}
 #fq::-webkit-search-cancel-button{-webkit-appearance:none}
-#fstat{margin:0 0 12px;min-height:1.45em}#fsparkw{max-width:820px;margin:0 0 14px}#fspark button.on{background:#fff;opacity:1}
+#fstat{margin:0 0 12px;min-height:1.45em}#fsparkw{max-width:820px;margin:0 0 14px}#fspark button.on{--c:#fff;opacity:1}
 #fres,#fcare,#fnote{max-width:820px}#fnote{margin:0 0 6px}
 #fres mark{background:var(--tint);color:#fff;border-bottom:1px solid var(--rim);border-radius:2px;padding:0 1px}
 #fres .mcard{--by:var(--dim)}#fres .mcard .heard{white-space:normal}
@@ -661,7 +664,7 @@ body.mini .ov,body.exhibit .ov{display:none}
   </nav>
 </header>
 
-<div id="app">
+<main id="app">
   <h1 class="vh">AIgorithmic Butterfly Effect</h1>
   <div id="player" role="region" aria-label="The stage"><div id="pin">
     <div id="stage">
@@ -703,7 +706,7 @@ body.mini .ov,body.exhibit .ov{display:none}
     <p class="note" id="rkey" hidden>Above: the 5,909 pictures of the document, in the order they were pasted. Below: the nine weeks; <i class="k1"></i>yellow where the call was recorded, <i class="k2"></i>green a phone video, <i class="k3"></i>white another recording.</p>
   </div></div>
 
-  <aside id="side" aria-label="Your mark, and the marks so far">
+  <section id="side" aria-label="Your mark, and the marks so far">
     <h2 class="vh" id="sideh" tabindex="-1">The stage: your mark, and the marks so far</h2>
     <div id="docbox" hidden>
       <div class="meta">In the 2021 document</div>
@@ -755,9 +758,9 @@ body.mini .ov,body.exhibit .ov{display:none}
       <p class="meta" style="margin-top:8px;text-transform:none;letter-spacing:0" id="recnote"></p>
     </div>
     <details class="fold" id="ocrbox" hidden><summary>Machine-read text</summary><div id="ocr"></div></details>
-  </aside>
+  </section>
 
-  <main id="views">
+  <div id="views">
     <section id="v-browse">
       <div class="chips" id="bkinds"></div>
       <div id="bhead" class="meta"></div>
@@ -887,8 +890,8 @@ body.mini .ov,body.exhibit .ov{display:none}
       </div></details>
       <p class="trow" id="aend"><button type="button" class="btn go" id="ago">Somewhere in the work</button><button type="button" class="btn" id="aall">See every mark</button></p>
     </section>
-  </main>
-</div>
+  </div>
+</main>
 <footer>Begun 14 November 2021 by Rana, reopened 14 November 2026. Form found with Claude. Marks are CC0.<br><a href="feed.xml">Feed</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">source</a></footer>
 
 <nav id="tabbar" aria-label="Parts of the work">
@@ -1219,7 +1222,7 @@ async function show0(id,o){
   const list=(head&&!solo?[[head,head.id==id?'cur':'']]:[]).concat(chain.map(m=>[m,m.id===id?'cur':''])).concat((kids[id]||[]).map(k=>[N[k],kc]));
   const air=pending().filter(p=>p.hears==id),nk=(kids[id]||[]).length+air.length;
   $('#thh').textContent=nk?'Marks so far · '+nk:'Marks so far';
-  $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></li>').join('')
+  $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'"><div class="tb" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></div></li>').join('')
     +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · appears within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">Nobody has answered this yet.</li>'+(liveMarks().length?'<li style="cursor:default;border:0;padding:0"><button type="button" class="lk" id="tmarks">See the marks left elsewhere</button></li>':''));
   $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
@@ -1691,6 +1694,11 @@ const mid5=n=>'m'+pad(n,5),WDAY=['Sunday','Monday','Tuesday','Wednesday','Thursd
 const longDay=ms=>{const d=new Date(ms+36e5);return WDAY[d.getUTCDay()]+' '+d.getUTCDate()+' '+MONTH[d.getUTCMonth()]+' '+d.getUTCFullYear()};
 /* a picture in a frame of its own; large where it is shown large and the visitor has asked to see */
 const pic=(id,big)=>'<img loading="lazy" decoding="async" src="'+esc(big&&RAW?bigUrl(id):thumbUrl(id))+'" alt="">';
+/* a picture that does not arrive: its small copy is tried once; after that its place stays empty instead of showing a broken sign */
+document.addEventListener('error',e=>{const im=e.target;if(!im||im.tagName!='IMG'||!im.closest||!im.closest('#app'))return;const u=im.getAttribute('src')||'';
+  if(!im.dataset.fb&&/\/i\/w\/|\/f\/\d+\.webp$/.test(u)){im.dataset.fb=1;im.src=u.replace('/i/w/','/i/t/').replace(/\/f\/(\d+\.webp)$/,'/s/$1');return}
+  im.style.visibility='hidden'},true);
+document.addEventListener('load',e=>{const im=e.target;if(im&&im.tagName=='IMG'&&(im.dataset.fb||im.style.visibility=='hidden')){delete im.dataset.fb;im.style.visibility=''}},true);
 const okItem=i=>!gone[i]&&!gone[i.slice(0,4)];
 /* when a thing happened, where that is known: a minute of a recording by the recording's clock, a screenshot or a line by the sound it was found in */
 const shotMs=n=>{const a=sndJ&&sndJ.at[n],r=a&&recById[a[0]];return r&&r.t0?r.t0+a[1]*1e3:0};
@@ -1796,8 +1804,8 @@ async function bDays(){const D=await bDayData(),ix=await needImgs();if(B.kind!='
   /* thirteen whole weeks, Monday 1 November 2021 to Sunday 30 January 2022: the months the author searched his drives for; the call itself ran from 14 November to 13 January */
   const s0=Date.UTC(2021,10,1),nd=91,keys=[];
   for(let i=0;i<nd;i++){const d=new Date(s0+i*day),k=d.toISOString().slice(0,10),x=D[k],ok=dayHas(x),n=ok?x.shots.length+x.pics.length:0,face=ok?dayFace(x):'';if(ok)keys.push(k);
-    const lab=longDay(d.getTime()+432e5)+(ok?': '+(x.min?'the call was open for '+dur(x.min*60)+', ':'')+fmt(n)+(n==1?' picture':' pictures'):': nothing kept');
-    h+='<button class="bd'+(ok?'':' off')+'" data-day="'+k+'"'+(ok?'':' disabled')+' aria-label="'+esc(lab)+'" title="'+esc(lab)+'">'+(face?'<span class="ph">'+pic(face)+'</span>':'')+'<b>'+d.getUTCDate()+'</b>'+(i==0||d.getUTCDate()==1?'<em>'+MONTH[d.getUTCMonth()].slice(0,3)+'</em>':'')
+    const mon=i==0||d.getUTCDate()==1,lab=d.getUTCDate()+' '+(mon?MONTH[d.getUTCMonth()].slice(0,3):MONTH[d.getUTCMonth()])+' '+d.getUTCFullYear()+', '+WDAY[d.getUTCDay()]+(ok?': '+(x.min?'the call was open for '+dur(x.min*60)+', ':'')+fmt(n)+(n==1?' picture':' pictures'):': nothing kept');
+    h+='<button class="bd'+(ok?'':' off')+'" data-day="'+k+'"'+(ok?'':' disabled')+' aria-label="'+esc(lab)+'" title="'+esc(lab)+'">'+(face?'<span class="ph">'+pic(face)+'</span>':'')+'<b>'+d.getUTCDate()+'</b>'+(mon?' <em>'+MONTH[d.getUTCMonth()].slice(0,3)+'</em>':'')
       +(ok&&x.segs.length?'<span class="b24">'+x.segs.map(s=>'<i style="left:'+(s.a/14.4).toFixed(1)+'%;width:'+Math.max(1.5,(s.b-s.a)/14.4).toFixed(1)+'%"></i>').join('')+'</span>':'')+'</button>'}
   h+='</div><p class="note bkey"><i></i>The yellow line under a day is its twenty-four hours, midnight to midnight in Prague, lit where the call was open.</p></div><div id="bday"></div></div><h3 class="sh">Or by what it is</h3><div class="doors" id="bdoors">'+bDoors(ix)+'</div>';
   $('#bbody').innerHTML=h;
@@ -1947,7 +1955,7 @@ async function openT(id,o){o=o||{};const t=T[id];if(!t)return;const h0=o.push&&!
   TM=units;TL=[...new Set(b.lines.concat(b.dated,b.und).flatMap(g=>g.ids))];tShown=0;tFlip=0;tLead=true;
   /* when it came up: one bar for each day of the nine weeks */
   const mx=Math.max(1,...Object.values(by)),s0=Date.UTC(2021,10,14);let sp='';
-  for(let i=0;i<61;i++){const k=new Date(s0+i*day).toISOString().slice(0,10),n=by[k]||0,lab=longDay(s0+i*day+432e5)+': '+(n?n+(n==1?' moment':' moments'):'nothing');sp+='<button data-tday="'+k+'"'+(n?'':' disabled')+' style="height:'+(n?Math.max(8,Math.round(100*n/mx)):2)+'%" title="'+esc(lab)+'" aria-label="'+esc(lab)+'"></button>'}
+  for(let i=0;i<61;i++){const k=new Date(s0+i*day).toISOString().slice(0,10),n=by[k]||0,lab=longDay(s0+i*day+432e5)+': '+(n?n+(n==1?' moment':' moments'):'nothing');sp+='<button data-tday="'+k+'"'+(n?'':' disabled')+' style="--h:'+(n?Math.max(8,Math.round(100*n/mx)):2)+'%" title="'+esc(lab)+'" aria-label="'+esc(lab)+'"></button>'}
   $('#tspark').innerHTML=sp;$('#tsparkw').hidden=!b.dated.length;
   const nm=b.lines.length+b.dated.length+b.und.length;$('#tcount').textContent=(t.count>t.items.length?fmt(t.items.length)+' of the '+fmt(t.count)+' things a machine sorted here':fmt(t.items.length)+(t.items.length==1?' thing':' things'))+', as '+fmt(nm)+(nm==1?' moment':' moments')+'.';
   $('#tlist').innerHTML='';tMore();drawRuler();setTitle();if(h0)hPush(hashFor(),'',h0);else hRep(hashFor());
@@ -1980,7 +1988,7 @@ const rxEsc=c=>c.replace(/[.*+?^${}()|[\]\\\/]/g,'\\$&'),fWords=q=>q.toLowerCase
 /* as written: a short word whole, a longer one also as the beginning of a word (temple finds temples); accents do not matter */
 function fExact(ws){return new RegExp(FPRE+'('+ws.map(w=>[...w].map(c=>FOLD[c]?'['+FOLD[c]+']':c=="'"||c=='’'?"['’]":rxEsc(c)).join('')+([...w].length<4?FEND:'')).join(FSEP)+')','giu')}
 /* by ear: a doubled letter or none, h after a consonant or none, a for o, i for ee, u for oo, v for w, j for z, f for ph */
-function fLoose(ws){if(!ws.some(w=>w.length>=4))return null;
+function fLoose(ws){if(!ws.some(w=>w.replace(/(.)\1+/g,'$1').length>=4))return null; /* four letters once the doubled ones are counted once: "xxxxxxxx" is one letter */
   const one=w=>{let o='';w=w.replace(/(.)\1+/g,'$1');for(let i=0;i<w.length;i++){const c=w[i];
     if('kgcjtdpbs'.includes(c)){o+=c+'{1,2}h?';if(w[i+1]=='h')i++}
     else if(c=='a')o+='(?:a{1,2}|o)';else if(c=='o')o+='(?:o{1,2}|a|u)';else if(c=='i')o+='(?:i|ee|y)';else if(c=='e')o+='(?:e{1,2}|i)';else if(c=='u')o+='(?:u|oo)';
@@ -2033,12 +2041,15 @@ function fPaint(){if(!fReady)return;const q=FQ,ws=fWords(q),asked=ws.join('').le
   /* the two themes spoken of with care bring their note, and with it the helpline, when the word is one of theirs */
   let care='';if(asked)for(const t of themesJ.themes)if(T_QUIET.has(t.id)&&t.rule){let hit=false;try{hit=new RegExp('(^|[^a-z])(?:'+t.rule.slice(t.rule.indexOf(': ')+2).replace(/…/g,'[a-z]*')+')([^a-z]|$)','i').test(q)}catch(e){}
     if(hit)care+='<div class="care"><b>'+esc(t.title)+'</b><p>'+esc(t.note||'')+'</p><button class="btn sm" data-ft="'+esc(t.id)+'">Open this theme</button></div>'}
+  /* the number of a thing (they stand on every picture) typed as a question: offer the thing itself */
+  {const qi=q.toLowerCase();if(/^(m\d{5}|s\d{3}|w\d{6}|r\d{3}(\.\d{4})?)$/.test(qi)){const i=isRec(qi)?qi+'.0000':qi,r=recById[i.slice(0,4)];
+    if(!gone[i]&&!gone[i.slice(0,4)]&&((N[i]&&!N[i].removed)||(isImg(i)&&IMG.has(+i.slice(1)))||(isMin(i)&&r&&+i.slice(5)<r.min)))care='<div class="care"><b>'+esc(qi)+'</b><p>That is the number of a thing in the work.</p><button class="btn sm" data-id="'+esc(i)+'">Put it on the stage</button></div>'+care}}
   $('#fcare').innerHTML=care;
   $('#fkinds').innerHTML=asked&&fHits.length?FK.filter(([k])=>k=='all'||by[k]).map(([k,l])=>'<button class="btn sm'+(k==fKind?' on':'')+'" aria-pressed="'+(k==fKind)+'" data-fk="'+k+'">'+l+'<span class="meta">'+fmt(k=='all'?total:by[k])+'</span></button>').join('')+(fDay?'<button class="btn sm on" data-fday="'+esc(fDay)+'" title="Show every day again">'+esc(longDay(Date.parse(fDay+'T12:00:00Z')))+' ×</button>':'')
     :asked?'':'<span class="note" style="align-self:center">Words of their own: </span>'+[...new Set(themesJ.themes.filter(t=>!T_QUIET.has(t.id)).flatMap(t=>(t.note||'').match(/#[A-Za-z][A-Za-z]{3,}/g)||[]))].slice(0,10).map(g=>'<button class="btn sm" data-fq="'+esc(g.slice(1))+'">'+esc(g)+'</button>').join('');
   const dd={};for(const h of inK)if(h.ms){const k=dkey(h.ms);dd[k]=(dd[k]||0)+1}
   const mx=Math.max(1,...Object.values(dd)),s0=Date.UTC(2021,10,14);let sp='';
-  for(let i=0;i<61;i++){const k=new Date(s0+i*day).toISOString().slice(0,10),n=dd[k]||0,lab=longDay(s0+i*day+432e5)+': '+(n?fmt(n)+(n==1?' place':' places'):'nothing');sp+='<button data-fday="'+k+'"'+(n?'':' disabled')+(k==fDay?' class="on" aria-pressed="true"':'')+' style="height:'+(n?Math.max(8,Math.round(100*n/mx)):2)+'%" title="'+esc(lab)+'" aria-label="'+esc(lab)+'"></button>'}
+  for(let i=0;i<61;i++){const k=new Date(s0+i*day).toISOString().slice(0,10),n=dd[k]||0,lab=longDay(s0+i*day+432e5)+': '+(n?fmt(n)+(n==1?' place':' places'):'nothing');sp+='<button data-fday="'+k+'"'+(n?'':' disabled')+(k==fDay?' class="on" aria-pressed="true"':'')+' style="--h:'+(n?Math.max(8,Math.round(100*n/mx)):2)+'%" title="'+esc(lab)+'" aria-label="'+esc(lab)+'"></button>'}
   $('#fspark').innerHTML=sp;$('#fsparkw').hidden=!Object.keys(dd).length;
   const parts=[['i','on screen'],['r','heard'],['d','in the document'],['l',by.l==1?'line of 2021':'lines of 2021'],['w',by.w==1?'mark':'marks'],['t','among themes and people']].filter(([k])=>by[k]).map(([k,l])=>fmt(by[k])+' '+l);
   $('#fstat').textContent=!asked?(q?'Two letters at least.':''):(total?fmt(total)+(total==1?' place':' places')+(parts.length>1?': '+parts.join(', '):total==by.r?', all heard':'')+'.':fBusy?'':'Nothing as you wrote it.')+(by.x?' '+fmt(by.x)+' more spelled another way, where Hindi or Bengali was heard.':'')+(fBusy?' Reading through what was heard in the recordings …':'');
@@ -2277,7 +2288,7 @@ addEventListener('keydown',e=>{if(introOpen()||e.target.closest('input,textarea,
 /* addresses: #m00123 (the stage), #browse, #themes/t-suicide, #people/p-name, #find/a word, #about */
 async function route(first){
   let h='';try{h=decodeURIComponent(location.hash.slice(1))}catch(e){} /* a mangled address opens the work somewhere, like any other visit */
-  const sm=/^seal=(p-[a-z0-9-]{1,40})$/.exec(h);if(sm){h='people/'+sm[1];if(!EX){hRep('#'+h);if(introOpen()){document.documentElement.classList.add('in')}openSeal(sm[1])}}
+  const sm=/^seal=(p-[a-z0-9-]{1,40})$/.exec(h);if(sm){h='people/'+sm[1];if(!EX){hRep('#'+h);if(introOpen()){document.documentElement.classList.add('in');introInert()}openSeal(sm[1])}}
   const sayRaw=/^say=/.test(location.hash.slice(1)),say=sayRaw&&!EX?sayRead(location.hash.slice(1)):null;if(sayRaw)h=say?say.id:'';
   const[a,b,c]=h.split('/');let v='stage',id='';
   if(a=='find'){v='find';const q=h.slice(5).trim().replace(/\s+/g,' ').slice(0,80);if(q!=FQ||first){FQ=q;fWant=true}}
@@ -2299,6 +2310,8 @@ paintPlay();
    stands today: the 98 lines of 2021 first, then every mark left since, as far as the visitor has read. */
 const intro=$('#intro'),isc=$('#iscroll'),icv=$('#icv'),ipages=$$('#intro .ip');let introRaf=0,introT0=0,introDraw=null;
 const introOpen=()=>!document.documentElement.classList.contains('in');
+/* while the way in is open, what lies behind it cannot be reached by the keyboard or read out by a screen reader */
+const introInert=()=>{const o=introOpen();for(const q of['#bar','#tabs','#app','footer','#tabbar']){const e=$(q);if(e)e.inert=o}};
 function introStart(){
   if(C.pictures){$('#ic1').textContent=fmt(IMGS.length||C.pictures);$('#ic2').textContent=fmt(C.recorded_hours)}
   $('#ic3').textContent=' · '+fmt(seeds.length)+' lines, '+fmt(liveMarks().length)+(liveMarks().length==1?' mark':' marks')+' so far';
@@ -2334,17 +2347,17 @@ const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.o
 $('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
 $('#iskip').onclick=()=>introGo(ipages.length-1);
 let introAgain=false;
-function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);store.set('abe-hint',1);store.set('abe-rkey',1);document.documentElement.classList.add('in');requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
+function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);store.set('abe-hint',1);store.set('abe-rkey',1);document.documentElement.classList.add('in');introInert();requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
 $('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving; a screenshot whose moment was found in the recordings plays that moment's sound; a call waits for its play button */
 $('#icol').onclick=async()=>{introClose();await setRaw(false)};
 $('#iexit').onclick=()=>{cancelAnimationFrame(introRaf);stopPlay();
   intro.innerHTML='<div id="ibye"><div><p class="it" style="font:400 var(--t-head)/1.4 var(--serif)">Nothing was shown.</p><p class="lead" style="margin:0 auto 18px">The work stays where it is, until at least 2046. You can close this tab.</p><p><button class="btn sm" id="iback">Come back in</button></p></div></div>';
   $('#iback').onclick=()=>location.reload();
   setTimeout(()=>{try{if(history.length>1)history.back();else window.close()}catch(e){}},1400)};
-$('#iagain').onclick=()=>{introAgain=true;stopPlay();document.documentElement.classList.remove('in');isc.scrollTop=0;ipages.forEach((el,i)=>el.classList.toggle('on',i==0));if(introDraw){introT0=performance.now();introDraw()}else introStart()};
+$('#iagain').onclick=()=>{introAgain=true;stopPlay();document.documentElement.classList.remove('in');introInert();isc.scrollTop=0;ipages.forEach((el,i)=>el.classList.toggle('on',i==0));if(introDraw){introT0=performance.now();introDraw()}else introStart()};
 intro.addEventListener('keydown',e=>{if(e.key=='ArrowDown'||e.key=='PageDown'){introGo(introAt()+1);e.preventDefault()}else if(e.key=='ArrowUp'||e.key=='PageUp'){introGo(introAt()-1);e.preventDefault()}else if(e.key=='Escape'){$('#iskip').click();e.preventDefault()}
   else if(e.key=='Tab'){const f=[...intro.querySelectorAll('button')].filter(b=>b.offsetParent),i=f.indexOf(document.activeElement);if(f.length&&(e.shiftKey?i<=0:i==f.length-1)){f[e.shiftKey?f.length-1:0].focus();e.preventDefault()}}}); /* the way in is a choice, so focus stays inside it */
-if(introOpen())introStart();
+if(introOpen())introStart();introInert();
 
 await route(true);
 hReady=true;if(!EX){hRep(location.href);if(HY[HS.n]&&!introOpen())hRestore(HY[HS.n],++hTok)}

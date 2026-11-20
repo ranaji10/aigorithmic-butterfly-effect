@@ -20,7 +20,7 @@ const pad = (n, w) => String(n).padStart(w, '0');
 const exact = (ws) => new RegExp(PRE + '(' + ws.map((w) => [...w].map((c) => (FOLD[c] ? '[' + FOLD[c] + ']' : c === "'" || c === '’' ? "['’]" : rxEsc(c))).join('') + ([...w].length < 4 ? END : '')).join(SEP) + ')', 'giu');
 // by ear, only where Hindi or Bengali was heard: a doubled letter or none, h after a consonant or none, a for o, i for ee …
 function loose(ws) {
-  if (!ws.some((w) => w.length >= 4)) return null;
+  if (!ws.some((w) => w.replace(/(.)\1+/g, '$1').length >= 4)) return null; // four letters once doubled ones count once
   const one = (w) => { let o = ''; w = w.replace(/(.)\1+/g, '$1');
     for (let i = 0; i < w.length; i++) { const c = w[i];
       if ('kgcjtdpbs'.includes(c)) { o += c + '{1,2}h?'; if (w[i + 1] === 'h') i++; }

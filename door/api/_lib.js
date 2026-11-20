@@ -25,12 +25,14 @@ export function send(res, code, obj, extra) {
   for (const [k, v] of Object.entries(extra || {})) res.setHeader(k, v);
   res.end(JSON.stringify(obj));
 }
+// Whatever arrives, the answer is an object: a body of `null`, a number or a bare string is an empty request, not a crash.
+const obj = (x) => (x && typeof x === 'object' ? x : {});
 export async function body(req) {
   if (req.body && typeof req.body === 'object') return req.body;
-  if (typeof req.body === 'string') { try { return JSON.parse(req.body); } catch { return {}; } }
+  if (typeof req.body === 'string') { try { return obj(JSON.parse(req.body)); } catch { return {}; } }
   const chunks = [];
   for await (const c of req) { chunks.push(c); if (Buffer.concat(chunks).length > 20000) break; }
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return {}; }
+  try { return obj(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}')); } catch { return {}; }
 }
 // Characters nobody can see (controls, bidi overrides, zero-width marks, blank fillers, the Unicode "tag" block) are dropped
 // on arrival: they hide words from people while showing them to machines, or slip a link past the rules. Same list as
