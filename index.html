@@ -1454,7 +1454,8 @@ function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view;vie
   document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
   $$('#tabs button,#tabbar button').forEach(b=>{const on=b.dataset.v==v;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});setTitle();
   if(v=='browse')bInit();if(v=='themes')tInit();if(v=='people')pInit();if(v=='about'){drawFly()}
-  syncDock();if(was!=v){if(v=='people'||v=='about'){viewSmall=true;peek=false;hold=false;holdAway=false;dockSync()}else setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
+  /* on a screen narrower than 900 px Browse and Themes begin with the small bar too (Amendment 11): the strip took the top third of a phone */
+  syncDock();if(was!=v){const narrow=matchMedia('(max-width:899px)').matches;if(v=='people'||v=='about'||(narrow&&(v=='browse'||v=='themes'))){viewSmall=true;peek=false;hold=false;holdAway=false;dockSync()}else setMini(false,false);if(!o.quiet){if(!EX)history.pushState(null,'',hashFor());scrollTo(0,0)}}
   requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
 function tabTo(v){if(v=='stage'&&view=='stage'&&!EX){if(mini)dockOpen();scrollTo(0,0);return}setView(v)}
 $$('#tabs button,#tabbar button').forEach(b=>b.onclick=()=>{const was=view;tabTo(b.dataset.v);if(view!=was)focusHead()});
@@ -1468,8 +1469,9 @@ $('#banswer').onclick=()=>{setView('stage');const t=$('#t');if(!wide.matches)t.s
    open it large over the page (a tap on the small bar, or choosing something), which lasts until the page is scrolled on; and
    keep it small with the button in its corner, which lasts until the page has been away from the top and come back. */
 const wide=matchMedia('(min-width:900px)'),pin=$('#pin'),BC=document.body.classList;let mini=false,peek=false,peekAt=0,hold=false,holdAway=false,full=false,pfull=0,viewSmall=false;
-/* People and About open with the stage as its small bar (Amendment 9): it stays small there, whatever the page does, until the
-   visitor opens it, and is small again the next time one of the two views is opened. */
+/* People and About open with the stage as its small bar (Amendment 9), and on a narrow screen Browse and Themes do too
+   (Amendment 11): it stays small there, whatever the page does, until the visitor opens it, and is small again the next time
+   one of these views is opened. */
 const dockable=()=>!EX&&!(wide.matches&&view=='stage');
 const dockTh=()=>Math.max(24,pfull-72); /* how far the page has to go up before only a small bar's worth of the stage would be left */
 function dockSync(){const d=dockable(),y=Math.max(0,scrollY);let m=false,p=false;
