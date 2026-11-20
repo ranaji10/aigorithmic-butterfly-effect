@@ -555,6 +555,14 @@ html:not(.in) body{overflow:hidden}
 .ob{width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r-pill);background:#0009;color:#fffc;cursor:pointer}
 .ob:hover{background:#000;color:#fff}.ob svg{width:16px;height:16px;display:block}
 body.mini .ov,body.exhibit .ov{display:none}
+/* with a mouse, on the wide stage, the controls that lie on the picture rest dim and come up under the pointer or the keyboard;
+   while the picture is censored they stay at full strength, and under a finger nothing changes. The two edge buttons repeat
+   Previous and Next of the row below: a click still works, the Tab key and a screen reader meet each of the two once. */
+@media (hover:hover) and (pointer:fine) and (min-width:900px){
+  body.v-stage.raw .ov,body.v-stage.raw #idtag{opacity:.45;transition:opacity var(--fast)}
+  body.v-stage.raw #stage:hover .ov,body.v-stage.raw #stage:hover #idtag,body.v-stage.raw #stage:focus-within .ov,body.v-stage.raw #stage:focus-within #idtag,body.v-stage.raw.drawing .ov,body.v-stage.raw.full .ov{opacity:1}
+}
+@media (prefers-reduced-motion:reduce){.ov,#idtag{transition:none!important}}
 @media (max-width:480px){.cb.txt svg{display:none}.cb.txt{padding:0 12px}}
 /* under a finger: the small things that are pressed get room around them */
 @media (pointer:coarse){
@@ -627,7 +635,7 @@ body.mini .ov,body.exhibit .ov{display:none}
       <video id="clip" playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload noplaybackrate nofullscreen noremoteplayback" hidden></video>
       <button class="meta" id="idtag" title="Copy a link to this"></button>
       <span class="meta" id="vwait" role="status" hidden>The moving picture is loading. Until then, one frame a minute.</span>
-      <button class="edge l" id="eprev" aria-label="Previous">‹</button><button class="edge r" id="enext" aria-label="Next">›</button>
+      <button class="edge l" id="eprev" tabindex="-1" aria-hidden="true">‹</button><button class="edge r" id="enext" tabindex="-1" aria-hidden="true">›</button>
       <div class="ov">
         <button class="ob tx" id="bcens" title="Censor it again: colours only, no sound" hidden>Censor again</button>
         <button class="ob" id="brm" data-ic="flag" title="Ask for this to be removed" aria-label="Ask for removal"></button>
