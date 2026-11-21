@@ -2,11 +2,5 @@
  "id": "p-juan",
  "name": "Juan",
  "wrote": [],
- "from": "name tag in a call",
- "pending": {
-  "lock": "3c864757b40599d29cd1075a9579649c5a060c235b79da4c456d086a31bc34d1",
-  "display": "Juan",
-  "at": "2026-11-21",
-  "proof": "v1.BMRs0vVhxLWignsJePOkCNPEISWhEcBQ870NvcGvLwn-a4Bs8CjnlNr0vS9MEOm8cgVUpMjmUprdMIFce_45rbGifXIxiYNAZs5OBAdnlnJL_MHBYdQF-LiFZ3WH770bhg"
- }
+ "from": "name tag in a call"
 }
