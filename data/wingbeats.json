@@ -4,9 +4,9 @@
  "built": "2026-11-21",
  "count": {
   "seeds_2021": 98,
-  "wingbeats": 3,
+  "wingbeats": 4,
   "by": {
-   "human": 1,
+   "human": 2,
    "ai": 2,
    "both": 0,
    "unsure": 0
@@ -38,6 +38,15 @@
    "by": "human",
    "name": "anonymous",
    "at": "2026-11-15"
+  },
+  {
+   "id": "w000004",
+   "hears": "r248.0000",
+   "by": "human",
+   "name": "anonymous",
+   "at": "2026-11-21",
+   "mark": "698,503 699,503",
+   "text": ""
   }
  ]
 }
