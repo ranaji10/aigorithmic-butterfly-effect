@@ -305,6 +305,14 @@ body.raw .tile img{filter:none;transform:none}
 .tcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:12px 14px;cursor:pointer;text-align:left}
 .tcard:hover{border-color:var(--rim-2)}.tcard.on{border-color:var(--wall)}
 .tcard b{display:block;font:400 var(--t-quote)/1.2 var(--serif);margin-bottom:4px}
+/* a name somebody has claimed (21 Nov 2026): the tile says so before it is read. Confirmed: a yellow edge, yellow at its darkest
+   as the ground, and a filled label. Asked and waiting: the same label, outlined. Yellow because it is a human who is here. */
+.tcard.here{background:var(--wall-dim);border-color:var(--wall);box-shadow:inset 4px 0 0 var(--wall);padding-left:18px}
+.tcard.here:hover{border-color:var(--wall-hi)}.tcard.asked{border-style:dashed;border-color:var(--edge)}
+.tcard .pin{display:block;width:max-content;max-width:100%;margin:0 0 6px;padding:3px 8px;border:1px solid var(--wall);border-radius:var(--r-pill);font:var(--t-label)/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--wall)}
+.tcard.here .pin{background:var(--wall);color:var(--on-wall);font-weight:700}
+/* a tile with a label is taller than its neighbours in the row: every tile keeps its words at the top */
+.pgrid .tcard{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}
 /* doors: a way in, with a strip of what is behind it */
 .doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin:10px 0 20px}
 .door{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;text-align:left;color:inherit;padding:0;min-width:0}
@@ -2312,7 +2320,9 @@ const pOwn=()=>claim&&P[claim.person]&&(pSt=='mine'||pSt=='pending')?claim.perso
 function pList(){const st=pSt;
   $('#plist').innerHTML=peopleJ.people.filter(p=>p.id!=pShow).map(p=>{const mine=claim&&claim.person==p.id&&st;
     const src=p.from=='named by the author'?'named by the author':p.from=='name tag in a call'?'read from a name tag':'typed in the call chat';
-    return'<button class="tcard" data-p="'+esc(p.id)+'"><b>'+esc(p.name)+'</b><span class="meta">'+src+(p.claimed||p.pending||(p.here||[]).length?' · ':'')+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting</span>':'asked · waiting'):'')+((p.here||[]).length?' in '+fmt(p.here.length):'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
+    /* claimed or asked for: said by the tile itself (.here, .asked) and by a label of its own (.pin), not by a word in the small print */
+    const pin=p.claimed?'<span class="pin">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?'<span class="pin">'+(mine=='pending'?'you asked · waiting':'asked · waiting')+'</span>':'';
+    return'<button class="tcard'+(p.claimed?' here':p.pending?' asked':'')+'" data-p="'+esc(p.id)+'"><b>'+esc(p.name)+'</b>'+pin+'<span class="meta">'+src+((p.here||[]).length?' · in '+fmt(p.here.length):'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
   $('#ph2').textContent=pShow?'Who else was in the calls':'Who was in the calls';$('#pask').hidden=!!pOwn()}
 function pNone(){pShow='';$('#popen').hidden=true;$('#popen').innerHTML='';pList()}
 async function pInit(){pSt=await claimUI();const id=openPerson&&P[openPerson]?openPerson:pOwn();if(id)return openP(id,{own:!openPerson});pNone()}

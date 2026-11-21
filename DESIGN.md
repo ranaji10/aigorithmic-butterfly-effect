@@ -63,6 +63,7 @@ Motion: `--fast` 150 ms for a state and for the change of a view, `--slow` 700 m
 | Who is speaking | `#byrow` buttons | a radio group; each with the square of its colour |
 | A row | `.mcard`, `.ln` | something to be read that opens on the stage: a hairline above, no card ground. What Find finds is such rows; the word that was looked for is lifted (`--tint`, white, a hairline under it), never coloured |
 | A field to look for a word | `#fq` | one on the page, in Find: a pill like everything pressed, the border of anything typed into (`--edge`) |
+| A name in People | `.tcard`; `.here`, `.asked`, `.pin` | a name to open. A name a steward confirmed wears a human's yellow: an edge, the darkest yellow as its ground, and a filled label "✓ here". A name asked for and waiting has a dashed border and the label outlined |
 | Bars of the nine weeks | `#tspark`, `#fspark` | when a theme, or a word, came up, day by day; a bar is pressed to go to its day |
 
 States for all: hover (a brighter border or brighter words), focus (2 px yellow ring, 2 px away), chosen (yellow border or `aria-current`, never colour alone), disabled (35% and no pointer), busy (`aria-busy`, the label says what is happening). Nothing pressed is smaller than 24 px in either direction, and 44 under a finger. A row of many small things (a strip of frames, the calendar, an hour's pictures) is one stop for the Tab key; the arrows move inside it.
