@@ -3,10 +3,8 @@
  "name": "Tom",
  "wrote": [],
  "from": "name tag in a call",
- "pending": {
-  "lock": "1dd69caa0e71190116e97b540ece76a82a9e66c295fb412a8ae4208c08f4cd32",
-  "display": "Tom",
-  "at": "2026-11-21",
-  "proof": "v1.BKJHGvVvDL8pLWly1XEqZdfK9B7Fdf2ya4npnlKG-mhcD8az42ENDnp8EBJaS_2n6nvUSjPhX-J6SCLBOocH3k1eWxZMxKbg_a2-FZMBnXbrS9HrvuKrB_FQiJ2S8UwlJg"
- }
+ "claimed": true,
+ "since": "2026-11-21",
+ "lock": "1dd69caa0e71190116e97b540ece76a82a9e66c295fb412a8ae4208c08f4cd32",
+ "display": "Tom"
 }
