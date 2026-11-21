@@ -2,5 +2,11 @@
  "id": "p-sukesha",
  "name": "Sukesha",
  "wrote": [],
- "from": "name tag in a call"
+ "from": "name tag in a call",
+ "pending": {
+  "lock": "f76ffc6be6301c0888ec3def2cb3fdc2b4fc94656e218023fc11581d27f41ad8",
+  "display": "Sukesha",
+  "at": "2026-11-21",
+  "proof": "v1.BHwce-ssBG4UnrQwEBfw2NeR1GFQGQx0GCMWtM3JShRfODTMBRR7ah0AKc8CZiNgpUZUwFS0aeyU6GVGHQRQSsMTX6BbdFR5oSDXRTQHBeyXq5-3UdqTNzJBTCFpL7C6X2QgrVsF5L8q3TK16BkImdxnWTajm0Wisk1v11IPXb0CitpgVkc"
+ }
 }
