@@ -12,7 +12,8 @@ KEPT_ASIDE.json must be a file outside both repositories (the author's drive): i
 that a thing which is shown again gets its words back. Then commit and push the archive clone.
 
 Touched: i/text.json (words read in pictures), i/doc.json (which words of the 2021 document stand beside a picture),
-i/sound.json (where a picture was found in the recordings), i/names.json (where a listed first name was read), and
+i/sound.json (where a picture was found in the recordings), i/names.json (where a listed first name was read, and the
+recordings the author named somebody in), and
 r/<id>/voice.json (what was heard and what was typed in the chat, per minute), and r/find.json, the copy of the voice
 files that Find on the site searches (made again by tools/search_build.py at the end). The picture and frame files themselves
 are not touched: whether they leave the archive is the author's decision when he settles the request.
@@ -51,7 +52,7 @@ def main():
         if m:
             mins.setdefault(m.group(1), set()).add(int(m.group(2)))
     aside = load(aside_path) if os.path.exists(aside_path) else {}
-    for k in ("text", "doc", "sound", "names", "voice"):
+    for k in ("text", "doc", "sound", "names", "named", "voice"):
         aside.setdefault(k, {})
     n = {"text": 0, "doc": 0, "sound": 0, "names": 0, "voice": 0, "restored": 0}
     hidden_min = lambda rid, sec: rid in recs or int(sec // 60) in mins.get(rid, ())
@@ -113,6 +114,20 @@ def main():
             back = [x for x in aside["names"][pid] if x not in gone]
             v["pics"] = sorted(set(v.get("pics", [])) | set(back))
             aside["names"][pid] = [x for x in aside["names"][pid] if x in gone]
+            n["restored"] += len(back)
+        # the recordings the author himself named this person in (`named`): a hidden recording leaves the list too
+        out = [x for x in v.get("named", []) if x in recs]
+        if out:
+            aside["named"][pid] = sorted(set(aside["named"].get(pid, [])) | set(out))
+            v["named"] = [x for x in v["named"] if x not in recs]
+            if not v["named"]:
+                del v["named"]
+            n["names"] += len(out)
+        if restore and aside["named"].get(pid):
+            back = [x for x in aside["named"][pid] if x not in recs]
+            if back:
+                v["named"] = sorted(set(v.get("named", [])) | set(back))
+            aside["named"][pid] = [x for x in aside["named"][pid] if x in recs]
             n["restored"] += len(back)
     save(p, N)
 

@@ -1,8 +1,8 @@
 # DESIGN.md: how AIgorithmic Butterfly Effect looks, and why
 
-One page, no build step, no font files, no pictures of its own except the work's. Character comes from scale, from two colours that mean something, and from two drawn objects: the butterfly and the ruler.
+One page, no build step, no font files, no pictures of its own except the work's. Character comes from scale, from two colours that mean something, and from three drawn objects: the butterfly, the ruler and, where a recording is sound alone, its waveform.
 
-Every value below is a token at the top of the stylesheet in `index.html` (`:root`). Use a token, not a new value. This file is true to the page as of 21 November 2026 (Amendment 13); if you change a token, change its row here in the same commit.
+Every value below is a token at the top of the stylesheet in `index.html` (`:root`). Use a token, not a new value. This file is true to the page as of 21 November 2026 (Amendment 15); if you change a token, change its row here in the same commit.
 
 ## Colour (every colour has one job)
 
@@ -75,9 +75,9 @@ In full screen, seen as it was, only the picture and the words stay: the control
 
 A picture of the work is shown whole (`object-fit:contain` on the stage) and never cropped to decorate, except as the small cover of a row or tile. Censored, a picture is its colours and nothing else. No icons except the stage's line icons (20 px, stroke 2). No illustration, no stock picture, no emoji.
 
-## The work's own two objects
+## The work's own three objects
 
-**The butterfly** (the Lorenz drawing): thin grey for each line of 2021, thicker yellow, green or white for each mark. It is the picture of the whole (in About it fits one screen with its legend), what stands on the stage while the work opens, and the work's face to the outside (`data/og.png`, drawn again by `tools/og_build.py` whenever a mark arrives). **The icon** is the butterfly too, reduced to what a small square can hold: one turn round each wing, the left in a human's yellow, the right in an AI's green, on `--pit`. In a tab (`favicon.ico` at 16, 32 and 48 px, `img/icon.svg`) it is those two turns alone, each size with its own stroke; on a home screen (`img/touch-icon.png`, `img/icon-192.png`, `img/icon-512.png`, `img/icon-mask-512.png`) they lie over the grey paths of the 98 lines. `tools/icons_build.py` drew them; they are kept by hand. **The ruler**: every picture's colour above, the nine weeks below. Nothing else on the page is drawn.
+**The butterfly** (the Lorenz drawing): thin grey for each line of 2021, thicker yellow, green or white for each mark. It is the picture of the whole (in About it fits one screen with its legend), what stands on the stage while the work opens, and the work's face to the outside (`data/og.png`, drawn again by `tools/og_build.py` whenever a mark arrives). **The icon** is the butterfly too, reduced to what a small square can hold: one turn round each wing, the left in a human's yellow, the right in an AI's green, on `--pit`. In a tab (`favicon.ico` at 16, 32 and 48 px, `img/icon.svg`) it is those two turns alone, each size with its own stroke; on a home screen (`img/touch-icon.png`, `img/icon-192.png`, `img/icon-512.png`, `img/icon-mask-512.png`) they lie over the grey paths of the 98 lines. `tools/icons_build.py` drew them; they are kept by hand. **The ruler**: every picture's colour above, the nine weeks below. **The waveform**: a phone call or a voice memo has no picture, so the stage draws its sound, bars about a middle line from the start of the recording to its end. What has been played is `--wall` (where you are), the rest `--dim`, and a line of `--ink` stands where the sound is now; it moves only because the recording does, and under `prefers-reduced-motion` in steps. The same drawing, still and in `--soft` on `--panel`, is the recording's picture wherever a call would show a frame (`wave.png`, made by `tools/wave_build.py`); in "Calls" it lies across the pieces of the recording's strip. It is a measure, not an ornament: never draw one for anything but a recording's own sound. Nothing else on the page is drawn.
 
 ## Time
 

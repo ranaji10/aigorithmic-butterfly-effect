@@ -381,6 +381,8 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .cs.cur header b{color:var(--wall)}
 .fs{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:2px}
 .fr{aspect-ratio:16/10;border:0;padding:0;cursor:pointer;min-width:0}.fr:hover{outline:1px solid #fff;outline-offset:0}
+/* a piece of a waveform: the picture of the whole sound lies across the --n pieces of its strip, and piece --i shows its own part */
+.fr.wv img{width:calc(var(--n)*100%);max-width:none;object-fit:fill;margin-left:calc(var(--i)*-100%)}
 /* phone videos: upright as they were held, wide when they recorded the screen */
 .vflow{display:flex;flex-wrap:wrap;gap:26px 30px;margin:14px 0}.vday{min-width:0}.vday .note{display:flex;gap:10px;align-items:baseline;color:var(--soft)}
 .vg{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
@@ -822,7 +824,7 @@ body.mini .ov,body.exhibit .ov{display:none}
     <section id="v-people">
       <div id="popen" hidden></div>
       <h2 id="ph2">Who was in the calls</h2>
-      <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all.<span id="pask"> Is one of them you? Choose your name.</span></p>
+      <p class="lead" style="margin-bottom:12px">First names from the calls and recordings of 2021: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read most of them, so one or two may not be a person at all.<span id="pask"> Is one of them you? Choose your name.</span></p>
       <div class="pgrid" id="plist"></div>
     </section>
 
@@ -1042,13 +1044,16 @@ async function docBox(mid,tok){const box=$('#docbox'),n=mid?+mid.slice(1):0;if(!
 const segLang=(v,t)=>{for(const g of(v&&v.lang)||[])if(t>=g[0]-.05&&t<g[1])return g[2]=='hi'?'hi-Latn':g[2]=='bn'?'bn-Latn':'';return''};
 async function voice(rid){if(!voiceCache[rid])voiceCache[rid]=await jq(MEDIA+'r/'+rid+'/voice.json',{segs:[],chat:[],heard_hours:[]});return voiceCache[rid]}
 const frameN=(rid,min)=>{const r=recById[rid],step=r?r.step:60;return pad(Math.floor(min*60/step),5)};
-const frameUrl=(rid,min,small)=>MEDIA+'r/'+rid+'/'+(small&&(!recById[rid]||recById[rid].small!==false)?'s':'f')+'/'+frameN(rid,min)+'.webp';
+/* a phone call or a voice memo has no frames: where a call shows a frame, it shows its sound, drawn (r/<id>/wave.png, made by tools/wave_build.py) */
+const isSnd=r=>!!(r&&!r.frames&&r.wave),waveUrl=(rid,small)=>MEDIA+'r/'+rid+'/wave'+(small?'.s':'')+'.png';
+const frameUrl=(rid,min,small)=>isSnd(recById[rid])?waveUrl(rid,small):MEDIA+'r/'+rid+'/'+(small&&(!recById[rid]||recById[rid].small!==false)?'s':'f')+'/'+frameN(rid,min)+'.webp';
 const thumbUrl=id=>isImg(id)?MEDIA+'i/t/'+id+'.webp':isMin(id)?frameUrl(id.slice(0,4),+id.slice(5),1):isRec(id)?frameUrl(id,0,1):'';
 const bigUrl=id=>isImg(id)?MEDIA+'i/w/'+id+'.webp':isMin(id)?frameUrl(id.slice(0,4),+id.slice(5)):thumbUrl(id);
 const prague=(ms,addSec)=>{if(!ms)return'';const d=new Date(ms+(addSec||0)*1e3+36e5);return d.toISOString().slice(0,16).replace('T',' ')};
 const DOW=['SUN','MON','TUE','WED','THU','FRI','SAT'],MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 const niceDay=ms=>{const d=new Date(ms+36e5);return DOW[d.getUTCDay()]+' '+d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+d.getUTCFullYear()};
 const hm=s=>pad(Math.floor(s/3600),2)+':'+pad(Math.floor(s%3600/60),2),hms=s=>hm(s)+':'+pad(Math.floor(s%60),2);
+const kindName=r=>r.kind=='call'?'Call':r.kind=='story'?(r.screen?'Screen recording':r.cam?'Camera video':'Phone video'):r.kind=='phone call'?'Phone call':'Voice memo';
 const dur=s=>s>=3600?Math.round(s/360)/10+' h':Math.max(1,Math.round(s/60))+' min';
 /* a position and the length it is measured against are written the same way: 1:03:12 in a recording of an hour or more, 2:43 in a shorter one */
 const clock=(s,long)=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return long||h?h+':'+pad(m,2)+':'+pad(x,2):m+':'+pad(x,2)};
@@ -1080,14 +1085,36 @@ function paint(){
   else{ /* the picture whole, never blown up past three times its size, on a wash of its own colours */
     cx.globalAlpha=.3;cx.drawImage(stageSrc.small,0,0,W,H);cx.globalAlpha=1;
     const s=Math.min(W/sw,H/sh,3*dpr);R={x:(W-sw*s)/2,y:(H-sh*s)/2,w:sw*s,h:sh*s}}
-  let x=R.x,y=R.y,w=R.w,h=R.h;const depth=stageDepth;
-  for(let d=0;d<=Math.min(depth+(cover?1:0),9);d++){cx.drawImage(src,x,y,w,h);
+  let x=R.x,y=R.y,w=R.w,h=R.h;const depth=stageDepth,wv=waveOf(cur); /* under a waveform the field lies flat: no frame within the frame */
+  for(let d=0;d<=(wv?0:Math.min(depth+(cover?1:0),9));d++){cx.drawImage(src,x,y,w,h);
     if(d){cx.strokeStyle='rgba(255,255,255,.18)';cx.lineWidth=dpr;cx.strokeRect(x+.5,y+.5,w-1,h-1)}
     const nw=w*.56,nh=h*.56;x+=w*.07;y+=h*.12;w=nw;h=nh}
   const pen=(pts,col,lw)=>{cx.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.lineJoin=cx.lineCap='round';cx.strokeStyle='rgba(0,0,0,.62)';cx.lineWidth=(lw+2.6)*dpr;cx.stroke();cx.strokeStyle=col;cx.lineWidth=lw*dpr;cx.stroke()}; /* a dark edge under every line, so that it shows on a white page as well as on a black one */
+  if(wv)paintWave(wv,W,H);
   for(const m of stageMarks)for(const s of m.strokes)pen(s,m.col,2.5);
   for(const s of strokes)pen(s,PEN,3.2);
 }
+/* The sound of a phone call or a voice memo, drawn on the stage: how loud it is from its start to its end (r/<id>/wave.json,
+   1,200 steps), as bars about a middle line. What has been played is yellow (--wall: where you are), the rest is --dim, and a
+   line of --ink stands where the sound is now. It is drawn from numbers that say how loud and nothing else, so it stands the
+   same whether the visitor has chosen "uncensored" or not. While the recording plays it is drawn again every frame
+   (waveRun); under prefers-reduced-motion only when the clock of the recording ticks, four times a second. */
+const waveGot={},waveP={};
+function needWave(rid){return waveP[rid]||(waveP[rid]=jq(MEDIA+'r/'+rid+'/wave.json',null).then(o=>{let w=null;
+  try{if(o&&typeof o.peaks=='string'){const b=atob(o.peaks),p=new Uint8Array(b.length);for(let i=0;i<b.length;i++)p[i]=b.charCodeAt(i);if(p.length>1)w={sec:+o.sec||0,p}}}catch(e){}
+  return waveGot[rid]=w}))}
+function waveOf(id){if(!id||!isMin(id))return null;const rid=id.slice(0,4);return isSnd(recById[rid])&&waveGot[rid]||null}
+function wavePos(){const rid=cur.slice(0,4);if(scrubbing)return+$('#scrub').value;
+  if(playing&&playMode=='rec')return audioLive&&audKey.split('/')[0]==rid?+audKey.split('/')[1]*600+audio.currentTime:playPos;
+  return pausePos&&pausePos.id==cur?pausePos.sec:+$('#scrub').value}
+function paintWave(w,W,H){const r=recById[cur.slice(0,4)],len=w.sec||r.sec||1,P=w.p,pos=clamp(wavePos()/len,0,1);
+  const pd=Math.round(W*.04),ww=W-2*pd,mid=Math.round(H/2),amp=H*.34,pitch=Math.max(2,Math.round(3*dpr)),bw=Math.max(1,pitch-Math.max(1,Math.round(dpr))),n=Math.max(1,Math.floor(ww/pitch)),px=pd+pos*n*pitch;
+  cx.fillStyle='#2a2a30' /* --line-2 */;cx.fillRect(pd,mid,n*pitch,Math.max(1,Math.round(dpr/2)));
+  for(let i=0;i<n;i++){const a=Math.floor(i*P.length/n),b=Math.max(a+1,Math.floor((i+1)*P.length/n));let m=0;for(let k=a;k<b;k++)if(P[k]>m)m=P[k];
+    const h=Math.max(1,Math.round(m/255*amp)),x=pd+i*pitch;cx.fillStyle=x+bw/2<px?'#e3c34d' /* --wall */:'#8f8b83' /* --dim */;cx.fillRect(x,mid-h,bw,2*h)}
+  cx.fillStyle='#ece8df' /* --ink */;cx.fillRect(Math.round(px)-Math.round(dpr/2),Math.round(mid-amp-8*dpr),Math.max(1,Math.round(1.5*dpr)),Math.round(2*amp+16*dpr))}
+const calmMotion=matchMedia('(prefers-reduced-motion:reduce)');let waveRaf=0;
+function waveRun(){cancelAnimationFrame(waveRaf);if(calmMotion.matches)return;const f=()=>{if(!(playing&&playMode=='rec'&&cur&&waveOf(cur)))return;paint();waveRaf=requestAnimationFrame(f)};waveRaf=requestAnimationFrame(f)}
 new ResizeObserver(()=>{if(sizeStage())paint();drawRuler();lineFit()}).observe(stage);
 const PEN='#ff2e7e'; /* the line being drawn: a colour that is in none of the pictures, clear on light and on dark */
 const parseMark=s=>String(s||'').split(';').map(t=>t.trim().split(/\s+/).map(p=>p.split(',').map(Number)).filter(p=>p.length==2&&p.every(n=>n>=0&&n<=999))).filter(t=>t.length>1);
@@ -1148,7 +1175,7 @@ async function pseudo(id){ /* a picture, a minute, a recording, a theme or a per
   if(isMin(id)||isRec(id)){await needRecs();const rid=id.slice(0,4),r=recById[rid];if(!r)return{id,pseudo:1,label:id,text:'[not found]'};
     const min=isMin(id)?+id.slice(5):0,v=await voice(rid),a=min*60,b=a+60,said=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>s[2]).join(' ');
     const heard=(v.heard_hours||[]).includes(Math.floor(min/60));
-    return{id,pseudo:1,label:(r.kind=='call'?'Call':r.kind=='story'?(r.screen?'Screen recording':r.cam?'Camera video':'Phone video'):r.kind=='phone call'?'Phone call':'Voice memo')+' · '+(r.t0?niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time':'undated')+' · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
+    return{id,pseudo:1,label:kindName(r)+' · '+(r.t0?niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time':'undated')+' · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
       text:said||r.note||(r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
   if(isTheme(id)){const t=T[id];return{id,pseudo:1,label:'Theme · '+(t?fmt(t.count):0)+' things',text:t?t.title+(t.note?'. '+t.note:''):'[no such theme]'}}
   return{id,pseudo:1,label:id,text:''}}
@@ -1334,7 +1361,7 @@ function paintSound(){const rec=!!(cur&&(isMin(cur)||shotSound(cur))),bs=$('#bso
   bs.hidden=!RAW||!rec;bs.innerHTML=ic(soundOn?'sound':'mute');bs.classList.toggle('on',soundOn&&playing);bs.setAttribute('aria-label',soundOn?'The recorded sound is on':'The recorded sound is off');}
 /* stop whatever is sounding or moving, without deciding whether we are still "playing" */
 function halt(){quiet();clearTimeout(slideT);clearInterval(recT);slideTok++;recTok++;clearInterval(shotT);shotLive=false;audio.volume=1;audioLive=false;audio.pause();if(vidLive){vidLive=false;vidPaused=true}if(!clip.hidden||vidRec)clip.pause()}
-function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:playPos};halt();playing=false;paintPlay();paintSound()}
+function stopPlay(){if(playing&&playMode=='rec'&&cur&&isMin(cur))pausePos={id:cur,sec:waveOf(cur)?wavePos():playPos};halt();playing=false;paintPlay();paintSound();if(cur&&waveOf(cur))render()}
 if(!EX&&!store.get('abe-rkey',0)){$('#rkey').hidden=false;if(!introOpenNow())store.set('abe-rkey',1)}
 const hintOff=()=>{$('#hint').hidden=true};$('#bplay').addEventListener('click',hintOff);
 if(!EX&&!store.get('abe-hint',0)){$('#hint').hidden=false;if(!introOpenNow())store.set('abe-hint',1)}
@@ -1431,7 +1458,7 @@ async function startRec(sec,bound){
   audio.onended=()=>{if(tok!=recTok||!playing||vidLive===true)return;playPos=(Math.floor(playPos/600)+1)*600;if(playPos>=r.sec)return finish();go()};
   recFallback=()=>{if(tok==recTok&&playing)go()};recEnd=()=>{if(tok==recTok&&playing)finish()};
   if(RAW&&!drawing)iaUrl(r).then(u=>{if(u&&tok==recTok&&playing)vidArm(u,r,tok)});
-  await go();if(tok!=recTok||!playing)return;
+  await go();if(tok!=recTok||!playing)return;waveRun();
   recT=setInterval(()=>{
     if(tok!=recTok||!playing){clearInterval(recT);return}
     if(vidLive=='follow'&&!audioLive&&!loading){vidLive=true}
@@ -1446,12 +1473,13 @@ async function startRec(sec,bound){
       if(vidLive===true){try{clip.currentTime=playPos}catch(e){}}else{clearInterval(recT);audioLive=false;quiet();audio.pause();const b=end;show(rid+'.'+pad(m,4),{keep:1,fromPlay:1}).then(()=>{if(tok==recTok&&playing)startRec(m*60,b)});return}}
     if(m!=lastMin){lastMin=m;const id=rid+'.'+pad(m,4);if(id!=cur)show(id,{keep:1,fromPlay:1})}
     if(!scrubbing){$('#scrub').value=Math.floor(playPos);$('#stime').textContent=stime(playPos,r)}
+    if(calmMotion.matches&&waveOf(cur))render();
     if(audioLive||vidLive){let s=null;for(let i=v._i||0;i<v.segs.length;i++){const g=v.segs[i];if(g[0]>playPos)break;if(g[1]>=playPos-1.5){s=g;v._i=i;break}}
       if(v._i&&v.segs[v._i]&&v.segs[v._i][0]>playPos+30)v._i=0;
       if(s&&s!=lastSeg){lastSeg=s;sayNow(s[2],segLang(v,s[0]));const el=$('#voice [data-s="'+s[0]+'"]');if(el){$$('#voice .now').forEach(n=>n.classList.remove('now'));el.classList.add('now');$('#voice').scrollTop=el.offsetTop-$('#voice').offsetTop-70}}}
   },250)}
 let scrubbing=false;
-$('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=stime(+$('#scrub').value,ownClip()&&clip.duration?{sec:clip.duration}:r)});
+$('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=stime(+$('#scrub').value,ownClip()&&clip.duration?{sec:clip.duration}:r);if(cur&&waveOf(cur))render()});
 $('#scrub').addEventListener('change',()=>{scrubbing=false;seek(+$('#scrub').value)});
 async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),was=playing&&playMode=='rec';
   if(ownClip()){try{clip.currentTime=sec}catch(e){}return}
@@ -1461,7 +1489,10 @@ async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),wa
 let seekAt=null;
 async function syncRec(id,tok){
   const rid=id.slice(0,4),min=+id.slice(5);await needRecs();const r=recById[rid];if(!r||tok!=showing)return;
-  const sw=$('#scrubw'),own=r.kind=='story'&&r.clip&&RAW&&!drawing;sw.hidden=own?r.sec<15:r.sec<120||!(r.kind=='call'||(r.audio&&!r.clip));$('#scrub').max=Math.max(0,r.sec-1);
+  /* a phone call or a voice memo can be moved through however short it is: until 21 November 2026 the scrubber was kept for
+     recordings of two minutes and more, and five of the twelve had none */
+  const sw=$('#scrubw'),own=r.kind=='story'&&r.clip&&RAW&&!drawing,soundOnly=!r.frames&&r.audio&&!r.clip;sw.hidden=own?r.sec<15:soundOnly?r.sec<2:r.sec<120||!(r.kind=='call'||(r.audio&&!r.clip));$('#scrub').max=Math.max(0,r.sec-1);
+  if(isSnd(r)&&!waveGot[rid])needWave(rid).then(w=>{if(w&&cur&&cur.slice(0,4)==rid){render();if(playing&&playMode=='rec')waveRun()}});
   if(!sw.hidden&&cur==id){const w=$('#who');w.textContent=w.textContent.replace(/ · [\d:]+ of [\d:]+$/,'')}
   if(!(playing&&playMode=='rec')){const at=seekAt&&seekAt.id==id?seekAt.sec:min*60;$('#scrub').value=Math.floor(at);$('#stime').textContent=stime(at,r)}
   const v=await voice(rid);if(tok!=showing)return;
@@ -1718,6 +1749,7 @@ function tile(id,n){
 function markTiles(){$$('#views .cur').forEach(t=>t.classList.remove('cur'));if(!cur)return;$$('#views [data-id="'+cur+'"]'+(isMin(cur)?',#views [data-id="'+cur.slice(0,4)+'"]':'')).forEach(t=>t.classList.add('cur'));if(isMin(cur))$$('#views [data-rec="'+cur.slice(0,4)+'"]').forEach(t=>t.classList.add('cur'));
   if(isImg(cur)&&docJ&&$('#dtocl')){const b=$('#dtocl [data-s="'+secOf(+cur.slice(1))+'"]');if(b)b.classList.add('cur')}}
 document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]');if(!b)return;stageUp();const id=b.dataset.id;
+  if(b.classList.contains('wv')&&isMin(id)){pausePos=null;seekAt={id,sec:+b.dataset.sec||0}}else if(!b.dataset.sec&&seekAt&&seekAt.id==id)seekAt=null; /* a piece of a waveform starts at its own second; a plain tile of the same minute at the minute's start */
   if(b.closest('#tlist')&&openTheme&&TL.length)ctx={kind:'list',list:TL};else if(b.dataset.list)ctx={kind:'list',list:[...new Set($$('#'+b.dataset.list+' [data-id]').map(x=>x.dataset.id))]};else if(isImg(id))ctx={kind:'pics'};else if(isMin(id)||isRec(id))ctx={kind:'rec'};else ctx={kind:'lines'};
   go(id,{keep:1,play:RAW})});
 
@@ -1725,7 +1757,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]
 const B={kind:'',grp:'',list:[],a:0,b:0,ready:false,secs:false,title:'',want:''};const BN=120;
 const KINDS=[['days','','Day by day'],['marks','','Marks since 2026'],['pics','d','The document'],['calls','','Calls'],['pics','p','Camera roll'],['stories','','Phone videos'],['pics','s','Screenshots'],['pics','x','Made in 2026'],['lines','','Lines'],['pics','','Every picture']]; /* the marks second: they are a place of their own, not the ninth way of browsing 2021 */
 const KINFO={'pics/d':['The document','The shared document of November 2021. Every screenshot of the call was pasted into it, in order, under headings and hashtags written by whoever was there. The strip beside each heading shows the colours of the screenshots under it.'],
-  'calls/':['The calls','The call itself, recording by recording. Each strip runs from the start of a recording to its end, and its length follows the length of the recording. Pick any frame to start there. The phone calls and voice memos of those weeks stand here too, under their day, as a line without pictures. The words were heard by a small speech model in 2026, and it mishears.'],
+  'calls/':['The calls','The call itself, recording by recording. Each strip runs from the start of a recording to its end, and its length follows the length of the recording. Pick any frame to start there. The phone calls and voice memos of those weeks stand here too, under their day: the strip of each is its sound, drawn from its start to its end. The words were heard by a small speech model in 2026, and it mishears.'],
   'pics/p':['Camera roll','What the camera saw away from the screen: the floor, the sky, the snow.'],
   'stories/':['Phone videos','Short videos and screen recordings from the phone, as they were posted or kept.'],
   'pics/s':['Other screenshots','Screens that were saved outside the document.'],
@@ -1774,6 +1806,9 @@ const dayHead=(k,n,what)=>'<div class="jhd"><h3>'+(k?esc(longDay(Date.parse(k+'T
 function bByDate(ix){return'<div id="bjg">'+byDay(B.list,n=>{const d=(ix[n]||[])[4]||'';return/^\d{4}-\d\d-\d\d$/.test(d)?d:''}).map(([k,L])=>dayHead(k,L.length,B.grp=='p'?'photograph':'picture')+'<div class="jg">'+L.map(n=>jTile(n,'bjg')).join('')+'</div>').join('')+'</div>'}
 /* a call as a strip of film: frames from its start to its end, as many as its length asks for (one for about every half hour) */
 function callStrip(r){const n=r.frames?clamp(Math.round(r.min/30),2,14):0;let fr='';
+  /* a phone call or a voice memo: the same strip, as long as its length asks for, cut from the picture of its sound; each piece starts where it begins */
+  if(isSnd(r)){const k=clamp(Math.round(r.min/30),2,14);for(let i=0;i<k;i++){const sc=Math.floor(i*r.sec/k),id=r.id+'.'+pad(Math.min(r.min-1,Math.floor(sc/60)),4);if(gone[id])continue;
+    fr+='<button class="fr ph wv" data-id="'+esc(id)+'" data-sec="'+sc+'" style="--n:'+k+';--i:'+i+'" title="'+clock(sc,r.sec>=3600)+' into the recording" aria-label="Start '+clock(sc,r.sec>=3600)+' into the recording"><img loading="lazy" decoding="async" src="'+esc(waveUrl(r.id))+'" alt=""></button>'}}
   for(let i=0;i<n;i++){const m=Math.min(r.min-1,Math.floor((i+.5)*r.min/n)),id=r.id+'.'+pad(m,4);if(gone[id])continue;
     fr+='<button class="fr ph" data-id="'+esc(id)+'" title="'+clock(m*60,r.sec>=3600)+' into the recording" aria-label="Start '+clock(m*60,r.sec>=3600)+' into the recording"><img loading="lazy" decoding="async" src="'+esc(frameUrl(r.id,m,1))+'" alt=""></button>'}
   return'<article class="cs'+(cur&&cur.slice(0,4)==r.id?' cur':'')+'" data-rec="'+esc(r.id)+'"><header><b>'+(r.t0?prague(r.t0).slice(11):r.kind=='call'?'':'Sound only')+'</b><span class="du">'+dur(r.sec)+'</span><span class="note">'+(r.kind=='phone call'?'phone call, ':r.kind=='voice memo'?'voice memo, ':'')+(r.lines?fmt(r.lines)+' lines heard':'no words heard')+', '+esc(r.id)+'</span><button class="btn sm" data-call="'+esc(r.id)+'">Play from the first words</button></header>'+(fr?'<div class="fs">'+fr+'</div>':'')+'</article>'}
@@ -1882,7 +1917,8 @@ function bDay(k,scroll){const x=BD&&BD[k],el=$('#bday');if(!x||!el)return;bDaySe
     t+=q.shots.slice(0,CAP).map(n=>tile(mid5(n),(kids[mid5(n)]||[]).length||'').replace('data-id=','data-list="bhours" data-id=')).join('');
     if(q.shots.length>CAP)t+='<button class="tile more" data-hour="'+h+'">'+fmt(q.shots.length-CAP)+' more</button>';
     {const c=q.shots.filter(isCam).length,s2=q.shots.length-c;if(s2)says.push(fmt(s2)+(s2==1?' screenshot':' screenshots'));if(c)says.push(fmt(c)+(c==1?' photograph':' photographs'))}
-    t+=q.stories.map(r=>r.frames?tile(r.id+'.0000','').replace('data-id=','data-list="bhours" data-id=').replace('class="tile"','class="tile vid"'):'<button class="tile txt" data-list="bhours" data-id="'+esc(r.id)+'.0000">'+(r.kind=='phone call'?'Phone call':'Voice memo')+'<br>'+esc(dur(r.sec))+'</button>').join('');
+    t+=q.stories.map(r=>r.frames?tile(r.id+'.0000','').replace('data-id=','data-list="bhours" data-id=').replace('class="tile"','class="tile vid"'):isSnd(r)?'<button class="tile snd" data-list="bhours" data-id="'+esc(r.id)+'.0000" aria-label="'+(r.kind=='phone call'?'Phone call':'Voice memo')+', '+esc(dur(r.sec))+'"><img loading="lazy" decoding="async" src="'+esc(waveUrl(r.id,1))+'" alt=""><span class="tag">'+(r.kind=='phone call'?'phone call':'voice memo')+', '+clock(r.sec)+'</span></button>'
+      :'<button class="tile txt" data-list="bhours" data-id="'+esc(r.id)+'.0000">'+(r.kind=='phone call'?'Phone call':'Voice memo')+'<br>'+esc(dur(r.sec))+'</button>').join('');
     {const nv=q.stories.filter(r=>r.video).length,na=q.stories.length-nv;if(nv)says.push(nv+(nv==1?' video':' videos'));if(na)says.push(na+(na==1?' sound recording':' sound recordings'))}
     hours+='<section class="hr"><b>'+pad(h,2)+'<small>:00</small></b><div class="hx"><span class="note">'+esc(says.join(', '))+'</span>'
       +q.lines.map(id=>'<button class="hq hl" data-id="'+esc(id)+'"><q>'+esc(N[id].text)+'</q><span class="note">written under the call by the caption machine, 2021</span></button>').join('')
@@ -2287,7 +2323,9 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!
   setTitle();await needRecs();const st=claim&&claim.person==id?await claimState():'';
   const nm=(await needNames())[id]||{};if(pShow!=id)return;
   const first=p.name.split(' ')[0],wrote=(p.wrote||[]).filter(w=>!gone[w[0]]),pics=(nm.pics||[]).filter(n=>IMG.has(n)),tagCalls=Object.keys(nm.calls||{}).filter(r=>recById[r]&&recById[r].kind=='call'),calls=[...new Set(tagCalls.concat(wrote.map(w=>w[0]).filter(r=>recById[r])))].sort(),mineView=st=='mine'||st=='pending';
-  const cnt=[[pics.length,pics.length==1?'screenshot':'screenshots'],[calls.length,calls.length==1?'call recording':'call recordings'],[wrote.length,wrote.length==1?'line typed in the chat':'lines typed in the chat'],[(p.here||[]).length,'marked “I am in this”'],[(p.said||[]).length,(p.said||[]).length==1?'mark left':'marks left']].filter(c=>c[0]);
+  /* what only the author can say (a phone call, a voice memo, a video call on the phone's screen): `named` in the index, kept apart from what a machine read, and said to be his word wherever it is shown */
+  const named=(Array.isArray(nm.named)?nm.named:[]).filter(r=>recById[r]);
+  const cnt=[[pics.length,pics.length==1?'screenshot':'screenshots'],[calls.length,calls.length==1?'call recording':'call recordings'],[named.length,named.length==1?'recording named by the author':'recordings named by the author'],[wrote.length,wrote.length==1?'line typed in the chat':'lines typed in the chat'],[(p.here||[]).length,'marked “I am in this”'],[(p.said||[]).length,(p.said||[]).length==1?'mark left':'marks left']].filter(c=>c[0]);
   const counts=cnt.length?'<div class="pcount">'+cnt.map(c=>'<div><div class="num">'+fmt(c[0])+'</div><div class="meta">'+c[1]+'</div></div>').join('')+'</div>':'';
   const hadF=!!o.scroll||(head.contains(document.activeElement)&&document.activeElement.tagName=='H2');
   let h=(id==pOwn()?'':'<p style="margin:0 0 4px"><button class="btn sm" id="pback">← All names</button></p>')+'<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>'+counts;
@@ -2296,13 +2334,14 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!
   else if(p.claimed)h+='<p>'+esc(p.name)+' has claimed this place'+(p.since?' ('+esc(p.since)+')':'')+'. If that should have been you, press the flag under the stage on anything, or tell the author.</p>';
   else if(p.pending)h+='<p>Someone has asked for this name and a steward has not confirmed it yet. If that should have been you, tell the author.</p>';
   else if(claim&&claim.person!=id&&st!=='')h+='';
-  else h+='<p class="meta" style="text-transform:none;letter-spacing:0;font-size:var(--t-note);margin-bottom:10px">'+(p.from=='named by the author'?'The author named this friend. Nothing in the archive is tied to the name.':p.from=='name tag in a call'?'A machine read this name on a name tag that the call software wrote under a participant. It may have misread, and nothing else in the archive is tied to the name.':(p.wrote||[]).length?'Someone with this name typed in the chat of the calls.':'Someone with this name typed in the chat of the calls. What they typed was a link or has been taken out.')+(cnt.length?' The numbers above are where a machine read the name “'+esc(first)+'” on screen or in the chat. They say where the name was written, not who is in a picture.':'')+'</p><p>If this is you, claim your place. You then see these things straight away, on this device. A steward confirms that it is you, and after that your marks carry a ✓. If this is not a person from the calls at all, the flag on the stage tells the stewards.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div>'
+  else h+='<p class="meta" style="text-transform:none;letter-spacing:0;font-size:var(--t-note);margin-bottom:10px">'+(p.from=='named by the author'?(named.length?'The author named this friend, and said which recordings they are in.':'The author named this friend. Nothing in the archive is tied to the name.'):p.from=='name tag in a call'?(nm.alias?'A machine read a name tag that the call software wrote under a participant; the tag reads otherwise, and the author said that it is '+esc(first)+'’s.':'A machine read this name on a name tag that the call software wrote under a participant. It may have misread'+(named.length?'.':', and nothing else in the archive is tied to the name.')):(p.wrote||[]).length?'Someone with this name typed in the chat of the calls.':'Someone with this name typed in the chat of the calls. What they typed was a link or has been taken out.')+(cnt.length>(named.length?1:0)?' The '+(named.length?'other ':'')+'numbers above are where a machine read '+(nm.alias?'that tag, or the name “'+esc(first)+'”,':'the name “'+esc(first)+'”')+' on screen or in the chat. They say where the name was written, not who is in a picture.':'')+(named.length&&p.from!='named by the author'?' In '+(named.length==1?'one recording':fmt(named.length)+' recordings')+' the author himself said that '+esc(first)+' is there: his word, not a machine’s reading.':'')+'</p><p>If this is you, claim your place. You then see these things straight away, on this device. A steward confirms that it is you, and after that your marks carry a ✓. If this is not a person from the calls at all, the flag on the stage tells the stewards.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div>'
     +(SEAL?'<div style="margin:0 0 12px"><label class="meta" for="pk">Write something that only Rana and '+esc(first)+' will know</label><textarea id="pk" maxlength="280" required placeholder="A place, a day, a joke between you. It is how the stewards know it is you."></textarea><p class="meta" style="text-transform:none;letter-spacing:0;margin:4px 0 0">Needed. It is sealed on this device before it is sent, only the stewards can open it, and it is never shown on the site.</p></div>':'')
     +'<button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg" aria-live="polite"></span>';
   h+='</div>';
   /* the things themselves: for whoever asked for this name on this device, confirmed or still waiting */
-  if(mineView&&pics.length)h+='<h3>Screenshots where a machine read “'+esc(first)+'” · '+fmt(pics.length)+'</h3><p class="lead">Only you know which ones you are in.'+(st=='mine'?' Put one on the stage and press the person button under it to say so.':' Once a steward has confirmed you, you can say so on each.')+'</p><div class="grid" id="pf">'+pics.slice(0,600).map(n=>tile('m'+pad(n,5),'').replace('data-id','data-list="pf" data-id')).join('')+'</div>'+(pics.length>600?'<p class="meta">The first 600 of '+fmt(pics.length)+'.</p>':'');
+  if(mineView&&pics.length)h+='<h3>Screenshots where a machine read '+(nm.alias?'the name tag of ':'')+'“'+esc(first)+'” · '+fmt(pics.length)+'</h3><p class="lead">Only you know which ones you are in.'+(st=='mine'?' Put one on the stage and press the person button under it to say so.':' Once a steward has confirmed you, you can say so on each.')+'</p><div class="grid" id="pf">'+pics.slice(0,600).map(n=>tile('m'+pad(n,5),'').replace('data-id','data-list="pf" data-id')).join('')+'</div>'+(pics.length>600?'<p class="meta">The first 600 of '+fmt(pics.length)+'.</p>':'');
   if(mineView&&calls.length)h+='<h3>Call recordings with this name · '+calls.length+'</h3><div class="calls" id="pc">'+calls.map(rid=>{const r=recById[rid];return'<button class="call" data-prec="'+esc(rid)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(rid,Math.min(r.min-1,2),1))+'" alt=""></span><span><b>'+(r.t0?niceDay(r.t0)+' · ':'')+dur(r.sec)+'</b><span class="meta">'+((nm.calls||{})[rid]?'name tag read in '+fmt(nm.calls[rid])+' frames':'typed in the chat')+' · '+esc(rid)+'</span></span></button>'}).join('')+'</div>';
+  if(mineView&&named.length)h+='<h3>Recordings the author named '+esc(first)+' in · '+named.length+'</h3><p class="lead">Named by the author, not read by a machine: a phone call, a voice memo, a video call or a live on the phone’s screen, a room his camera saw.</p><div class="calls" id="pn">'+named.map(rid=>{const r=recById[rid];return'<button class="call" data-prec="'+esc(rid)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(rid,r.kind=='call'?Math.min(r.min-1,2):0,1))+'" alt=""></span><span><b>'+(r.t0?niceDay(r.t0)+' · ':'')+dur(r.sec)+'</b><span class="meta">'+kindName(r).toLowerCase()+' · named by the author · '+esc(rid)+'</span></span></button>'}).join('')+'</div>';
   if(wrote.length&&(mineView||p.claimed))h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+esc(iid)+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+esc(thumbUrl(iid))+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+esc(iid)+'</span></span></button>'}).join('')+'</div>';
   if((p.here||[]).length)h+='<h3>'+esc(p.name)+' says: I am in this</h3><div class="grid" id="ph">'+p.here.map(i=>tile(i,'').replace('data-id','data-list="ph" data-id')).join('')+'</div>';
   if((p.said||[]).length)h+='<h3>Marks left as '+esc(p.name)+'</h3><div class="grid" id="ps" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+p.said.map(i=>tile(i,'')).join('')+'</div>';
@@ -2311,6 +2350,7 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!
   if($('#pback'))$('#pback').onclick=()=>{if(!hUp('#people'))closeP()};
   const msg=t=>{const m=$('#pmsg');if(m)m.textContent=t};
   if($('#pc'))$('#pc').onclick=e=>{const c=e.target.closest('[data-prec]');if(!c)return;const rid=c.dataset.prec,w=wrote.find(x=>x[0]==rid);stageUp();ctx={kind:'rec'};go(rid+'.'+pad(w?Math.floor(w[1]/60):0,4),{keep:1,play:RAW})};
+  if($('#pn'))$('#pn').onclick=e=>{const c=e.target.closest('[data-prec]');if(!c)return;stageUp();ctx={kind:'rec'};go(c.dataset.prec+'.0000',{keep:1,play:RAW})};
   if($('#pclaim'))$('#pclaim').onclick=async()=>{if(FRAMED)return msg(ownTab());if(!DOOR)return msg('The door is closed right now.');
     let proof='';if(SEAL){const a=$('#pk').value.trim().replace(/\s+/g,' ');if(a.length<3){msg('Answer the question first: it is how the stewards know it is you.');$('#pk').focus();return}
       try{proof=await seal(a)}catch(e){return msg('This browser could not seal your answer. Try another browser, or ask the author for a private link.')}}
