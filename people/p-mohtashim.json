@@ -2,5 +2,11 @@
  "id": "p-mohtashim",
  "name": "Mohtashim",
  "wrote": [],
- "from": "name tag in a call"
+ "from": "name tag in a call",
+ "pending": {
+  "lock": "dd7a4c9764e762b6988454f72f6238085a41860edb256413dbd71b2e73993d0e",
+  "display": "Mohtashim",
+  "at": "2026-11-21",
+  "proof": "v1.BEawKC-rbFVCLyYzvzJQR-6UNANGkHBPgQFrITqNSZASREdwMgXnGlEbiL--cE0gSN_O6F74pzkX77L9Zspkvl9SC2vxaXvIMM1Vp1LKlI94MVRHifc9oq-R_ouzQpZklWAbVx8Ni83tdf-oQvl4MfiZQWXjfCJBcYOkWjRWhF7DQ7Nj"
+ }
 }
