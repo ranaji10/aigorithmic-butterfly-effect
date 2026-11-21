@@ -445,6 +445,7 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .tline{display:block;width:100%;break-inside:avoid;background:none;border:0;border-left:2px solid var(--wall);padding:3px 0 3px 16px;margin:0 0 16px;text-align:left;cursor:pointer;color:var(--ink);font:400 var(--t-head)/1.3 var(--serif)}
 .tline:hover,.tline.cur{color:var(--wall)}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:0 0 14px}
+#popen:not([hidden])+#ph2{margin-top:32px} /* the others begin a step below the person who is open */
 .pcount{display:flex;flex-wrap:wrap;gap:8px 26px;margin:4px 0 14px}.pcount .num{font-size:var(--t-title)}.pcount>div{min-width:90px}
 #pk{min-height:70px;font-size:var(--t-body)}
 #sdb .quote{margin:10px 0;overflow-wrap:anywhere}#sdkey{min-height:64px;font:var(--t-note)/1.4 var(--mono)}
@@ -819,10 +820,10 @@ body.mini .ov,body.exhibit .ov{display:none}
     </section>
 
     <section id="v-people">
-      <h2>Who was in the calls</h2>
-      <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all. Is one of them you? Choose your name.</p>
-      <div class="pgrid" id="plist"></div>
       <div id="popen" hidden></div>
+      <h2 id="ph2">Who was in the calls</h2>
+      <p class="lead" style="margin-bottom:12px">First names from the 2021 calls: typed in the call chat, written on a name tag by the call software, or named by the author. A machine read them, so one or two may not be a person at all.<span id="pask"> Is one of them you? Choose your name.</span></p>
+      <div class="pgrid" id="plist"></div>
     </section>
 
     <section id="v-find">
@@ -1553,7 +1554,7 @@ ruler.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){nav(-1);e.preventDef
 {const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=96;c.height=62;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingQuality='high';x.drawImage(im,0,0,96,62);const d=x.getImageData(0,0,96,62).data;atlasCols=[];for(let i=0;i<DOCN;i++)atlasCols.push([d[i*4],d[i*4+1],d[i*4+2]]);drawRuler()}catch(e){}};im.crossOrigin='anonymous';im.src='data/weather-2021.png'} /* asked for as About's picture asks for it, so that the browser downloads it once */
 
 /* views */
-const VIEWS=['stage','browse','themes','people','find','about'];let view='stage',openTheme='',openPerson='',FQ='';
+const VIEWS=['stage','browse','themes','people','find','about'];let view='stage',openTheme='',openPerson='',pShow='',FQ='';
 /* the stage keeps no address of its own, so that every visit opens somewhere else; the id in the corner copies a link to one thing */
 /* Browse says in the address which of its ways is open (#browse/calls, #browse/document/m00123), so that a way can be linked to and
    Back returns to it; the older form #browse/m00123 still opens. */
@@ -1624,7 +1625,7 @@ const TITLE0=document.title,WORK='AIgorithmic Butterfly Effect';
 /* the title of the tab says where one is; the bare address keeps the long title */
 function setTitle(){const p=view=='themes'?[openTheme&&T[openTheme]?T[openTheme].title:'','Themes']:view=='people'?[openPerson&&P[openPerson]?P[openPerson].name:'','People']:view=='browse'?[B.kind=='marks'||B.want=='marks'?'Marks':'Browse']:view=='find'?[FQ?'“'+FQ+'”':'','Find']:view=='about'?['About']:[];document.title=p.length?p.filter(Boolean).concat(WORK).join(' · '):TITLE0}
 /* after a change of view the keyboard carries on from the new place: its heading takes the focus (and shows no ring) */
-function focusHead(tries){const el=view=='stage'?$('#bplay'):view=='find'?$('#fq'):view=='themes'&&openTheme?$('#ttitle'):$('#v-'+view+' h2');
+function focusHead(tries){const el=view=='stage'?$('#bplay'):view=='find'?$('#fq'):view=='themes'&&openTheme?$('#ttitle'):view=='people'?$(pShow?'#popen h2':'#ph2'):$('#v-'+view+' h2');
   if(el&&el.offsetParent){if(!el.hasAttribute('tabindex')&&el.tagName=='H2')el.tabIndex=-1;try{el.focus({preventScroll:true})}catch(e){}}else if((tries||0)<40)setTimeout(()=>focusHead((tries||0)+1),60)}
 function setView(v,o){o=o||{};if(!VIEWS.includes(v))v='stage';const was=view,s0=was!=v&&!o.quiet&&!EX?hSnap():null;view=v;
   document.body.className=document.body.className.replace(/\bv-\w+/g,'').trim()+' v-'+v;
@@ -2267,20 +2268,29 @@ async function claimState(){ /* '', 'pending', 'mine', 'other' for the name this
   if(!claim||!P[claim.person])return'';if(!myLock)myLock=await sha256(claim.key);const p=P[claim.person];
   if(p.claimed)return p.lock==myLock?'mine':'other';if(p.pending)return p.pending==myLock.slice(0,12)?'pending':'other';return claim.asked?'pending':''}
 async function claimUI(){const st=await claimState();claimOK=st=='mine';$('#asme').hidden=!claimOK;$('#bhere').hidden=!claimOK;if(claimOK)$('#asname').textContent='✓ '+P[claim.person].name;return st}
-let pReady=false;
-async function pInit(){const st=await claimUI();
-  $('#plist').innerHTML=peopleJ.people.map(p=>{const mine=claim&&claim.person==p.id&&st;
+/* The person who is open stands above the names, and the names below are the others (since 21 November 2026). Whoever asked
+   for a name on this device, confirmed or still waiting, finds their own place there whenever People opens with nobody else
+   chosen: `pShow` is who stands on top, `openPerson` only who the address names, so "#people" stays "#people" for them. */
+let pSt='';
+const pOwn=()=>claim&&P[claim.person]&&(pSt=='mine'||pSt=='pending')?claim.person:'';
+function pList(){const st=pSt;
+  $('#plist').innerHTML=peopleJ.people.filter(p=>p.id!=pShow).map(p=>{const mine=claim&&claim.person==p.id&&st;
     const src=p.from=='named by the author'?'named by the author':p.from=='name tag in a call'?'read from a name tag':'typed in the call chat';
     return'<button class="tcard" data-p="'+esc(p.id)+'"><b>'+esc(p.name)+'</b><span class="meta">'+src+(p.claimed||p.pending||(p.here||[]).length?' · ':'')+(p.claimed?'<span class="ok">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?(mine=='pending'?'<span class="warn">you asked · waiting</span>':'asked · waiting'):'')+((p.here||[]).length?' in '+fmt(p.here.length):'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
-  if(openPerson)openP(openPerson)}
+  $('#ph2').textContent=pShow?'Who else was in the calls':'Who was in the calls';$('#pask').hidden=!!pOwn()}
+function pNone(){pShow='';$('#popen').hidden=true;$('#popen').innerHTML='';pList()}
+async function pInit(){pSt=await claimUI();const id=openPerson&&P[openPerson]?openPerson:pOwn();if(id)return openP(id,{own:!openPerson});pNone()}
+function closeP(){openPerson='';setTitle();hRep(hashFor());scrollTo(0,0);return pInit()}
 $('#plist').onclick=e=>{const b=e.target.closest('[data-p]');if(b)openP(b.dataset.p,{scroll:1,push:1})};
-async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!EX&&openPerson!=id?hSnap():null;openPerson=id;setTitle();await needRecs();const st=claim&&claim.person==id?await claimState():'';
-  const nm=(await needNames())[id]||{};if(openPerson!=id)return;
+async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!EX&&openPerson!=id?hSnap():null;if(!o.own)openPerson=id;
+  const head=$('#popen');pShow=id;if(head.hidden){head.hidden=false;head.innerHTML='<p class="meta">Reading…</p>'}pList();
+  setTitle();await needRecs();const st=claim&&claim.person==id?await claimState():'';
+  const nm=(await needNames())[id]||{};if(pShow!=id)return;
   const first=p.name.split(' ')[0],wrote=(p.wrote||[]).filter(w=>!gone[w[0]]),pics=(nm.pics||[]).filter(n=>IMG.has(n)),tagCalls=Object.keys(nm.calls||{}).filter(r=>recById[r]&&recById[r].kind=='call'),calls=[...new Set(tagCalls.concat(wrote.map(w=>w[0]).filter(r=>recById[r])))].sort(),mineView=st=='mine'||st=='pending';
   const cnt=[[pics.length,pics.length==1?'screenshot':'screenshots'],[calls.length,calls.length==1?'call recording':'call recordings'],[wrote.length,wrote.length==1?'line typed in the chat':'lines typed in the chat'],[(p.here||[]).length,'marked “I am in this”'],[(p.said||[]).length,(p.said||[]).length==1?'mark left':'marks left']].filter(c=>c[0]);
   const counts=cnt.length?'<div class="pcount">'+cnt.map(c=>'<div><div class="num">'+fmt(c[0])+'</div><div class="meta">'+c[1]+'</div></div>').join('')+'</div>':'';
-  $$('#plist [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p==id));
-  let h='<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>'+counts;
+  const hadF=!!o.scroll||(head.contains(document.activeElement)&&document.activeElement.tagName=='H2');
+  let h=(id==pOwn()?'':'<p style="margin:0 0 4px"><button class="btn sm" id="pback">← All names</button></p>')+'<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>'+counts;
   if(st=='mine')h+='<p class="ok">This place is yours. On this device you answer as yourself, and the person button under the stage marks what you are in.</p><div class="row"><div><label class="meta" for="dn">The name to show</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn sm" id="pname">Change the name shown</button> <button class="btn sm" id="pforget">Forget me on this device</button> <span class="meta" id="pmsg"></span>';
   else if(st=='pending')h+='<p class="warn">You asked for this name. A steward confirms it is you, usually within a day. Until then you can already look at everything below. Come back on this device.</p><button class="btn sm" id="pforget">That was a mistake: forget it on this device</button> <span class="meta" id="pmsg"></span>';
   else if(p.claimed)h+='<p>'+esc(p.name)+' has claimed this place'+(p.since?' ('+esc(p.since)+')':'')+'. If that should have been you, press the flag under the stage on anything, or tell the author.</p>';
@@ -2296,7 +2306,9 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!
   if(wrote.length&&(mineView||p.claimed))h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+esc(iid)+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+esc(thumbUrl(iid))+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+esc(iid)+'</span></span></button>'}).join('')+'</div>';
   if((p.here||[]).length)h+='<h3>'+esc(p.name)+' says: I am in this</h3><div class="grid" id="ph">'+p.here.map(i=>tile(i,'').replace('data-id','data-list="ph" data-id')).join('')+'</div>';
   if((p.said||[]).length)h+='<h3>Marks left as '+esc(p.name)+'</h3><div class="grid" id="ps" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">'+p.said.map(i=>tile(i,'')).join('')+'</div>';
-  $('#popen').hidden=false;$('#popen').innerHTML=h;if(s0)hPush(hashFor(),'',s0);else hRep(hashFor());
+  head.hidden=false;head.innerHTML=h;if(s0)hPush(hashFor(),'',s0);else if(view=='people')hRep(hashFor());
+  if(hadF){const t=$('#popen h2');t.tabIndex=-1;try{t.focus({preventScroll:true})}catch(e){}} /* the name that was pressed has left the list: the keyboard carries on from the person's heading */
+  if($('#pback'))$('#pback').onclick=()=>{if(!hUp('#people'))closeP()};
   const msg=t=>{const m=$('#pmsg');if(m)m.textContent=t};
   if($('#pc'))$('#pc').onclick=e=>{const c=e.target.closest('[data-prec]');if(!c)return;const rid=c.dataset.prec,w=wrote.find(x=>x[0]==rid);stageUp();ctx={kind:'rec'};go(rid+'.'+pad(w?Math.floor(w[1]/60):0,4),{keep:1,play:RAW})};
   if($('#pclaim'))$('#pclaim').onclick=async()=>{if(FRAMED)return msg(ownTab());if(!DOOR)return msg('The door is closed right now.');
@@ -2358,7 +2370,7 @@ async function route(first){
   if(id!=cur&&await ok(id)){if(first)await show(id,{quiet:1});else await go(id,{quiet:1})}
   else if(first)await show(await pickLanding(),{quiet:1}); /* every visit opens somewhere else in the work, on a thing with a picture and words */
   if(!first&&v=='themes'&&!id&&openTheme)tHome();
-  if(!first&&v=='people'&&!id&&openPerson){openPerson='';$('#popen').hidden=true;$$('#plist .on').forEach(b=>b.classList.remove('on'))}
+  if(!first&&v=='people'&&!id&&openPerson)openPerson='';
   setView(v,{quiet:1});if(v=='themes'&&openTheme)tP=openT(openTheme);if(v=='people'&&openPerson)pInit();if(v=='find'&&fWant){fWant=false;fRun()}
   if(sayRaw&&!EX){hRep(say&&cur==say.id?'#'+cur:location.pathname+location.search);if(say&&cur==say.id)sayFill(say)} /* the words leave the address at once: a reload or a copied address carries none */
   if(a=='marks'&&!EX)hRep('#marks')}
@@ -2406,7 +2418,7 @@ const introAt=()=>{let b=0,bd=1e9;ipages.forEach((el,i)=>{const dd=Math.abs(el.o
 $('#ibegin').onclick=$('#inext').onclick=()=>introGo(introAt()+1);
 $('#iskip').onclick=()=>introGo(ipages.length-1);
 let introAgain=false;
-function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);store.set('abe-hint',1);store.set('abe-rkey',1);document.documentElement.classList.add('in');introInert();requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
+function introClose(){cancelAnimationFrame(introRaf);store.set('abe-in',1);store.set('abe-hint',1);store.set('abe-rkey',1);document.documentElement.classList.add('in');introInert();requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler();try{if(view=='people'&&!introAgain)focusHead();else(introAgain&&view=='about'?$('#iagain'):$('#bplay')).focus({preventScroll:true})}catch(e){}introAgain=false})}
 $('#iraw').onclick=async()=>{introClose();await setRaw(true);if(cur&&!isMin(cur))startPlay()}; /* the stage starts moving; a screenshot whose moment was found in the recordings plays that moment's sound; a call waits for its play button */
 $('#icol').onclick=async()=>{introClose();await setRaw(false)};
 $('#iexit').onclick=()=>{cancelAnimationFrame(introRaf);stopPlay();
