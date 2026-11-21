@@ -1,11 +1,5 @@
 {
  "id": "p-jan",
  "name": "Jan",
- "wrote": [],
- "pending": {
-  "lock": "f63beede90b5a0a11def768e4eb8c3aa894b6f5dfa7289533db8579bd69cb93e",
-  "display": "Jan",
-  "at": "2026-11-21",
-  "proof": "v1.BDT2vW7B96PBXo5OyM1yu73mmoumX__8wnp5Lwh4tGMep6PJdw4fRUXE-YLCc1KFxyi0Jl4n3YuTHeegxT26oqtnNhZHU4yQ8j1rdj1Qaxaw6p_P5GRZQGc-Qzpd7NLAhg"
- }
+ "wrote": []
 }
