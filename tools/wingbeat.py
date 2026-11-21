@@ -835,7 +835,7 @@ def door(items=None):
     state = {"taken": sum(1 for w in known.W if w.get("door") and w.get("at") == day),
              "asked": public_requests_today(),
              "claims": sum(1 for v in seen["seen"].values() if v[0] == day and v[1] in ("claimed", "pending")),
-             "full_told": False}
+             "full_told": False, "held": seen.get("held", "")}
     changed = False
     for it in items[:MAX_INBOX]:
         did = ""
@@ -855,6 +855,9 @@ def door(items=None):
     # forget door ids older than 40 days (the door has dropped them long before)
     cut = (datetime.date.today() - datetime.timedelta(days=40)).isoformat()
     seen["seen"] = {k: v for k, v in seen["seen"].items() if v[0] >= cut}
+    if state["held"] and state["held"] != seen.get("held", ""):
+        seen["held"] = state["held"]
+        changed = True
     if changed:
         save("data/door-seen.json", seen, compact=True)
     return notes
@@ -888,7 +891,15 @@ def door_item(it, did, known, cfg, state, notes, day):
         if not p:
             return "refused"
         if state["claims"] >= CLAIMS_DAY_CAP:
-            return None  # a few names a day; the rest wait
+            # a few names a day; the rest wait at the door. The stewards are told once a day that somebody is waiting, because
+            # the person was told "usually within a day" and, until 22 November 2026, nobody here heard of it before midnight.
+            if state["held"] != day:
+                state["held"] = day
+                notes.append(f"**{plain(p['name'])}** was asked for at the door (`{pid}`), but {CLAIMS_DAY_CAP} names had already been asked for or "
+                             f"claimed on {day}, and the sweep takes in {CLAIMS_DAY_CAP} a day (`CLAIMS_DAY_CAP`). The request waits at the door, "
+                             "with any others that follow it today, and is taken in by the first sweep after midnight UTC; the confirm and "
+                             "deny links come then. Nothing needs doing.")
+            return None
         if kind == "claim":
             if it.get("verified") is not True:
                 return "refused"

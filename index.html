@@ -313,7 +313,7 @@ body.raw .tile img{filter:none;transform:none}
 .tcard .pin{display:block;width:max-content;max-width:100%;margin:0 0 6px;padding:3px 8px;border:1px solid var(--wall);border-radius:var(--r-pill);font:var(--t-label)/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--wall)}
 .tcard.here .pin{background:var(--wall);color:var(--on-wall);font-weight:700}
 /* a tile with a label is taller than its neighbours in the row: every tile keeps its words at the top */
-.pgrid .tcard{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}
+.pgrid .tcard{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;min-width:0}.pgrid .tcard .meta,.pgrid .tcard .pin{overflow-wrap:anywhere;white-space:normal}.pgrid .tcard .pin{width:auto;line-height:1.3}
 /* doors: a way in, with a strip of what is behind it */
 .doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin:10px 0 20px}
 .door{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;text-align:left;color:inherit;padding:0;min-width:0}
@@ -457,7 +457,23 @@ h3.sh{font:400 clamp(21px,2.2vw,27px)/1.2 var(--serif);letter-spacing:0;text-tra
 .tline:hover,.tline.cur{color:var(--wall)}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:0 0 14px}
 #popen:not([hidden])+#ph2{margin-top:32px} /* the others begin a step below the person who is open */
-.pcount{display:flex;flex-wrap:wrap;gap:8px 26px;margin:4px 0 14px}.pcount .num{font-size:var(--t-title)}.pcount>div{min-width:90px}
+.pcount{display:flex;flex-wrap:wrap;gap:8px 26px;margin:4px 0 14px}
+/* one's own place (Amendment 16): the screenshots under a name, by the day and the hour they were taken. An hour is closed
+   until it is opened and shows a few of its pictures meanwhile; nothing of an hour is in the page before that. */
+.pdays{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;margin:12px 0 0;scrollbar-width:thin;scrollbar-color:var(--edge-2) transparent}
+.pdb{flex:0 0 168px;display:flex;flex-direction:column;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:6px 6px 8px;cursor:pointer;text-align:left;min-width:0}
+.pdb:hover{border-color:var(--rim-2)}.pdb .tile{width:100%;pointer-events:none}.pdb b{font-weight:500;font-size:var(--t-small)}
+.pday{scroll-margin-top:calc(var(--bar) + 14px)}.pday>h3.sh{margin-top:36px}.pday>.note{margin:0 0 10px;max-width:70ch}
+.phr{border-top:1px solid var(--line)}
+.phr>summary{display:grid;grid-template-columns:62px minmax(0,1fr);gap:4px 12px;padding:14px 0 12px;cursor:pointer;list-style:none}
+.phr>summary::-webkit-details-marker{display:none}
+.phr>summary>b{grid-row:1/3;font:400 var(--t-title)/1 var(--serif);color:var(--ink)}.phr>summary>b small{font-size:var(--t-small);color:var(--dim)}
+.phr>summary>b.u{font:var(--t-label)/1.45 var(--mono);color:var(--dim);letter-spacing:.04em;text-transform:uppercase;padding-top:3px}
+.phr>summary:hover .note{color:var(--ink)}.phr>summary>.note::after{content:" · open";color:var(--wall)}.phr[open]>summary>.note::after{content:" · close"}
+.pstrip{display:flex;gap:4px;overflow:hidden;min-width:0}.pstrip .tile{flex:0 0 104px;pointer-events:none}
+.phr[open]>summary{padding-bottom:4px}.phr[open] .pstrip{display:none}
+.pgin{padding:0 0 16px 74px}.pgin .grid{margin-top:8px}
+@media(max-width:600px){.pgin{padding-left:0}.pstrip .tile{flex-basis:84px}}.pcount .num{font-size:var(--t-title)}.pcount>div{min-width:90px}
 #pk{min-height:70px;font-size:var(--t-body)}
 #sdb .quote{margin:10px 0;overflow-wrap:anywhere}#sdkey{min-height:64px;font:var(--t-note)/1.4 var(--mono)}
 .box{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--panel)}
@@ -556,7 +572,7 @@ dialog{background:var(--panel);color:var(--ink);border:1px solid var(--edge);bor
   .qlist,.calls{grid-template-columns:1fr}
   #afigs{grid-template-columns:repeat(2,minmax(0,1fr))}#afigs>div{padding:12px 14px}#afigs>div:nth-child(odd){border-left:0;padding-left:0}#afigs>div:nth-child(n+3){border-top:1px solid var(--line)}
   .mcard{grid-template-columns:72px minmax(0,1fr);gap:0 12px}
-  .tgrid,.pgrid{grid-template-columns:repeat(2,1fr)}
+  .tgrid,.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))} /* minmax(0,…): a tile whose label is wider than half a small screen must not push the grid out of it */
   .doors{grid-template-columns:1fr}.bd{aspect-ratio:1;min-height:40px}.bd b{left:4px;top:4px;font-size:var(--t-note)}.bd em{right:3px;top:4px;font-size:var(--t-label)}#bcal{gap:3px}
   #bkinds{flex-wrap:nowrap;overflow-x:auto;margin:0 -12px 12px;padding:0 12px 4px;scrollbar-width:none}#bkinds .btn{flex:none}
   /* the row of chips goes on past the edge: its last chip in sight fades, until the row has been scrolled to its end */
@@ -921,7 +937,7 @@ body.mini .ov,body.exhibit .ov{display:none}
     </section>
   </div>
 </main>
-<footer>Begun 14 November 2021 by Rana, reopened 14 November 2026. Form found with Claude. Marks are CC0.<br><a href="feed.xml">Feed</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">source</a></footer>
+<footer><span class="h-card"><data class="p-name" value="AIgorithmic Butterfly Effect"></data><data class="u-url u-uid" value="https://ranaji10.github.io/aigorithmic-butterfly-effect/"></data><data class="u-photo" value="https://ranaji10.github.io/aigorithmic-butterfly-effect/img/icon-512.png"></data><span class="p-note">Begun 14 November 2021 by Rana, reopened 14 November 2026. Form found with Claude. Marks are CC0.</span></span><br><a href="feed.xml">Feed</a> · <a href="llms.txt">llms.txt</a> · <a href="https://github.com/ranaji10/aigorithmic-butterfly-effect">source</a><br><a href="https://xn--sr8hvo.ws/previous" referrerpolicy="no-referrer-when-downgrade" aria-label="The site before this one in the IndieWeb webring">←</a> An <a href="https://xn--sr8hvo.ws">IndieWeb Webring</a> <a href="https://xn--sr8hvo.ws/next" referrerpolicy="no-referrer-when-downgrade" aria-label="The next site in the IndieWeb webring">→</a></footer>
 
 <nav id="tabbar" aria-label="Parts of the work">
   <button data-v="stage" class="on" aria-current="page">Stage</button><button data-v="browse">Browse</button><button data-v="themes">Themes</button><button data-v="people">People</button><button data-v="find" aria-keyshortcuts="/">Find</button><button data-v="about">About</button>
@@ -1262,8 +1278,8 @@ async function step(d){
   if(ctx.kind=='pics'&&isImg(cur)){const L=picIds(),n=+cur.slice(1);let i=L.indexOf(n);if(i<0)i=L.findIndex(x=>x>n)-(d>0?1:0);i=(i+d+L.length)%L.length;return show('m'+pad(L[i],5),{keep:1})}
   const L0=ctxList(),L=L0&&L0.length?L0:lineIds;let i=listAt(L,cur);if(i<0)i=d>0?-1:0;i=(i+d+L.length)%L.length;return show(L[i],{keep:1})}
 /* moving by hand: what was playing stops, the new thing appears, and it plays if something was playing (or if asked to) */
-async function go(id,o){o=o||{};const was=playing||!!o.play;halt();await show(id,o);if(was&&!drawing&&cur){playing=true;paintPlay();paintSound();playCur()}else if(playing){playing=false;paintPlay();paintSound()}}
-async function nav(d){hintOff();const was=playing;halt();await step(d);if(was&&!drawing)playCur()}
+async function go(id,o){o=o||{};drift=!!o.drift;const was=playing||!!o.play;halt();await show(id,o);if(was&&!drawing&&cur){playing=true;paintPlay();paintSound();playCur()}else if(playing){playing=false;paintPlay();paintSound()}}
+async function nav(d){hintOff();drift=false;const was=playing;halt();await step(d);if(was&&!drawing)playCur()}
 function show(id,o){return lastShow=show0(id,o)}
 async function show0(id,o){
   o=o||{};const tok=++showing;if(isRec(id))id=id+'.0000';
@@ -1323,7 +1339,52 @@ async function pickLanding(){
     else if(r<.75){const snd=await soon(needSound()),L=snd&&snd.at?IMGS.filter(n=>snd.at[n]&&!dark(n)):[];if(L.length)return'm'+pad(any(L),5)}
   }catch(e){}
   return line()}
-$('#bshuf').onclick=()=>go(pick(),{play:RAW});
+/* Left to itself (Amendment 16). While the visitor has chosen nothing, the thing on the stage was put there by the work: `drift`.
+   Play then does not walk on to the neighbour, as it does in a list somebody chose. The next screenshot of the document was
+   taken seconds after this one and looks the same, and a call goes on for hours, so a visitor who only watched saw one evening
+   of nine weeks and took it for a loop. Each step instead goes somewhere else: another kind of thing than the last (a screenshot
+   with its moment of sound, a sentence of a call and the minute after it, a line of 2021, a short phone video, a phone call or
+   voice memo, a photograph, a mark left since 2026), on a day none of the last twelve steps was on, and never the same thing
+   twice in a visit. What has been shown is kept in this page's memory and nowhere else: it is not stored, sent or counted,
+   and a reload begins again. The first thing the visitor chooses (a tile, Previous or Next, the ruler, the scrubber, a link)
+   ends it, and play follows that list as before; "Somewhere else" and the way in from About begin it again. */
+let drift=false;const DR={seen:new Set(),days:[],recs:[],last:'',pool:null},DRIFT_REC=60,DRIFT_CLIP=180;
+const isDark=n=>{const c=n<=DOCN&&atlasCols&&atlasCols[n-1];return!!c&&(c[0]+c[1]+c[2])/3<24};
+async function wander(){
+  const soon=p=>Promise.race([Promise.resolve(p).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),1500))]),any=L=>L[Math.floor(Math.random()*L.length)];
+  await soon(needRecs());const snd=await soon(needSound()),ix=await soon(needImgs());
+  if(!DR.pool&&recs&&recs.length&&snd&&snd.at){const pl=DR.pool={shot:[],photo:[],line:[],call:[],story:[],snd:[]};
+    for(const n of IMGS){if(snd.at[n]&&shotMs(n)&&!isDark(n))pl.shot.push(n);else if(ix&&(ix[n]||[])[2]=='p')pl.photo.push(n)}
+    pl.line=lineIds.filter(k=>{const sh=+N[k].shot;return sh&&IMG.has(sh)&&!isDark(sh)});
+    for(const r of recs){if(r.kind=='call'&&r.lines)pl.call.push(r);else if(isSnd(r)&&r.audio!==false&&r.lines)pl.snd.push(r);else if(r.kind=='story'&&r.clip&&r.sec<=DRIFT_CLIP)pl.story.push(r)}}
+  const pl=DR.pool;if(!pl)return'';
+  const newDay=k=>!k||!DR.days.includes(k),unseen=id=>!DR.seen.has(id)&&okItem(id)&&id!=cur;
+  /* of a list: something not yet shown, on a day not lately shown if there is one */
+  const fresh=(L,idOf,dayOf)=>{const U=L.filter(x=>unseen(idOf(x)));if(!U.length)return null;const D=U.filter(x=>newDay(dayOf(x)));return any(D.length?D:U)};
+  /* of a recording: a sentence somebody said, and where it stands */
+  const said=async r=>{const v=await soon(voice(r.id)),S=v&&v.segs||[];let got=null;
+    for(let k=0;k<24&&S.length;k++){const g=any(S),m=Math.floor(g[0]/60),id=r.id+'.'+pad(m,4);if((g[2]||'').trim().length<12||m>=r.min||!unseen(id))continue;
+      const d=r.t0?dkey(r.t0+g[0]*1e3):'';if(newDay(d)||k>11){got={id,day:d,sec:g[0]};break}}
+    return got};
+  const kinds={
+    shot:async()=>{const n=fresh(pl.shot,mid5,n=>dkey(shotMs(n)));return n?{id:mid5(n),day:dkey(shotMs(n))}:null},
+    photo:async()=>{const n=fresh(pl.photo,mid5,n=>(ix[n]||[])[4]||'');return n?{id:mid5(n),day:(ix[n]||[])[4]||''}:null},
+    line:async()=>{const dy=k=>{const a=snd.lines[k],r=a&&recById[a[0]];return r&&r.t0?dkey(r.t0+a[1]*1e3):''},k=fresh(pl.line,k=>k,dy);return k?{id:k,day:dy(k)}:null},
+    call:async()=>{const L=pl.call.filter(r=>!DR.recs.includes(r.id)),r=any(L.length?L:pl.call);if(!r)return null;const g=await said(r);if(g){DR.recs.push(r.id);if(DR.recs.length>8)DR.recs.shift()}return g},
+    snd:async()=>{const L=pl.snd.filter(r=>!DR.recs.includes(r.id));if(!L.length)return null;const r=any(L),g=await said(r);if(g)DR.recs.push(r.id);return g},
+    story:async()=>{const r=fresh(pl.story,r=>r.id+'.0000',r=>r.t0?dkey(r.t0):'');return r?{id:r.id+'.0000',day:r.t0?dkey(r.t0):''}:null},
+    mark:async()=>{const w=fresh(liveMarks().filter(w=>N[w.id]),w=>w.id,()=>'');return w?{id:w.id,day:''}:null}};
+  const W=[['shot',32],['call',22],['story',14],['line',12],['photo',8],['mark',7],['snd',4]].filter(k=>k[0]!=DR.last||k[0]=='shot');
+  let got=null,kind='';
+  for(let t=0;t<5&&W.length;t++){let x=Math.random()*W.reduce((a,k)=>a+k[1],0),i=0;while(i<W.length-1&&(x-=W[i][1])>=0)i++;const[k]=W.splice(i,1)[0];
+    let g=null;try{g=await kinds[k]()}catch(e){}
+    if(!g||!g.id)continue;if(!got||newDay(g.day)){got=g;kind=k}
+    if(newDay(g.day))break} /* a kind whose days were all shown lately gives way to another kind, if one has a newer day */
+  if(!got)return'';
+  DR.seen.add(got.id);DR.last=kind;if(got.day){DR.days.push(got.day);if(DR.days.length>12)DR.days.shift()}
+  if(got.sec!=null)seekAt={id:got.id,sec:got.sec}; /* a call begins at the sentence that was found */
+  return got.id}
+$('#bshuf').onclick=async()=>go(await wander()||pick(),{play:RAW,drift:1});
 /* "This hour in 2021" (Amendment 11): between 14 November and 13 January, a way to what was being recorded at the same day and
    hour of the first winter. Prague's date and time now, with the year set to 2021 (2022 for 1 to 13 January); the recording
    that was running then, or else the nearest recorded minute of that day, with one sentence that says so. Nothing is live:
@@ -1386,10 +1447,12 @@ async function playCur(){
       try{await clip.play()}catch(e){if(my==slideTok&&playing)stopPlay()}return}
     if(r){const L=ctx.kind=='theme'||ctx.kind=='list'?ctxList():null,whole=L&&L.includes(rid)&&!L.includes(cur);
       const from=pausePos&&pausePos.id==cur?pausePos.sec:vidPaused&&vidRec==rid&&!clip.hidden?clip.currentTime:seekAt&&seekAt.id==cur?seekAt.sec:(+cur.slice(5))*60;pausePos=null;
-      return startRec(from,L?(whole?r.sec:Math.min(r.sec,(+cur.slice(5)+1)*60)):0)}}
+      return startRec(from,L?(whole?r.sec:Math.min(r.sec,(+cur.slice(5)+1)*60)):drift?Math.min(r.sec,from+DRIFT_REC):0)}}
   playMode='slide';if(tickP)await tickP;if(my!=slideTok||!playing)return;slideOne(my)}
 /* after the thing that was playing: the next one in its list */
-async function advance(){if(!playing)return;const was=cur;halt();await step(1);if(!playing)return;if(cur==was)return stopPlay();playCur()}
+async function advance(){if(!playing)return;const was=cur;halt();
+  if(drift&&!EX){const my=slideTok,id=await wander();if(my!=slideTok||!playing||!drift)return;if(id){await show(id);if(my!=slideTok||!playing)return;return playCur()}}
+  await step(1);if(!playing)return;if(cur==was)return stopPlay();playCur()}
 function slideOne(my){
   const done=()=>{if(my==slideTok&&playing&&playMode=='slide')advance()};
   const n=tick.ws.length;
@@ -1460,7 +1523,9 @@ async function startRec(sec,bound){
     loading=false;silentAt=Date.now();silentFrom=playPos;paintSound()};
   const nextRec=()=>{const i=recOrder.findIndex(x=>x.id==rid),nx=recOrder[i+1];halt();vidPaused=false;if(nx)show(nx.id+'.0000',{keep:1}).then(()=>{if(playing)playCur()});else stopPlay()};
   const finish=()=>{if(bound){vidPaused=false;advance()}else nextRec()};
+  let letEnd=false;
   const over=()=>{ /* the minute asked for is over. If the list carries straight on into the next minute, so do we. */
+    if(drift&&!letEnd){letEnd=true;const g=v.segs.find(g=>g[0]<=end&&g[1]>end);if(g&&g[1]-end<12&&g[1]<r.sec-1){end=g[1]+.3;return false}} /* left to itself, a sentence that is being said is heard to its end */
     const L=ctxList()||[],i=listAt(L,cur),nx=i>=0?L[i+1]:null;
     if(nx&&nx==rid+'.'+pad(Math.floor(end/60),4)&&end<r.sec-1){end=Math.min(r.sec,end+60);return false}
     finish();return true};
@@ -1490,7 +1555,7 @@ async function startRec(sec,bound){
 let scrubbing=false;
 $('#scrub').addEventListener('input',()=>{scrubbing=true;const r=cur&&recById[cur.slice(0,4)];if(r)$('#stime').textContent=stime(+$('#scrub').value,ownClip()&&clip.duration?{sec:clip.duration}:r);if(cur&&waveOf(cur))render()});
 $('#scrub').addEventListener('change',()=>{scrubbing=false;seek(+$('#scrub').value)});
-async function seek(sec){if(!cur||!isMin(cur))return;const rid=cur.slice(0,4),was=playing&&playMode=='rec';
+async function seek(sec){if(!cur||!isMin(cur))return;drift=false;const rid=cur.slice(0,4),was=playing&&playMode=='rec';
   if(ownClip()){try{clip.currentTime=sec}catch(e){}return}
   if(was&&vidLive===true&&vidRec==rid){playPos=sec;try{clip.currentTime=sec}catch(e){}return}
   if(was){quiet();clearInterval(recT);audioLive=false;audio.pause()}else{vidPaused=false;pausePos=null}
@@ -1759,7 +1824,7 @@ function markTiles(){$$('#views .cur').forEach(t=>t.classList.remove('cur'));if(
   if(isImg(cur)&&docJ&&$('#dtocl')){const b=$('#dtocl [data-s="'+secOf(+cur.slice(1))+'"]');if(b)b.classList.add('cur')}}
 document.addEventListener('click',e=>{const b=e.target.closest('#views [data-id]');if(!b)return;stageUp();const id=b.dataset.id;
   if(b.classList.contains('wv')&&isMin(id)){pausePos=null;seekAt={id,sec:+b.dataset.sec||0}}else if(!b.dataset.sec&&seekAt&&seekAt.id==id)seekAt=null; /* a piece of a waveform starts at its own second; a plain tile of the same minute at the minute's start */
-  if(b.closest('#tlist')&&openTheme&&TL.length)ctx={kind:'list',list:TL};else if(b.dataset.list)ctx={kind:'list',list:[...new Set($$('#'+b.dataset.list+' [data-id]').map(x=>x.dataset.id))]};else if(isImg(id))ctx={kind:'pics'};else if(isMin(id)||isRec(id))ctx={kind:'rec'};else ctx={kind:'lines'};
+  if(b.closest('#tlist')&&openTheme&&TL.length)ctx={kind:'list',list:TL};else if(b.dataset.list)ctx={kind:'list',list:LISTS[b.dataset.list]||[...new Set($$('#'+b.dataset.list+' [data-id]').map(x=>x.dataset.id))]};else if(isImg(id))ctx={kind:'pics'};else if(isMin(id)||isRec(id))ctx={kind:'rec'};else ctx={kind:'lines'};
   go(id,{keep:1,play:RAW})});
 
 /* browse: the nine weeks day by day, and everything by what it is. Pictures first, words beside them. */
@@ -1992,7 +2057,7 @@ function marksHTML(){const W=liveMarks().slice().reverse(),air=pending(),k=fresh
   seenId=lastId();store.set('abe-seen',seenId);setTimeout(paintCount,0);return h}
 $('#nmarks').onclick=()=>{B.want='marks';setView('browse');hRep('#marks')};
 /* About ends with a way into the work: somewhere, as a visit to the bare address opens, or the marks */
-$('#ago').onclick=async()=>{setView('stage');focusHead();go(await pickLanding(),{play:RAW})};$('#aall').onclick=()=>$('#nmarks').click();
+$('#ago').onclick=async()=>{setView('stage');focusHead();go(await pickLanding(),{play:RAW,drift:1})};$('#aall').onclick=()=>$('#nmarks').click();
 paintCount();
 
 /* themes. The front: every theme as a picture with its name and the number of its moments; one of them is large and carries its
@@ -2325,32 +2390,84 @@ function pList(){const st=pSt;
     const pin=p.claimed?'<span class="pin">✓ here'+(mine=='mine'?' · you':'')+'</span>':p.pending?'<span class="pin">'+(mine=='pending'?'you asked · waiting':'asked · waiting')+'</span>':'';
     return'<button class="tcard'+(p.claimed?' here':p.pending?' asked':'')+'" data-p="'+esc(p.id)+'"><b>'+esc(p.name)+'</b>'+pin+'<span class="meta">'+src+((p.here||[]).length?' · in '+fmt(p.here.length):'')+'</span></button>'}).join('')||'<span class="meta">Nobody listed yet.</span>';
   $('#ph2').textContent=pShow?'Who else was in the calls':'Who was in the calls';$('#pask').hidden=!!pOwn()}
-function pNone(){pShow='';$('#popen').hidden=true;$('#popen').innerHTML='';pList()}
+/* One's own place (Amendment 16). A name can stand on six or eight hundred screenshots, and they came as one grid. They are
+   now told by the day and the hour they were taken, as "Day by day" tells a day. The moment of a screenshot is its own where
+   the sound gave it (i/sound.json); where it did not, the moment of the nearest screenshot beside it in the document that has
+   one (thirty places at most), and the hour then says how many were placed that way; a picture saved outside the document
+   carries its date and no hour; what has none of these comes last, in the document's order. An hour is a <details>: closed,
+   it shows a few of its pictures, and its tiles are only made when it is opened. LISTS.pf is all of them in order, so
+   Previous and Next on the stage walk through the whole name and not through one hour. */
+const LISTS={};let PG=[],PHERE=new Set(),pDated=null;
+function pWhen(n){const ms=shotMs(n);if(ms)return[ms,0,sndJ.at[n][0]];
+  if(n<=DOCN){if(!pDated)pDated=IMGS.filter(k=>k<=DOCN&&shotMs(k));let lo=0,hi=pDated.length-1;while(lo<hi){const m=(lo+hi)>>1;if(pDated[m]<n)lo=m+1;else hi=m}
+    const A=pDated[lo-1],B=pDated[lo],c=[A,B].filter(k=>k&&Math.abs(k-n)<=30).sort((a,b)=>Math.abs(a-n)-Math.abs(b-n))[0];
+    if(c){const ta=A&&shotMs(A),tb=B&&shotMs(B);if(A&&B&&n-A<=30&&B-n<=30&&sndJ.at[A][0]==sndJ.at[B][0]&&tb>ta&&tb-ta<72e5)return[ta+(tb-ta)*(n-A)/(B-A),1,sndJ.at[A][0]]; /* between two neighbours of one recording: between their moments */
+      return[shotMs(c),1,sndJ.at[c][0]]}}
+  const d=((imgIdx||{})[n]||[])[4]||'';return n>DOCN&&/^\d{4}-\d\d-\d\d$/.test(d)?[dayStart(d),2,'']:[0,3,'']}
+function pShots(pics,open){PG=[];const days={},keys=[],U=[],at={};
+  for(const n of pics){const[ms,how,rid]=pWhen(n);if(how==3){U.push(n);continue}
+    const k=how==2?((imgIdx||{})[n]||[])[4]:dkey(ms),h=how==2?-1:+prague(ms).slice(11,13);let d=days[k];if(!d){d=days[k]={k,n:0,hours:{},recs:{}};keys.push(k)}
+    const g=d.hours[h]||(d.hours[h]={h,list:[],est:0,a:0,b:0});g.list.push(n);d.n++;at[n]=[ms,how];
+    if(how==1)g.est++;if(how==0){if(!g.a||ms<g.a)g.a=ms;if(ms>g.b)g.b=ms}
+    if(rid&&recById[rid]&&how<2){const q=d.recs[rid];if(!q||ms<q)d.recs[rid]=ms}}
+  keys.sort();
+  const sample=(L,m)=>L.length<=m?L:Array.from({length:m},(_,i)=>L[Math.floor((i+.5)*L.length/m)]);
+  const strip=L=>'<span class="pstrip">'+sample(L,6).map(n=>'<span class="tile"><img loading="lazy" decoding="async" src="'+esc(thumbUrl(mid5(n)))+'" alt=""></span>').join('')+'</span>';
+  const hour=(g,lab,note)=>{const i=PG.push(g)-1,mine=g.list.filter(n=>PHERE.has(mid5(n))).length;
+    return'<details class="phr" data-pg="'+i+'"'+(open?' open':'')+'><summary>'+lab+'<span class="note">'+note+(mine?' · '+fmt(mine)+' marked “I am in this”':'')+'</span>'+strip(g.list)+'</summary><div class="pgin">'+(g.list.length>1?'<button class="btn sm" data-pplay="'+i+'">Play these '+fmt(g.list.length)+'</button>':'')+'<div class="grid">'+(open?pTiles(g):'')+'</div></div></details>'};
+  const shots=n=>fmt(n)+(n==1?' screenshot':' screenshots');
+  let h='',nav='';
+  /* an hour with more than 72 screenshots is told in pieces of ten minutes; ten minutes that are still that full, in parts of 48 */
+  const parts=q=>{if(q.list.length<=72)return[q];const o=[],np=Math.ceil(q.list.length/48);for(let i=0;i<np;i++){const L=q.list.slice(i*48,(i+1)*48),g={h:q.h,m:q.m,list:L,est:0,a:0,b:0,part:(i+1)+' of '+np};
+      for(const n of L){const[ms,how]=at[n];if(how==1)g.est++;else if(!how){if(!g.a||ms<g.a)g.a=ms;if(ms>g.b)g.b=ms}}o.push(g)}return o};
+  const tens=g=>{if(g.list.length<=72)return[g];if(g.h<0)return parts(g);const by={};for(const n of g.list){const[ms,how]=at[n],m=Math.floor(+prague(ms).slice(14,16)/10)*10,q=by[m]||(by[m]={h:g.h,m,list:[],est:0,a:0,b:0});q.list.push(n);if(how==1)q.est++;else{if(!q.a||ms<q.a)q.a=ms;if(ms>q.b)q.b=ms}}
+    return[].concat(...Object.values(by).sort((a,b)=>a.m-b.m).map(parts))};
+  for(const k of keys){const d=days[k],d0=dayStart(k),hs=[].concat(...Object.values(d.hours).sort((a,b)=>(a.h<0?99:a.h)-(b.h<0?99:b.h)).map(tens)),all=[].concat(...hs.map(g=>g.list));
+    const calls=Object.keys(d.recs).sort((a,b)=>d.recs[a]-d.recs[b]).map(rid=>{const r=recById[rid],ms=d.recs[rid],id=rid+'.'+pad(clamp(Math.floor((ms-r.t0)/6e4),0,r.min-1),4);
+      return okItem(id)?(r.kind=='call'?'the call':kindName(r).toLowerCase())+' that began '+(dkey(r.t0)==k?'at ':'on '+longDay(r.t0).replace(/ \d{4}$/,'')+' at ')+prague(r.t0).slice(11)+' (<button class="lk" data-pgo="'+esc(id)+'">open it at '+prague(ms).slice(11)+'</button>)':''}).filter(Boolean);
+    nav+='<button class="pdb" data-pday="'+k+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(thumbUrl(mid5(all[all.length>>1])))+'" alt=""></span><b>'+esc(longDay(d0+432e5).replace(/ \d{4}$/,''))+'</b><span class="meta">'+shots(d.n)+'</span></button>';
+    h+='<section class="pday" id="pd-'+k+'"><h3 class="sh" tabindex="-1">'+esc(longDay(d0+432e5))+'</h3><p class="note">'+shots(d.n)+(calls.length?', from '+calls.slice(0,3).join(calls.length>2?', ':' and ')+(calls.length>3?' and '+(calls.length-3)+' more':''):'')+'.</p>'
+      +hs.map(g=>hour(g,g.h<0?'<b class="u">hour not known</b>':'<b>'+pad(g.h,2)+'<small>:'+pad(g.m||0,2)+'</small></b>',(g.part?'part '+g.part+' · ':'')+shots(g.list.length)+(g.a?', '+(prague(g.a).slice(11)==prague(g.b).slice(11)?'at '+prague(g.a).slice(11):prague(g.a).slice(11)+' to '+prague(g.b).slice(11)):'')
+        +(g.est?' · '+(g.est==g.list.length?(g.est==1?'placed':'all placed'):fmt(g.est)+' placed')+' by '+(g.list.length==1?'its':'their')+' neighbours':''))).join('')+'</section>'}
+  if(U.length){nav+='<button class="pdb" data-pday="u"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(thumbUrl(mid5(U[U.length>>1])))+'" alt=""></span><b>Day not known</b><span class="meta">'+shots(U.length)+'</span></button>';
+    h+='<section class="pday" id="pd-u"><h3 class="sh" tabindex="-1">Day not known</h3><p class="note">'+shots(U.length)+' whose moment was not found in the recordings. They stand in the order of the 2021 document.</p>';
+    for(let i=0;i<U.length;i+=48){const L=U.slice(i,i+48);h+=hour({h:-2,list:L,est:0,a:0,b:0},'<b class="u">'+esc(mid5(L[0]))+'</b>',shots(L.length)+(L.length>1?', to '+esc(mid5(L[L.length-1])):''))}
+    h+='</section>'}
+  return(keys.length+(U.length?1:0)>1?'<div class="pdays" role="group" aria-label="The days these screenshots are from">'+nav+'</div>':'')+h}
+const pTiles=g=>g.list.map(n=>tile(mid5(n),PHERE.has(mid5(n))?'✓':'').replace('data-id','data-list="pf" data-id')).join('');
+$('#popen').addEventListener('toggle',e=>{const d=e.target;if(!d.open||!d.dataset||d.dataset.pg==null)return;const g=PG[+d.dataset.pg],box=d.querySelector('.grid');if(g&&box&&!box.firstChild){box.innerHTML=pTiles(g);markTiles()}},true);
+$('#popen').addEventListener('click',e=>{const d=e.target.closest('[data-pday]'),pl=e.target.closest('[data-pplay]'),c=e.target.closest('[data-pgo]');
+  if(d){const el=document.getElementById('pd-'+d.dataset.pday);if(!el)return;if(!el.querySelector('details[open]')){const f=el.querySelector('details');if(f)f.open=true}
+    el.scrollIntoView({block:'start',behavior:calmMotion.matches?'auto':'smooth'});try{el.querySelector('h3').focus({preventScroll:true})}catch(x){}}
+  else if(pl){const g=PG[+pl.dataset.pplay];if(g){stageUp();ctx={kind:'list',list:g.list.map(mid5)};go(mid5(g.list[0]),{keep:1,play:1})}}
+  else if(c){e.preventDefault();stageUp();ctx={kind:'rec'};go(c.dataset.pgo,{keep:1,play:RAW})}});
+function pNone(){pShow='';delete LISTS.pf;PG=[];$('#popen').hidden=true;$('#popen').innerHTML='';pList()}
 async function pInit(){pSt=await claimUI();const id=openPerson&&P[openPerson]?openPerson:pOwn();if(id)return openP(id,{own:!openPerson});pNone()}
 function closeP(){openPerson='';setTitle();hRep(hashFor());scrollTo(0,0);return pInit()}
 $('#plist').onclick=e=>{const b=e.target.closest('[data-p]');if(b)openP(b.dataset.p,{scroll:1,push:1})};
 async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!EX&&openPerson!=id?hSnap():null;if(!o.own)openPerson=id;
   const head=$('#popen');pShow=id;if(head.hidden){head.hidden=false;head.innerHTML='<p class="meta">Reading…</p>'}pList();
   setTitle();await needRecs();const st=claim&&claim.person==id?await claimState():'';
-  const nm=(await needNames())[id]||{};if(pShow!=id)return;
+  const nm=(await needNames())[id]||{};if(claim&&claim.person==id&&st)await Promise.all([needSound(),needImgs()]);if(pShow!=id)return;
   const first=p.name.split(' ')[0],wrote=(p.wrote||[]).filter(w=>!gone[w[0]]),pics=(nm.pics||[]).filter(n=>IMG.has(n)),tagCalls=Object.keys(nm.calls||{}).filter(r=>recById[r]&&recById[r].kind=='call'),calls=[...new Set(tagCalls.concat(wrote.map(w=>w[0]).filter(r=>recById[r])))].sort(),mineView=st=='mine'||st=='pending';
   /* what only the author can say (a phone call, a voice memo, a video call on the phone's screen): `named` in the index, kept apart from what a machine read, and said to be his word wherever it is shown */
   const named=(Array.isArray(nm.named)?nm.named:[]).filter(r=>recById[r]);
   const cnt=[[pics.length,pics.length==1?'screenshot':'screenshots'],[calls.length,calls.length==1?'call recording':'call recordings'],[named.length,named.length==1?'recording named by the author':'recordings named by the author'],[wrote.length,wrote.length==1?'line typed in the chat':'lines typed in the chat'],[(p.here||[]).length,'marked “I am in this”'],[(p.said||[]).length,(p.said||[]).length==1?'mark left':'marks left']].filter(c=>c[0]);
   const counts=cnt.length?'<div class="pcount">'+cnt.map(c=>'<div><div class="num">'+fmt(c[0])+'</div><div class="meta">'+c[1]+'</div></div>').join('')+'</div>':'';
-  const hadF=!!o.scroll||(head.contains(document.activeElement)&&document.activeElement.tagName=='H2');
+  const hadF=!!o.scroll||(head.contains(document.activeElement)&&document.activeElement.tagName=='H2'),own=pOwn();
   let h=(id==pOwn()?'':'<p style="margin:0 0 4px"><button class="btn sm" id="pback">← All names</button></p>')+'<div class="box"><h2 style="font-size:28px;margin:0 0 8px">'+esc(p.name)+'</h2>'+counts;
   if(st=='mine')h+='<p class="ok">This place is yours. On this device you answer as yourself, and the person button under the stage marks what you are in.</p><div class="row"><div><label class="meta" for="dn">The name to show</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div><button class="btn sm" id="pname">Change the name shown</button> <button class="btn sm" id="pforget">Forget me on this device</button> <span class="meta" id="pmsg"></span>';
   else if(st=='pending')h+='<p class="warn">You asked for this name. A steward confirms it is you, usually within a day. Until then you can already look at everything below. Come back on this device.</p><button class="btn sm" id="pforget">That was a mistake: forget it on this device</button> <span class="meta" id="pmsg"></span>';
   else if(p.claimed)h+='<p>'+esc(p.name)+' has claimed this place'+(p.since?' ('+esc(p.since)+')':'')+'. If that should have been you, press the flag under the stage on anything, or tell the author.</p>';
   else if(p.pending)h+='<p>Someone has asked for this name and a steward has not confirmed it yet. If that should have been you, tell the author.</p>';
-  else if(claim&&claim.person!=id&&st!=='')h+='';
+  else if(own&&own!=id)h+='<p>On this device you '+(pSt=='mine'?'are ':'have asked to be ')+esc(P[own].name)+'. One person, one name: a device that holds a name, or waits for one, is offered no other. If '+esc(P[own].name)+' was a mistake, open that place and press “'+(pSt=='mine'?'Forget me on this device':'That was a mistake: forget it on this device')+'” first.</p><p style="margin-bottom:0"><button class="btn sm" id="pmine">Go to '+esc(P[own].name)+'</button></p>'; /* one name for one device (Amendment 16); the line that stood here before could never be true */
   else h+='<p class="meta" style="text-transform:none;letter-spacing:0;font-size:var(--t-note);margin-bottom:10px">'+(p.from=='named by the author'?(named.length?'The author named this friend, and said which recordings they are in.':'The author named this friend. Nothing in the archive is tied to the name.'):p.from=='name tag in a call'?(nm.alias?'A machine read a name tag that the call software wrote under a participant; the tag reads otherwise, and the author said that it is '+esc(first)+'’s.':'A machine read this name on a name tag that the call software wrote under a participant. It may have misread'+(named.length?'.':', and nothing else in the archive is tied to the name.')):(p.wrote||[]).length?'Someone with this name typed in the chat of the calls.':'Someone with this name typed in the chat of the calls. What they typed was a link or has been taken out.')+(cnt.length>(named.length?1:0)?' The '+(named.length?'other ':'')+'numbers above are where a machine read '+(nm.alias?'that tag, or the name “'+esc(first)+'”,':'the name “'+esc(first)+'”')+' on screen or in the chat. They say where the name was written, not who is in a picture.':'')+(named.length&&p.from!='named by the author'?' In '+(named.length==1?'one recording':fmt(named.length)+' recordings')+' the author himself said that '+esc(first)+' is there: his word, not a machine’s reading.':'')+'</p><p>If this is you, claim your place. You then see these things straight away, on this device. A steward confirms that it is you, and after that your marks carry a ✓. If this is not a person from the calls at all, the flag on the stage tells the stewards.</p><div class="row"><div><label class="meta" for="dn">The name to show (you can change it)</label><input type="text" id="dn" maxlength="40" value="'+esc(p.name)+'"></div></div>'
     +(SEAL?'<div style="margin:0 0 12px"><label class="meta" for="pk">Write something that only Rana and '+esc(first)+' will know</label><textarea id="pk" maxlength="280" required placeholder="A place, a day, a joke between you. It is how the stewards know it is you."></textarea><p class="meta" style="text-transform:none;letter-spacing:0;margin:4px 0 0">Needed. It is sealed on this device before it is sent, only the stewards can open it, and it is never shown on the site.</p></div>':'')
     +'<button class="btn go" id="pclaim">This is me</button> <span class="meta" id="pmsg" aria-live="polite"></span>';
   h+='</div>';
   /* the things themselves: for whoever asked for this name on this device, confirmed or still waiting */
-  if(mineView&&pics.length)h+='<h3>Screenshots where a machine read '+(nm.alias?'the name tag of ':'')+'“'+esc(first)+'” · '+fmt(pics.length)+'</h3><p class="lead">Only you know which ones you are in.'+(st=='mine'?' Put one on the stage and press the person button under it to say so.':' Once a steward has confirmed you, you can say so on each.')+'</p><div class="grid" id="pf">'+pics.slice(0,600).map(n=>tile('m'+pad(n,5),'').replace('data-id','data-list="pf" data-id')).join('')+'</div>'+(pics.length>600?'<p class="meta">The first 600 of '+fmt(pics.length)+'.</p>':'');
+  PHERE=new Set(p.here||[]);if(mineView&&pics.length)LISTS.pf=pics.map(mid5);else delete LISTS.pf;
+  if(mineView&&pics.length)h+='<h3>Screenshots where a machine read '+(nm.alias?'the name tag of ':'')+'“'+esc(first)+'” · '+fmt(pics.length)+'</h3><p class="lead">Only you know which ones you are in.'+(st=='mine'?' Put one on the stage and press the person button under it to say so.':' Once a steward has confirmed you, you can say so on each.')+(pics.length>12?' They are told by the day and the hour they were taken: open an hour to see its screenshots, or play it. Where the sound of the call did not give a screenshot’s moment, it is placed by its neighbours in the 2021 document.':'')+'</p><div id="pf">'+pShots(pics,pics.length<=36)+'</div>';
   if(mineView&&calls.length)h+='<h3>Call recordings with this name · '+calls.length+'</h3><div class="calls" id="pc">'+calls.map(rid=>{const r=recById[rid];return'<button class="call" data-prec="'+esc(rid)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(rid,Math.min(r.min-1,2),1))+'" alt=""></span><span><b>'+(r.t0?niceDay(r.t0)+' · ':'')+dur(r.sec)+'</b><span class="meta">'+((nm.calls||{})[rid]?'name tag read in '+fmt(nm.calls[rid])+' frames':'typed in the chat')+' · '+esc(rid)+'</span></span></button>'}).join('')+'</div>';
   if(mineView&&named.length)h+='<h3>Recordings the author named '+esc(first)+' in · '+named.length+'</h3><p class="lead">Named by the author, not read by a machine: a phone call, a voice memo, a video call or a live on the phone’s screen, a room his camera saw.</p><div class="calls" id="pn">'+named.map(rid=>{const r=recById[rid];return'<button class="call" data-prec="'+esc(rid)+'"><span class="tile"><img loading="lazy" decoding="async" src="'+esc(frameUrl(rid,r.kind=='call'?Math.min(r.min-1,2):0,1))+'" alt=""></span><span><b>'+(r.t0?niceDay(r.t0)+' · ':'')+dur(r.sec)+'</b><span class="meta">'+kindName(r).toLowerCase()+' · named by the author · '+esc(rid)+'</span></span></button>'}).join('')+'</div>';
   if(wrote.length&&(mineView||p.claimed))h+='<h3>Wrote in the call chat</h3><div class="qlist" id="pw">'+wrote.map(w=>{const iid=w[0]+'.'+pad(Math.floor(w[1]/60),4);return gone[w[0]]?'':'<button class="qcard" data-id="'+esc(iid)+'" data-list="pw"><span class="tile"><img loading="lazy" src="'+esc(thumbUrl(iid))+'" alt=""></span><span><q>'+esc(w[2])+'</q><span class="meta">'+(recById[w[0]]&&recById[w[0]].t0?niceDay(recById[w[0]].t0+w[1]*1e3)+' · ':'')+esc(iid)+'</span></span></button>'}).join('')+'</div>';
@@ -2362,7 +2479,8 @@ async function openP(id,o){o=o||{};const p=P[id];if(!p)return;const s0=o.push&&!
   const msg=t=>{const m=$('#pmsg');if(m)m.textContent=t};
   if($('#pc'))$('#pc').onclick=e=>{const c=e.target.closest('[data-prec]');if(!c)return;const rid=c.dataset.prec,w=wrote.find(x=>x[0]==rid);stageUp();ctx={kind:'rec'};go(rid+'.'+pad(w?Math.floor(w[1]/60):0,4),{keep:1,play:RAW})};
   if($('#pn'))$('#pn').onclick=e=>{const c=e.target.closest('[data-prec]');if(!c)return;stageUp();ctx={kind:'rec'};go(c.dataset.prec+'.0000',{keep:1,play:RAW})};
-  if($('#pclaim'))$('#pclaim').onclick=async()=>{if(FRAMED)return msg(ownTab());if(!DOOR)return msg('The door is closed right now.');
+  if($('#pmine'))$('#pmine').onclick=()=>{if(!hUp('#people'))closeP()};
+  if($('#pclaim'))$('#pclaim').onclick=async()=>{if(pOwn()&&pOwn()!=id)return;if(FRAMED)return msg(ownTab());if(!DOOR)return msg('The door is closed right now.');
     let proof='';if(SEAL){const a=$('#pk').value.trim().replace(/\s+/g,' ');if(a.length<3){msg('Answer the question first: it is how the stewards know it is you.');$('#pk').focus();return}
       try{proof=await seal(a)}catch(e){return msg('This browser could not seal your answer. Try another browser, or ask the author for a private link.')}}
     const key=[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join(''),lock=await sha256(key);msg('…');
@@ -2419,7 +2537,7 @@ async function route(first){
   if(isPerson(id)&&P[id]){v='people';openPerson=id}
   const ok=async i=>{if(N[i]||(isTheme(i)&&T[i]))return true;if(isImg(i))return IMG.has(+i.slice(1));if(isMin(i)||isRec(i)){await needRecs();const r=recById[i.slice(0,4)];return!!r&&(isRec(i)||+i.slice(5)<r.min)}return false};
   if(id!=cur&&await ok(id)){if(first)await show(id,{quiet:1});else await go(id,{quiet:1})}
-  else if(first)await show(await pickLanding(),{quiet:1}); /* every visit opens somewhere else in the work, on a thing with a picture and words */
+  else if(first){drift=true;await show(await pickLanding(),{quiet:1});if(cur)DR.seen.add(cur)} /* every visit opens somewhere else in the work, on a thing with a picture and words */
   if(!first&&v=='themes'&&!id&&openTheme)tHome();
   if(!first&&v=='people'&&!id&&openPerson)openPerson='';
   setView(v,{quiet:1});if(v=='themes'&&openTheme)tP=openT(openTheme);if(v=='people'&&openPerson)pInit();if(v=='find'&&fWant){fWant=false;fRun()}
