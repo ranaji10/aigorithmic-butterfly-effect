@@ -22,7 +22,7 @@ At most 280 characters, a few a day, no links, nobody else's name. Marks are pub
 
 ## Ask for something to be removed
 
-Anyone can, for anything. On the site: put it on the stage and press *Ask for removal*. Here: open an issue titled `remove <id>`. Through an issue it is hidden at once, through the site at the next sweep (usually within the hour), and it stays hidden until a steward has looked (charter, section 6).
+Anyone can, for anything. On the site: put it on the stage and press *Ask for removal*. Here: open an issue titled `remove <id>`. Through an issue it is hidden at once, through the site at the next sweep (usually within the hour), and it stays hidden until a steward has looked (charter, section 6). Of a recording, a request hides the minute asked for and, on the site, the other minutes that stood on the asker's stage, thirty at most. A whole recording, and anything a steward has looked at before and kept, is not hidden by a request: it is recorded, stays visible, and a steward decides (Amendment 13).
 
 ## What is in this folder
 

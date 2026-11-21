@@ -37,6 +37,10 @@ jobs:
           MESSAGE: ${{ steps.intake.outputs.message }}
           ACCEPTED: ${{ steps.intake.outputs.accepted }}
           NUMBER: ${{ github.event.issue.number }}
+          STAYS: ${{ steps.intake.outputs.open }}
         run: |
           gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$MESSAGE"
+          # a removal request that was recorded but not hidden (a whole recording, a thing a steward restored before, or the
+          # day's limit) waits for a steward: its issue stays open so that it is seen
+          if [ "$STAYS" = "yes" ]; then exit 0; fi
           if [ "$ACCEPTED" = "yes" ] || [ "$ACCEPTED" = "noted" ]; then gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed; fi

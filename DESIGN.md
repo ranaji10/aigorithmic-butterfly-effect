@@ -2,7 +2,7 @@
 
 One page, no build step, no font files, no pictures of its own except the work's. Character comes from scale, from two colours that mean something, and from two drawn objects: the butterfly and the ruler.
 
-Every value below is a token at the top of the stylesheet in `index.html` (`:root`). Use a token, not a new value. This file is true to the page as of 20 November 2026 (Amendment 11); if you change a token, change its row here in the same commit.
+Every value below is a token at the top of the stylesheet in `index.html` (`:root`). Use a token, not a new value. This file is true to the page as of 21 November 2026 (Amendment 13); if you change a token, change its row here in the same commit.
 
 ## Colour (every colour has one job)
 
@@ -68,6 +68,8 @@ Motion: `--fast` 150 ms for a state and for the change of a view, `--slow` 700 m
 States for all: hover (a brighter border or brighter words), focus (2 px yellow ring, 2 px away), chosen (yellow border or `aria-current`, never colour alone), disabled (35% and no pointer), busy (`aria-busy`, the label says what is happening). Nothing pressed is smaller than 24 px in either direction, and 44 under a finger. A row of many small things (a strip of frames, the calendar, an hour's pictures) is one stop for the Tab key; the arrows move inside it.
 
 On the wide stage, with a mouse, the controls that lie on the picture rest at 45% and come up under the pointer or the keyboard. While the picture is censored, and under a finger, they are at full strength.
+
+In full screen, seen as it was, only the picture and the words stay: the controls and the ruler lie over the foot of the picture on `--scrim-2` and leave it after three seconds without a move of the mouse, a key or a tap (`--fast`, no motion under `prefers-reduced-motion`); the pointer goes with them. Any of the three brings them back, and the press that does so does nothing else. Censored, full screen keeps the plain column with everything in sight.
 
 ## Pictures
 

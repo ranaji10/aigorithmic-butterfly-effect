@@ -48,6 +48,8 @@ DOOR_DAY_CAP = 300     # everything the door may bring in per day before the cal
 VEILS_PER_VISITOR = 3  # removal requests that hide something at once, per visitor (or GitHub account) per day
 VEILS_DAY_CAP = 30     # beyond this, requests are recorded for the stewards but nothing more is hidden automatically
 REQUESTS_DAY_CAP = 200 # beyond this, removal requests are not even recorded that day (they wait where they were left)
+MINUTES_PER_FLAG = 30  # minutes of one recording one request may hide: the minute asked for and the others the visitor says they
+                       # had on the stage. Nobody can check what somebody looked at, so there is a ceiling (charter, Amendment 13)
 CLAIMS_DAY_CAP = 6     # names that can be asked for or claimed through the door in one day
 MAX_INBOX = 600        # marks read from the door in one sweep; the rest wait for the next one
 MAX_INBOX_BYTES = 6_000_000
@@ -195,7 +197,7 @@ class Known:
         self.themes = {t["id"]: t for t in themes_seed()}
         self.people = {p["id"]: p for p in people()}
         self.lines = {s["id"] for s in self.S} | {w["id"] for w in self.W if not w.get("removed")}
-        self.gone = {x["id"] for x in removals() if x.get("state") in ("veiled", "removed")}
+        self.gone = {i for x in removals() if x.get("state") in ("veiled", "removed") for i in covered(x)}
 
     def exists(self, i):
         if i in self.lines or i in self.themes:
@@ -379,10 +381,30 @@ def tombstone(wid, why):
     return True
 
 
-def veil(target, why, state="veiled", via="steward"):
+def covered(x):
+    """Every id one removal request speaks for: the thing itself and, for a minute of a recording, the other minutes of that
+    recording asked for with it (`with`). Hidden, removed or restored, they share the request's fate."""
+    return [x["id"]] + [i for i in (x.get("with") or []) if isinstance(i, str)]
+
+
+def kept_ids(X=None):
+    """What a steward has looked at and restored, and that is not hidden now. Such a thing is not hidden again by a
+    request from outside: the request is recorded and waits for a steward (charter, Amendment 13)."""
+    X = removals() if X is None else X
+    gone = {i for x in X if x.get("state") in ("veiled", "removed") for i in covered(x)}
+    return {i for x in X if x.get("state") == "restored" for i in covered(x)} - gone
+
+
+def is_kept(i, kept):
+    """A minute is kept when it was restored itself, or when the whole recording it belongs to was."""
+    return i in kept or (bool(ID_MIN.match(i or "")) and i[:4] in kept)
+
+
+def veil(target, why, state="veiled", via="steward", extra=None):
     X = removals()
     n = max([int(x["n"]) for x in X] + [0]) + 1
     x = {"n": n, "id": target, "why": why, "state": state, "via": via, "at": today()}
+    x.update({k: v for k, v in (extra or {}).items() if v})
     save("removals/x%05d.json" % n, x)
     if ID_WING.match(target) and state in ("veiled", "removed"):
         pass  # the line's own file is left alone until a steward resolves it; the index hides it meanwhile
@@ -396,24 +418,81 @@ def public_requests_today(X=None):
             if x.get("at") == day and str(x.get("via", "")).split(":")[0] in ("door", "github")]
 
 
-def ask_removal(target, why, who, asked=None):
-    """A removal request from someone who is not a steward. Charter, section 6: it hides the thing at once, before anyone
-    has judged it, unless that would let one visitor (or one busy day) blank the work. Returns (request, words):
-    the request is None when nothing new was written."""
+def seen_minutes(target, seen, known):
+    """The other minutes of the same recording that came with a request for one minute: whole numbers, inside the
+    recording, each once, the nearest to the minute asked for first, MINUTES_PER_FLAG with it at most. Whatever else was
+    sent is dropped without a word."""
+    m = ID_MIN.match(target or "")
+    if not m or not isinstance(seen, (list, tuple)):
+        return []
+    rid, here = m.group(1), int(m.group(2))
+    try:
+        length = int(known.recordings.get(rid, 0))
+    except (TypeError, ValueError):
+        length = 0
+    out = set()
+    for v in list(seen)[:2000]:
+        if isinstance(v, bool) or not isinstance(v, (int, str)):
+            continue
+        if isinstance(v, str) and not re.match(r"^\d{1,4}$", v):
+            continue
+        v = int(v)
+        if 0 <= v < length and v != here:
+            out.add(v)
+    near = sorted(out, key=lambda v: (abs(v - here), v))[:MINUTES_PER_FLAG - 1]
+    return ["%s.%04d" % (rid, v) for v in sorted(near)]
+
+
+def ask_removal(target, why, who, asked=None, seen=None):
+    """A removal request from someone who is not a steward. Charter, section 6: it hides the thing before anyone has
+    judged it, unless that would let one visitor (or one busy day) blank the work. Amendment 13 names three things one
+    request never hides, which are recorded and wait for a steward instead: a whole recording; anything a steward has
+    restored before; and more than MINUTES_PER_FLAG minutes of one recording. `seen` is the list of other minutes of
+    the same recording (already cleaned by seen_minutes) that the visitor had on the stage and asks for with this one.
+    Returns (request, words): the request is None when nothing new was written."""
     X = removals()
     asked = public_requests_today(X) if asked is None else asked
-    for x in X:
-        if x.get("id") == target and x.get("state") in ("veiled", "removed"):
-            return None, "already hidden"
-        if x.get("id") == target and x.get("state") == "requested":
-            return None, "already asked for; a steward has it"
+    hidden = {i for x in X if x.get("state") in ("veiled", "removed") for i in covered(x)}
+    waiting = {i for x in X if x.get("state") == "requested" for i in covered(x)}
+    whole = target[:4] if ID_MIN.match(target) else None
+    if target in hidden or whole in hidden:
+        return None, "already hidden"
+    if target in waiting or whole in waiting:
+        return None, "already asked for; a steward has it"
     if len(asked) >= REQUESTS_DAY_CAP:
         return None, "full"
-    mine = sum(1 for x in asked if x.get("via") == who)
-    state = "veiled" if (mine < VEILS_PER_VISITOR and len(asked) < VEILS_DAY_CAP) else "requested"
-    x = veil(target, why, state=state, via=who)
+    kept = kept_ids(X)
+    others = [i for i in (seen or []) if i != target and i not in hidden and i not in waiting][:MINUTES_PER_FLAG - 1]
+    extra = {}
+    if ID_REC.match(target):
+        state, extra["because"] = "requested", "a whole recording"
+    elif is_kept(target, kept):
+        state, extra["because"] = "requested", "restored by a steward before"
+        extra["with"] = others
+    else:
+        mine = sum(1 for x in asked if x.get("via") == who)
+        state = "veiled" if (mine < VEILS_PER_VISITOR and len(asked) < VEILS_DAY_CAP) else "requested"
+        extra["with"] = [i for i in others if not is_kept(i, kept)]
+        extra["waits"] = [i for i in others if is_kept(i, kept)]  # asked for too; a steward restored them before, so they stay
+    x = veil(target, why, state=state, via=who, extra=extra)
     asked.append(x)
     return x, state
+
+
+def request_words(x):
+    """One sentence for the stewards about a request that was just written."""
+    n = len(x.get("with") or [])
+    more = (" and %d more minute%s of the same recording" % (n, "" if n == 1 else "s")) if n else ""
+    if x.get("state") == "veiled":
+        s = "removal request x%05d: `%s`%s (%s), hidden now until a steward settles it" % (x["n"], x["id"], more, x.get("why"))
+    else:
+        why = x.get("because") or "the day's limit on hiding was reached"
+        s = ("removal request x%05d: `%s`%s (%s), **not hidden** (%s): it stays visible and waits for a steward"
+             % (x["n"], x["id"], more, x.get("why"), why))
+    if x.get("waits"):
+        s += (". Asked for with it, restored by a steward before and therefore left visible: %s (to hide one: "
+              "`python3 tools/wingbeat.py veil <id>`)" % ", ".join("`%s`" % i for i in x["waits"]))
+    return s
 
 
 # ---------- building the public indexes ----------
@@ -421,7 +500,7 @@ def ask_removal(target, why, who, asked=None):
 def build():
     S, W = seeds(), wingbeats()
     X = removals()
-    gone = {x["id"]: x["state"] for x in X if x.get("state") in ("veiled", "removed")}
+    gone = {i: x["state"] for x in X if x.get("state") in ("veiled", "removed") for i in covered(x)}
     P = people()
     stewards = config().get("stewards", [])
     nodes = {}
@@ -486,7 +565,10 @@ def build():
                               "built": day, "people": ppl}, compact=True)
 
     save("data/veiled.json", {"note": "Hidden at someone's request, or removed. The site and well-behaved readers skip these.",
-                              "built": day, "ids": gone}, compact=True)
+                              "built": day, "ids": gone,
+                              "kept_note": "A steward has looked at these and kept them. A new request about one of them "
+                                           "is recorded and waits for a steward; it is not hidden meanwhile (charter, Amendment 13).",
+                              "kept": sorted(kept_ids(X))}, compact=True)
 
     # open.json: where an answer is most wanted (fewest answers first, newest first)
     live = [n for n in nodes.values() if not n.get("removed") and n.get("text")]
@@ -662,10 +744,20 @@ def intake():
         build()
         if state == "veiled":
             words = f"`{target}` is hidden from the site as of the next few minutes, and the stewards have been asked to settle it. No reason needs to be given."
+        elif x.get("because") == "a whole recording":
+            words = (f"Your request about `{target}` is recorded (x{x['n']:05d}). A whole recording is not hidden by one request: "
+                     "a steward will look at it, and it stays visible until then (charter, Amendment 13). To have a minute of it hidden "
+                     f"at once, open an issue for that minute (for example `remove {target}.0012`), or use the flag on the site, "
+                     "which hides the minutes you had on the stage.")
+        elif x.get("because"):
+            words = (f"Your request about `{target}` is recorded (x{x['n']:05d}). A steward has looked at this before and kept it, "
+                     "so it stays visible until a steward has looked again (charter, Amendment 13). No reason needs to be given.")
         else:
             words = (f"Your request about `{target}` is recorded (x{x['n']:05d}) and the stewards will look at it. It has not been hidden "
                      "automatically, because the limit on automatic hiding was reached today (charter, section 6).")
-        set_output(accepted="yes", id="x%05d" % x["n"], message=words)
+        if state != "veiled":
+            words += " This issue stays open until a steward has settled it."
+        set_output(accepted="yes", id="x%05d" % x["n"], message=words, open="" if state == "veiled" else "yes")
         return
 
     m = re.match(r"^(confirm|deny|unclaim)\s+(p-[a-z0-9-]+)", title)
@@ -779,7 +871,7 @@ def door_item(it, did, known, cfg, state, notes, day):
         why = clean(it.get("why"), 30).lower()
         if not ((known.exists(target) or target in known.people) and why in WHY):
             return "refused"
-        x, how = ask_removal(target, why, "door:" + v, state["asked"])
+        x, how = ask_removal(target, why, "door:" + v, state["asked"], seen_minutes(target, it.get("seen"), known))
         if x is None and how == "full":
             if not state["full_told"]:
                 state["full_told"] = True
@@ -788,7 +880,7 @@ def door_item(it, did, known, cfg, state, notes, day):
             return None
         if x is None:
             return how
-        notes.append(f"removal request x{x['n']:05d}: `{target}` ({why}), now {how}")
+        notes.append(request_words(x))
         return "x%05d" % x["n"]
     if kind in ("claim", "ask"):
         pid = clean(it.get("person"), 44)

@@ -178,6 +178,23 @@ body.full #pin{position:fixed;inset:0;z-index:var(--z-full);padding-bottom:env(s
 body.full #stage{flex:1 1 auto!important;height:auto!important;min-height:0}
 body.full #cap{display:block!important;min-height:58px}
 body.full #tabbar{display:none}
+/* In full screen, once the visitor has chosen to see the work as it was, the controls and the ruler lie over the foot of the
+   picture instead of under it (two things in one cell of a grid), so that the picture and the words keep their size whether the
+   controls are there or not. Three seconds after the last move of the mouse, key or tap they go (body.calm) and only the picture
+   and the words remain; any of the three brings them back. They are made invisible, not taken away: a screen reader and the Tab
+   key still find them. Censored, full screen keeps the plain layout, with everything in sight. While the visitor draws, the
+   controls stay away so that the whole picture can be drawn on; the bar of the drawing has its own. */
+body.full.raw #pin{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+body.full.raw #stage{grid-area:1/1}body.full.raw #cap{grid-area:2/1}
+body.full.raw #ruler{grid-area:1/1;align-self:end;z-index:var(--z-on-2)}
+body.full.raw #ctl{grid-area:1/1;align-self:end;margin-bottom:52px;z-index:var(--z-on-2);background:var(--scrim-2)} /* 52px: the height of the ruler under it */
+body.full.raw #player.rbig #cap{transform:none;box-shadow:none;z-index:auto;background:none}
+body.full.raw #player.rbig #ctl{background:var(--bg)}
+body.full.raw #vwait{bottom:auto;top:40px}
+body.full.raw #ctl,body.full.raw #ruler,body.full.raw .ov,body.full.raw #idtag,body.full.raw .edge{transition:opacity var(--fast),transform var(--fast) ease-out}
+body.full.raw.calm #ctl,body.full.raw.calm #ruler,body.full.raw.calm .ov,body.full.raw.calm #idtag,body.full.raw.calm .edge,body.full.raw.calm #hint,body.full.raw.drawing #ctl,body.full.raw.drawing #ruler{opacity:0!important;pointer-events:none}
+body.full.raw.calm #pin{cursor:none}
+@media (prefers-reduced-motion:reduce){body.full.raw #ctl,body.full.raw #ruler,body.full.raw .ov,body.full.raw #idtag,body.full.raw .edge{transition:none}}
 body.mini #stage{width:100px;height:56px!important;border-radius:var(--r-pic)}
 body.mini #cap{display:block!important;padding:0!important;min-height:0!important;min-width:0}
 body.mini #who{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -867,7 +884,7 @@ body.mini .ov,body.exhibit .ov{display:none}
         <p id="held"></p>
       </div></details>
       <details><summary>If you are in it, or it hurts</summary><div>
-        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden within the hour, usually, and stays hidden until a steward has looked. You do not have to explain.</p>
+        <p>Anyone can ask for anything here to be removed: put it on the stage and press the flag in its corner. It is hidden within the hour, usually, and stays hidden until a steward has looked. Of a recording, the flag hides the minutes that stood on your stage, thirty at most. A whole recording, and anything a steward has already looked at and kept, stays visible until a steward has looked again. You do not have to explain.</p>
       </div></details>
       <details><summary>House rules</summary><div>
         <p class="quote">This is an experimental space for anyone to write / draw / delete / confess / rant / create magic. Please stay respectful and open towards the fact that there might be people from diverse cultures reading what you write here. And have fun \o-0/</p>
@@ -910,7 +927,9 @@ body.mini .ov,body.exhibit .ov{display:none}
 </dialog>
 <dialog id="rmd" aria-labelledby="rmh">
   <h2 style="font-size:var(--t-head)" id="rmh">Ask for removal</h2>
-  <p>Hide <b id="rmid"></b> within the hour, usually, until a steward has looked. You do not have to explain.</p>
+  <p id="rmsay" aria-live="polite"></p>
+  <div id="rmwbox" hidden><label for="rmwhat" class="meta" style="display:block;margin:0 0 4px">What</label>
+  <select id="rmwhat" style="margin-bottom:12px"></select></div>
   <label for="rmwhy" class="meta" style="display:block;margin:0 0 4px">Why</label>
   <select id="rmwhy"><option value="i am in it">I am in it</option><option value="someone i know is in it">Someone I know is in it</option><option value="private information">Private information</option><option value="hurtful">It hurts</option><option value="copyright">Copyright</option><option value="other">Something else</option></select>
   <p style="margin-top:16px"><button class="btn go" id="rmyes">Ask for removal</button> <button class="btn" id="rmno">Cancel</button> <span class="meta" id="rmmsg" aria-live="polite"></span></p>
@@ -964,7 +983,7 @@ function flyWait(x,W,H,d){if(!paths)buildFly();const k=Math.min(W/1600,H/1000)*.
   x.globalAlpha=1}
 if(!EX)setTimeout(()=>{if(opened)return;flyOn=true;try{const c=$('#field'),b=c.getBoundingClientRect();if(!b.width||!b.height)return;const d=Math.min(2,window.devicePixelRatio||1),w=Math.round(b.width*d),h=Math.round(b.height*d);if(c.width!=w||c.height!=h){c.width=w;c.height=h}flyWait(c.getContext('2d'),w,h,d)}catch(e){}},350);
 const [cfg,arch,themesJ,peopleJ,veiledJ]=await Promise.all([jq('data/config.json',{}),jq('data/archive.json',{images:[],recordings:{},counts:{}}),jq('data/themes.json',{themes:[]}),jq('data/people.json',{people:[]}),jq('data/veiled.json',{ids:{}})]);
-const DOOR=(cfg.door||'').replace(/\/$/,''),MEDIA=(LOCAL&&QS.get('media'))||arch.media||'',AUD=(LOCAL&&QS.get('audio'))||arch.audio||'',IA=(LOCAL&&QS.get('ia'))||arch.ia||'',gone=veiledJ.ids||{};
+const DOOR=(cfg.door||'').replace(/\/$/,''),MEDIA=(LOCAL&&QS.get('media'))||arch.media||'',AUD=(LOCAL&&QS.get('audio'))||arch.audio||'',IA=(LOCAL&&QS.get('ia'))||arch.ia||'',gone=veiledJ.ids||{},kept=new Set(Array.isArray(veiledJ.kept)?veiledJ.kept:[]);
 const IMGS=(arch.images||[]).filter(n=>!gone['m'+String(n).padStart(5,'0')]),IMG=new Set(IMGS),T={},P={};
 for(const t of themesJ.themes)T[t.id]=t;for(const p of peopleJ.people)P[p.id]=p;
 const isImg=i=>/^m\d{5}$/.test(i),isMin=i=>/^r\d{3}\.\d{4}$/.test(i),isRec=i=>/^r\d{3}$/.test(i),isTheme=i=>/^t-/.test(i),isPerson=i=>/^p-/.test(i),isMedia=i=>isImg(i)||isMin(i)||isRec(i);
@@ -1180,6 +1199,14 @@ function syncClip(){
 const ownClip=()=>{const r=!vidRec&&!clip.hidden&&cur&&isMin(cur)?recById[cur.slice(0,4)]:null;return r&&r.kind=='story'&&r.clip?r:null};
 clip.addEventListener('timeupdate',()=>{const r=ownClip();if(!r||scrubbing)return;$('#scrub').value=Math.floor(clip.currentTime);$('#stime').textContent=stime(clip.currentTime,{sec:clip.duration||r.sec})});
 clip.addEventListener('loadedmetadata',()=>{const r=ownClip();if(r&&clip.duration){$('#scrub').max=Math.max(0,Math.floor(clip.duration));$('#stime').textContent=stime(clip.currentTime,{sec:clip.duration})}});
+/* Which minutes of a recording have stood on this stage in this visit. It is kept for one purpose: a request for removal hides
+   the minutes its asker has had in front of them, and no others (Amendment 13). A minute counts once it has stood for a second
+   and a half, so a pass along the ruler does not. The list lives in this tab only (sessionStorage) and leaves the device only
+   inside a request for removal that the visitor sends, and then only for the one recording asked about. */
+const SEEN={};try{const o=JSON.parse(sessionStorage.getItem('abe-seen')||'{}');for(const k in o)if(/^r\d{3}$/.test(k)&&Array.isArray(o[k]))SEEN[k]=new Set(o[k].filter(Number.isInteger))}catch(e){}
+let seenT=0;
+function seenArm(id){clearTimeout(seenT);if(!isMin(id)||EX)return;seenT=setTimeout(()=>{if(cur!=id)return;const r=id.slice(0,4),m=+id.slice(5),S=SEEN[r]||(SEEN[r]=new Set());if(S.has(m))return;S.add(m);
+  try{const o={};for(const k in SEEN)o[k]=[...SEEN[k]];sessionStorage.setItem('abe-seen',JSON.stringify(o))}catch(e){}},1500)}
 /* what is on the stage, and the list it belongs to */
 let showing=0,ctx={kind:'lines'};
 const lineIds=Object.keys(N).filter(k=>!N[k].removed&&(N[k].at=='2021'||N[k].text)).sort((a,b)=>(N[a].shot||1e9)-(N[b].shot||1e9)||(a<b?-1:1));
@@ -1208,7 +1235,7 @@ async function show0(id,o){
   if(!o.keep)inferCtx(id);
   if(cur!=id){strokes=drafts[id]||[];pausePos=null;heardHide()}
   if(thenNote&&id!=thenNote){thenNote='';$('#hint').hidden=true;$('#hint').textContent=HINT0} /* the sentence of "This hour in 2021" is said once */
-  const prev=cur;cur=id;
+  const prev=cur;cur=id;seenArm(id);
   const rootId=x||chain[0].id,depth=chain.length-(x?0:1);
   $('#idtag').textContent=id;paintDraw();
   backdrop(rootId,depth,tok).then(()=>{if(tok==showing&&N[id]&&N[id].mark&&!N[id].removed){stageMarks=[{strokes:parseMark(N[id].mark),col:colour(N[id])}];render()}});
@@ -1650,7 +1677,22 @@ $('#bmin').onclick=e=>{e.stopPropagation();dockHold()};
 /* full screen: the browser's own where it has one (it hides the browser's bars), and the same layout without it where it has none */
 function setFull(v){if(v==full)return;full=v;BC.toggle('full',v);const b=$('#bfull');b.innerHTML=ic(v?'shrink':'full');b.setAttribute('aria-label',v?'Leave full screen':'Full screen');b.title=v?'Leave full screen (Esc)':'Full screen (F)';
   const de=document.documentElement;try{if(v&&de.requestFullscreen&&!document.fullscreenElement)de.requestFullscreen().catch(()=>{});else if(!v&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}
+  calmOver=false;calmSet(false);if(v)calmArm();else clearTimeout(calmT);
   dockSync();requestAnimationFrame(()=>{if(sizeStage())paint();drawRuler()})}
+/* Full screen goes quiet: three seconds after the last move of the mouse, key or tap, the controls and the ruler leave the picture
+   (body.calm) and come back with the next one. They stay while a dialog is open, while the ruler or the scrubber is held, while the
+   mouse rests on them, and while the picture is censored (there the plain layout stands, see the stylesheet). A tap that wakes
+   them does nothing else (on the picture a tap would otherwise begin a drawing): the press after it is the one that counts. */
+let calmT=0,calmTap=0,calmXY=null,calmOver=false;
+const calmStay=()=>!full||!RAW||drawing||rdrag||scrubbing||calmOver||!!document.querySelector('dialog[open]');
+function calmSet(v){BC.toggle('calm',!!v&&full)}
+function calmArm(){clearTimeout(calmT);if(full&&!EX)calmT=setTimeout(()=>{if(calmStay())calmArm();else calmSet(true)},3000)}
+function calmWake(){if(!full)return;calmSet(false);calmArm()}
+addEventListener('pointermove',e=>{if(!full)return;if(e.pointerType=='mouse'){const p=calmXY;calmXY=[e.clientX,e.clientY];calmOver=!!(e.target.closest&&e.target.closest('#ctl,#ruler,.ov'));if(p&&Math.abs(p[0]-e.clientX)+Math.abs(p[1]-e.clientY)<3)return}calmWake()},{passive:true});
+addEventListener('pointerdown',e=>{if(!full)return;if(e.pointerType!='mouse')calmOver=false;if(BC.contains('calm')){calmTap=performance.now();e.stopPropagation()}calmWake()},true); /* stopped here, the press never reaches the picture, where a tap would begin a drawing or pause the video */
+addEventListener('click',e=>{if(full&&calmTap&&performance.now()-calmTap<700){calmTap=0;e.preventDefault();e.stopPropagation()}else calmTap=0},true);
+addEventListener('keydown',calmWake,true);addEventListener('focusin',calmWake);addEventListener('wheel',calmWake,{passive:true});
+document.documentElement.addEventListener('pointerleave',()=>{calmOver=false});
 $('#bfull').onclick=e=>{e.stopPropagation();if(!full){setFull(true);if(!HS.k&&!EX)hPush(location.href,'full')}else if(HS.k=='full'&&!hBusy)history.back();else setFull(false)};
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&full){if(HS.k=='full'&&!hBusy&&!EX)history.back();else setFull(false)}});
 wide.addEventListener('change',syncDock);
@@ -2167,11 +2209,28 @@ addEventListener('beforeunload',e=>{if(!draftIds().length||EX)return;e.preventDe
 $('#lvback').onclick=()=>$('#lvd').close();
 $('#lvsave').onclick=async()=>{$('#lvmsg').textContent='Saving …';const ok=await leave();if(ok){$('#lvmsg').textContent='Saved. You can close this tab now.';setTimeout(()=>{$('#lvd').close();window.close()},900)}else $('#lvmsg').textContent=$('#sent').textContent};
 /* asking for removal */
-$('#brm').onclick=e=>{e.stopPropagation();$('#rmid').textContent=cur;$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
-$('#rmyes').onclick=async()=>{if(FRAMED){$('#rmmsg').textContent=ownTab();return}if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+cur),'_blank','noopener');$('#rmd').close();return}
-  try{const r=await fetch(DOOR+'/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:cur,why:$('#rmwhy').value})}),o=await r.json();
-    $('#rmmsg').textContent=o.ok?'Asked. Hidden within the hour, usually.':(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),1800)}
-  catch(e){$('#rmmsg').innerHTML='It could not be sent just now. Try again in a minute, or <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+cur)+'">ask on GitHub instead</a>.'}};
+/* What one request hides (charter, section 6 and Amendment 13; the sweep in the repository has the last word): the thing on the
+   stage; of a recording, that minute and, if the visitor says so, the other minutes that stood on this stage in this visit, RMMAX
+   together at most. A whole recording, and anything a steward has looked at and kept (`kept` in data/veiled.json), is not hidden
+   by a request: it goes to a steward and stays visible until one has looked. The dialog says which of these will happen. */
+const RMMAX=30,isKept=i=>!!i&&(kept.has(i)||(isMin(i)&&kept.has(i.slice(0,4))));
+function rmSeen(){if(!isMin(cur))return[];const r=cur.slice(0,4),h=+cur.slice(5),rec=recById[r];
+  return[...(SEEN[r]||[])].filter(m=>m!=h&&m>=0&&(!rec||m<rec.min)&&!gone[r+'.'+pad(m,4)]).sort((a,b)=>Math.abs(a-h)-Math.abs(b-h)||a-b)}
+function rmSay(){const min=isMin(cur),r=min?cur.slice(0,4):'',what=min?$('#rmwhat').value:'one',n=rmSeen().length+1;let h;
+  if(what=='all')h='Ask a steward to look at the whole of <b>'+esc(r)+'</b>. A whole recording is not hidden by one request: it stays visible until a steward has looked.';
+  else if(isKept(cur))h='A steward has looked at <b>'+esc(cur)+'</b> before and kept it. Your request goes to a steward, and it stays visible until one has looked again.';
+  else if(what=='seen')h=(n>RMMAX?'Hide the '+RMMAX+' minutes of <b>'+esc(r)+'</b> nearest to this one, of the '+n+' that stood on your stage in this visit. One request hides '+RMMAX+' at most; ask again for the others, or for the whole recording.':'Hide the '+n+' minutes of <b>'+esc(r)+'</b> that stood on your stage in this visit')+(n>RMMAX?'':' within the hour, usually, until a steward has looked.');
+  else h='Hide <b>'+esc(cur)+'</b> within the hour, usually, until a steward has looked.';
+  $('#rmsay').innerHTML=h+' You do not have to explain.'}
+$('#rmwhat').onchange=rmSay;
+$('#brm').onclick=e=>{e.stopPropagation();if(!cur)return;const min=isMin(cur),n=rmSeen().length+1,w=$('#rmwhat');
+  w.innerHTML='<option value="one">This minute</option>'+(n>1?'<option value="seen">The '+Math.min(n,RMMAX)+' minutes that stood on my stage'+(n>RMMAX?' nearest to this one':'')+'</option>':'')+'<option value="all">The whole recording (a steward decides)</option>';
+  $('#rmwbox').hidden=!min;rmSay();$('#rmmsg').textContent='';$('#rmd').showModal()};$('#rmno').onclick=()=>$('#rmd').close();
+$('#rmyes').onclick=async()=>{const what=isMin(cur)?$('#rmwhat').value:'one',id=what=='all'?cur.slice(0,4):cur,q={id,why:$('#rmwhy').value};if(what=='seen')q.seen=rmSeen().slice(0,RMMAX-1).sort((a,b)=>a-b);
+  if(FRAMED){$('#rmmsg').textContent=ownTab();return}if(!DOOR){open(REPO+'/issues/new?title='+encodeURIComponent('remove '+id),'_blank','noopener');$('#rmd').close();return}
+  try{const r=await fetch(DOOR+'/api/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(q)}),o=await r.json();
+    $('#rmmsg').textContent=o.ok?(o.hidden===false||what=='all'||isKept(id)?'Asked. A steward will look; it stays visible until then.':'Asked. Hidden within the hour, usually.'):(o.problems||['Could not ask.']).join(' ');if(o.ok)setTimeout(()=>$('#rmd').close(),o.hidden===false?3200:1800)}
+  catch(e){$('#rmmsg').innerHTML='It could not be sent just now. Try again in a minute, or <a target="_blank" rel="noopener" href="'+REPO+'/issues/new?title='+encodeURIComponent('remove '+id)+'">ask on GitHub instead</a>.'}};
 
 /* people: tap your name, "This is me", a steward confirms */
 /* What a machine tied to each first name: the pictures where it read the name on screen, the calls where it read it on a name tag.

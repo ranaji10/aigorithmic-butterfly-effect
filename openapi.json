@@ -95,6 +95,16 @@
            "copyright",
            "other"
           ]
+         },
+         "seen": {
+          "type": "array",
+          "maxItems": 29,
+          "items": {
+           "type": "integer",
+           "minimum": 0,
+           "maximum": 9999
+          },
+          "description": "Only when `id` is one minute of a recording: the other minutes of the same recording that you had in front of you and ask for with it (431 for r026.0431). They are hidden with it, 30 minutes together at most."
          }
         }
        }
@@ -103,12 +113,13 @@
     },
     "responses": {
      "202": {
-      "description": "Asked. Hidden at the next sweep (meant to be hourly, sometimes a few hours) until a steward has looked."
+      "description": "Asked. `hidden` says what the sweep will do: true, it is hidden at the next sweep (meant to be hourly, sometimes a few hours) until a steward has looked; false, it is recorded for a steward and stays visible until one has looked (a whole recording, or a thing a steward restored before)."
      },
      "503": {
       "description": "The call is paused, or the door's waiting room is full until the next sweep. Nothing is lost; come back later or use the GitHub way."
      }
-    }
+    },
+    "description": "The thing is hidden at the next sweep and stays hidden until a steward has looked. Three things are recorded for a steward instead and stay visible until one has looked: a whole recording (r026; ask for a minute of it, r026.0431), anything a steward has restored before (listed as `kept` in data/veiled.json), and more than 30 minutes of one recording in one request."
    }
   },
   "/api/find": {

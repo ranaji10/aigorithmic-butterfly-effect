@@ -76,6 +76,20 @@ try {
   ok('GET /api/find is refused (a question never stands in an address)', s6 === 405, String(s6));
   const [s4] = await j('/mcp/server-card');
   ok('GET /mcp/server-card answers', s4 === 200, String(s4));
+  // removal (charter, section 6 and Amendment 13): a minute with the minutes seen beside it; a whole recording waits for a steward
+  const rid = Object.keys(JSON.parse(fs.readFileSync(path.join(root, 'data/archive.json'), 'utf8')).recordings).find((k) => !JSON.parse(fs.readFileSync(path.join(root, 'data/veiled.json'), 'utf8')).ids[k]);
+  const post = (b) => ({ method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) });
+  const [s7, r7] = await j('/api/remove', post({ id: rid + '.0000', why: 'other', seen: [0, 0, -1, 'x', 99999] }));
+  ok('POST /api/remove takes a minute and drops what is not a minute of it', s7 === 202 && r7.ok && r7.hidden === true && r7.minutes === 1, JSON.stringify(r7).slice(0, 200));
+  await new Promise((r) => setTimeout(r, 3100)); // the door asks for three seconds between two requests from one place
+  const [s8, r8] = await j('/api/remove', post({ id: rid, why: 'other' }));
+  ok('POST /api/remove says that a whole recording waits for a steward', s8 === 202 && r8.ok && r8.hidden === false, JSON.stringify(r8).slice(0, 200));
+  const [s9] = await j('/api/remove', post({ id: rid + '.0000', why: 'other', seen: 'all of it' }));
+  ok('POST /api/remove refuses a "seen" that is not a list', s9 === 422, String(s9));
+  // the door's list of what waits is kept for a minute, so the two requests are read where the rehearsal door put them
+  const files = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? files(path.join(dir, e.name)) : [path.join(dir, e.name)]));
+  const waiting = files(store).filter((f) => f.endsWith('.json')).map((f) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return null; } }).filter((x) => x && x.kind === 'remove');
+  ok('the two requests wait at the door, and a list that named nothing was not kept', waiting.length === 2 && waiting.every((x) => !('seen' in x)), JSON.stringify(waiting).slice(0, 300));
 } catch (e) { ok('the rehearsal runs', false, String(e).slice(0, 300)); }
 child.kill(); fs.rmSync(store, { recursive: true, force: true });
 console.log(bad ? bad + ' check(s) failed.' : 'The door works with the installed storage library.');

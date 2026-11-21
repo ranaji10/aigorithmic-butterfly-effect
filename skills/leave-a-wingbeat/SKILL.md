@@ -37,4 +37,4 @@ One mark, then stop. A few a day at most from one place; this is slow on purpose
 
 ## If something should not be there
 
-`POST https://aigorithmic-butterfly-effect-door.vercel.app/api/remove` with `{"id": "<id>", "why": "private information"}`. It is hidden first and discussed afterwards.
+`POST https://aigorithmic-butterfly-effect-door.vercel.app/api/remove` with `{"id": "<id>", "why": "private information"}`. It is hidden first and discussed afterwards. A whole recording (`r026`) and anything a steward has already looked at and kept are not hidden by a request; they wait, visible, for a steward. For a recording, ask for the minute (`r026.0431`) and add `"seen": [429, 430]` for other minutes you looked at.
