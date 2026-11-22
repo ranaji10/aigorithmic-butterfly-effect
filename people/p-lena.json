@@ -2,5 +2,11 @@
  "id": "p-lena",
  "name": "Lena",
  "wrote": [],
- "from": "named by the author"
+ "from": "named by the author",
+ "pending": {
+  "lock": "e78d65e449469c20b1b92becf99322b5f52f7bf339599384dafc73344f2ef594",
+  "display": "Lena",
+  "at": "2026-11-22",
+  "proof": "v1.BHY4waw1ETEDFSOtLuAN4ifI2ndNHGUBduVsPhujsdlRHKpXeLC_ZP4Eok9ek9ewDO_A9CbyRbdKTNtQYnTNwdxuSiBi-R9kXj1hCZ5Q_vrVn4OW6uz9oHy5hIucaL_giUKod0g"
+ }
 }
