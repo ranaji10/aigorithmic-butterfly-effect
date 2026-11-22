@@ -26,20 +26,23 @@ HOURS = float(os.environ.get('THREADS_HOURS') or 48)
 KEEP, READ, MAX_COMMENTS = 40, 30, 40          # threads kept; threads whose comments are read; comments kept of each
 QUERIES = ['net art', 'digital preservation', 'no build step', 'single HTML file', 'small web', 'llms.txt', 'MCP server',
            'AI agents', 'Internet Archive', 'personal archive', 'transcription', 'generative art', 'content moderation']
-# what the author can speak about from experience, as words to look for in a title or a post
+# what the author can speak about from experience, as words to look for in a title or a post: (weight, words).
+# 3: few threads touch it and he has much to say; 1: half of Hacker News touches it. Loose words ("decades", "claude",
+# "ai agents", "screenshots") were tried on 22 November 2026 and put a platform game on top; they are left out.
 TOPICS = {
-    'art on the web': r'\b(net\.? ?art|web art|internet art|art ?work|art project|art piece|artist|installation|generative art|creative cod\w+|interactive (fiction|art|story)|digital art)\b',
-    'keeping things for decades': r'\b(digital preservation|preserv\w+|archiv\w+|link ?rot|bit ?rot|long[- ]term|longevity|decades?|\d\d years|software heritage|wayback|internet archive)\b',
-    'plain web, no build': r'\b(no[- ]build|build step|single[- ](html|file)|one html|vanilla (js|javascript)|no (framework|dependenc\w+)|without (a )?(framework|dependenc\w+|build)|static site|github pages|plain html|html[- ]first)\b',
-    'small web': r'\b(small web|indie ?web|web ?ring|personal (site|web ?site|web)|smol web|old web|blogroll)\b',
-    'AI agents as visitors': r'\b(llms\.txt|mcp|model context protocol|ai agents?|agentic|agents?[- ](friendly|ready|native|first)|for (ai )?agents|prompt injection|tool (use|calling))\b',
-    'a personal archive read by machine': r'\b(personal archive|life ?log\w*|screenshots?|quantified self|self[- ]track\w+|transcri\w+|whisper|speech[- ]to[- ]text|captions?|subtitles?|ocr|diari[sz]ation|multilingual|hinglish|hindi|bengali)\b',
-    'moderation and removal': r'\b(moderat\w+|takedowns?|right to be forgotten|removal requests?|trust and safety|consent|anonymi[sz]\w+|redact\w+|face (recognition|blur\w*))\b',
-    'automation that fails quietly': r'\b(github actions?|cron|scheduled (job|task|workflow)s?|cloudflare workers?|uptime|dead man|heartbeat)\b',
-    'search without a server': r'\b(client[- ]side search|static search|search (without|with no) (a )?(server|backend)|full[- ]text search|in[- ]browser search)\b',
-    'working with an AI': r'\b(claude|vibe[- ]cod\w+|built (this )?with (ai|an llm|claude|cursor)|ai[- ]assisted|non[- ]programmer|not a (programmer|developer)|hand[- ]?(over|off))\b',
+    'art on the web': (3, r'\b(net\.? ?art|web art|internet art|art ?work|art project|art piece|art installation|generative art|creative cod\w+|digital art|interactive (fiction|art|story|documentary)|participatory|collaborative (art|canvas|story|writing))\b'),
+    'keeping things for decades': (3, r'\b(digital preservation|preserv(e|es|ed|ing|ation)|archiv(e|es|ed|ing|al|ist)|link ?rot|bit ?rot|software heritage|wayback|internet archive|built to last|long[- ]lived|(20|twenty|50|fifty|100) years)\b'),
+    'plain web, no build': (3, r'\b(no[- ]build|build step|single[- ](html|file)|one html|vanilla (js|javascript)|no (framework|dependenc\w+)s?|zero[- ]dependenc\w+|without (a |any )?(framework|dependenc\w+|build)|static site|github pages|plain html|html[- ]first)\b'),
+    'small web': (3, r'\b(small web|indie ?web|web ?rings?|personal (web ?sites?|sites?|web)|smol web|old web|blogrolls?|marginalia|wiby)\b'),
+    'AI agents as visitors': (2, r'\b(llms\.txt|remote mcp|mcp (server|registry|directory|client)s?|model context protocol|(site|web ?site|web|api|docs?) for (ai )?agents|agent[- ](friendly|ready|readable)|prompt injection|agents? as (users|visitors|participants))\b'),
+    'a personal archive read by machine': (3, r'\b(personal (archive|data|history)|life ?logg?\w*|quantified self|screen ?recordings?|transcri(be|bes|bed|bing|ption|ptions|pts?)|whisper|speech[- ]to[- ]text|live captions?|subtitles?|ocr|diari[sz]ation|multilingual|code[- ]switch\w+|hinglish|hindi|bengali)\b'),
+    'moderation and removal': (2, r'\b(moderat(e|ion|ing|or|ors)|takedowns?|right to be forgotten|removal requests?|trust and safety|redact\w+|face (recognition|blur\w*)|anonymi[sz]\w+)\b'),
+    'automation that fails quietly': (2, r'\b(github actions?|cron ?jobs?|scheduled (job|task|workflow)s?|cloudflare workers?|dead man\W?s switch|heartbeat monitor\w*|silent(ly)? fail\w*)\b'),
+    'search without a server': (2, r'\b(client[- ]side search|static search|search (without|with no) (a )?(server|backend)|in[- ]browser search|pagefind|lunr)\b'),
+    'made with an AI by a non-programmer': (1, r'\b(vibe[- ]?cod\w+|claude code|built (it |this )?(entirely )?with (ai|an llm|claude|cursor|codex)|ai[- ]assisted|non[- ]programmer|not a (programmer|developer|coder)|as a designer|as an artist)\b'),
 }
-TOPICS = {k: re.compile(v, re.I) for k, v in TOPICS.items()}
+TOPICS = {k: (w, re.compile(v, re.I)) for k, (w, v) in TOPICS.items()}
+ENOUGH = 3                                      # a thread is kept from this weight on (a word in the title counts twice)
 
 
 def get(path):
@@ -92,14 +95,17 @@ def main(out):
     for oid, h in hits.items():
         text = plain(h.get('story_text'), 1500)
         hay = ' '.join([h.get('title') or '', text, h.get('url') or ''])
-        topics = [k for k, rx in TOPICS.items() if rx.search(hay)]
+        title = h.get('title') or ''
+        topics = [k for k, (w, rx) in TOPICS.items() if rx.search(hay)]
+        weight = sum(w * (2 if rx.search(title) else 1) for k, (w, rx) in TOPICS.items() if rx.search(hay))
         own = 'aigorithmic' in hay.lower() or (h.get('url') or '').startswith('https://ranaji10.github.io')
-        if not topics or own or h.get('created_at_i', 0) < since:
+        if weight < ENOUGH or own or h.get('created_at_i', 0) < since:
             continue
         kind = 'Show HN' if 'show_hn' in (h.get('_tags') or []) else 'Ask HN' if 'ask_hn' in (h.get('_tags') or []) else 'story'
         n = h.get('num_comments') or 0
-        # other people's Show HN and Ask HN first; then the more of his subjects, the better; a full thread is a late one
-        score = (3 if kind != 'story' else 0) + 2 * len(topics) + (0 if n < 60 else -3) + (1 if 0 < n < 25 else 0) + (1 if text else 0)
+        # the more of his subjects and the nearer to the title, the better; other people's Show HN and Ask HN before
+        # stories, because their authors read the answers; a thread of sixty comments is a late one
+        score = weight + (2 if kind != 'story' else 0) + (0 if n < 60 else -3) + (1 if 0 < n < 25 else 0) + (1 if text else 0)
         rows.append({'id': oid, 'kind': kind, 'title': plain(h.get('title'), 200), 'hn': 'https://news.ycombinator.com/item?id=' + oid,
                      'url': h.get('url') or '', 'by': h.get('author') or '', 'created_at': h.get('created_at') or '',
                      'age_h': round((now - h.get('created_at_i', now)) / 3600, 1), 'points': h.get('points') or 0, 'num_comments': n,
