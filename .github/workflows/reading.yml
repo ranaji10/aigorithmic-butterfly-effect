@@ -1,0 +1,45 @@
+name: reading list
+# Not part of the work: nothing on the site reads what this writes. It is the author's reading list.
+# Hacker News lets a new account show its own project only after it has taken part for a while, and forbids comments
+# written by a machine, so the author answers other people's threads in his own words; a daily session of his reads the
+# list and gives him pointers. That session runs in the cloud and may not ask Hacker News itself (it may only open
+# addresses a person gave it by hand, and nobody is there at seven in the morning), but it can read this repository.
+# So this asks Hacker News's public search (tools/threads.py, standard library, read only) and moves the tag
+# `reading-list` to one commit that holds two files and nothing else: threads.json and README.md. A tag and not a
+# branch, because the door's hosting service builds every branch that is pushed here. The tag is moved on purpose;
+# it has nothing to do with the rings, whose tags never move.
+#
+# When: GitHub drops most scheduled runs on a quiet repository (see sweep.yml), so this follows the sweep, which the
+# clock outside GitHub starts every hour, and takes the sweeps that began between 04:00 and 06:00 UTC. The other
+# twenty-two show as "skipped" and use no machine. Any steward can run it by hand (Actions > reading list > Run workflow).
+on:
+  workflow_run:
+    workflows: [sweep]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: reading-list
+  cancel-in-progress: false
+jobs:
+  list:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && (contains(github.event.workflow_run.created_at, 'T04:') || contains(github.event.workflow_run.created_at, 'T05:'))) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: read Hacker News
+        run: python3 tools/threads.py "$RUNNER_TEMP/reading"
+      - name: keep
+        # one commit without a parent, holding the two files only; the tag is moved to it and yesterday's list is let go
+        env:
+          GIT_AUTHOR_NAME: the caption machine
+          GIT_AUTHOR_EMAIL: actions@users.noreply.github.com
+          GIT_COMMITTER_NAME: the caption machine
+          GIT_COMMITTER_EMAIL: actions@users.noreply.github.com
+        run: |
+          export GIT_INDEX_FILE="$RUNNER_TEMP/reading.index"
+          git --work-tree="$RUNNER_TEMP/reading" add -A
+          COMMIT=$(git commit-tree "$(git write-tree)" -m "reading list $(date -u +%FT%H:%MZ)")
+          git push --force origin "$COMMIT:refs/tags/reading-list"

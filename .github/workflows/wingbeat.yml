@@ -44,3 +44,11 @@ jobs:
           # day's limit) waits for a steward: its issue stays open so that it is seen
           if [ "$STAYS" = "yes" ]; then exit 0; fi
           if [ "$ACCEPTED" = "yes" ] || [ "$ACCEPTED" = "noted" ]; then gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY" --reason completed; fi
+      - name: close what is settled
+        # the stewards' issue that asked for this decision closes by itself once every line in it is decided
+        # (tools/settled.py); a failure here must never cost the intake its run
+        if: steps.intake.outputs.accepted == 'yes'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/settled.py

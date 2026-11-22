@@ -43,3 +43,10 @@ jobs:
           STEWARDS=$(python3 -c "import json;print(','.join(json.load(open('data/config.json'))['stewards']))")
           BODY=$(printf 'The hourly sweep needs a person to look at this.\n\n%s\n\nTo settle a removal request: `python3 tools/wingbeat.py resolve N removed` or `... resolve N restored`, then commit and push. Until then a thing that was hidden stays hidden, and a thing that was not hidden (a whole recording, or something a steward restored before) stays visible. See CHARTER.md, section 6 and Amendment 13.' "$NOTES")
           gh issue create --repo "$GITHUB_REPOSITORY" --title "for the stewards, $(date -u +%F)" --body "$BODY" --assignee "$STEWARDS" || gh issue create --repo "$GITHUB_REPOSITORY" --title "for the stewards, $(date -u +%F)" --body "$BODY"
+      - name: close what is settled
+        # a stewards' issue closes by itself once every line in it that asked for a decision has one (tools/settled.py):
+        # here for what was settled by hand (`resolve`), in wingbeat.yml right after a `confirm` or `deny`
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/settled.py
