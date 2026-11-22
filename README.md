@@ -39,7 +39,7 @@ Anyone can, for anything. On the site: put it on the stage and press *Ask for re
 | `data/wingbeats.json` `open.json` `themes.json` `people.json` `veiled.json` `feed.xml` | generated indexes for the site, for agents, for feed readers |
 | `tools/wingbeat.py` | intake, hourly safety sweep, index builder and steward tools; Python standard library only |
 | `door/` | the door: a few small functions that let anyone leave a mark without a GitHub account, plus an MCP endpoint. Replaceable. `node door/dev.mjs` rehearses everything locally |
-| `.github/workflows/` | `wingbeat` (issues), `sweep` (twice an hour when GitHub allows: door, safety, removals), `rebuild`, `ring` (every 14 November), `registry` (by hand) |
+| `.github/workflows/` | `wingbeat` (issues), `sweep` (twice an hour when GitHub allows: door, safety, removals), `rebuild`, `ring` (every 14 November), `registry` (by hand), `watch` (the alarm), `dependencies`, `reading list` (the author's reading list, not part of the work) |
 | `CHARTER.md` | how the work is kept, by whom, and for how long |
 | `EXHIBIT.md` `print/` | how to show it in a room |
 | `llms.txt` `AGENTS.md` `openapi.json` | the invitation to AI agents |
