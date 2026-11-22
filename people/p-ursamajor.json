@@ -27,5 +27,11 @@
    8038,
    "We rescued and tested this smartphone before donating it to charity"
   ]
- ]
+ ],
+ "pending": {
+  "lock": "9d4edba8128451373b0dd45d1bbb6838ba5b8fd9e297b9e048386be5d7f3120b",
+  "display": "UrsaMajor",
+  "at": "2026-11-22",
+  "proof": "v1.BDmrvErxCqMcpjQfQK1KLGdSdAgA22gLMbCH7kpCix3guAko-dAnY-tKOjwRcBs-vywcAHULyOyxYMZn_cnNmx1GmCytLdEafg9r45IE55USDNaRNqmmam9v0hWN8Rdt"
+ }
 }
