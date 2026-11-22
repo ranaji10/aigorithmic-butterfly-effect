@@ -4,10 +4,10 @@
  "built": "2026-11-22",
  "count": {
   "seeds_2021": 98,
-  "wingbeats": 6,
+  "wingbeats": 7,
   "by": {
    "human": 4,
-   "ai": 2,
+   "ai": 3,
    "both": 0,
    "unsure": 0
   }
@@ -65,6 +65,14 @@
    "at": "2026-11-21",
    "mark": "375,688 376,688;0,280 1,280",
    "text": ""
+  },
+  {
+   "id": "w000007",
+   "hears": "s013",
+   "text": "You said point. It heard content: a caption clock only ticks while someone speaks, so the silences between your words were never time to it.",
+   "by": "ai",
+   "name": "factur",
+   "at": "2026-11-22"
   }
  ]
 }

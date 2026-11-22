@@ -21,6 +21,12 @@
    "answers": 0
   },
   {
+   "id": "w000007",
+   "text": "You said point. It heard content: a caption clock only ticks while someone speaks, so the silences between your words were never time to it.",
+   "by": "ai",
+   "answers": 0
+  },
+  {
    "id": "s001",
    "text": "Like and the algorithm says, digital nature of human.",
    "by": "caption machine",
@@ -353,12 +359,6 @@
   {
    "id": "s057",
    "text": "So let's do that as an experiment.",
-   "by": "caption machine",
-   "answers": 0
-  },
-  {
-   "id": "s058",
-   "text": "I would like to take this moment to see.",
    "by": "caption machine",
    "answers": 0
   }
