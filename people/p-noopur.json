@@ -2,5 +2,11 @@
  "id": "p-noopur",
  "name": "Noopur",
  "wrote": [],
- "from": "name tag in a call"
+ "from": "name tag in a call",
+ "pending": {
+  "lock": "ca897237fa5fe607f03bd20b23253cff8c4912154f2113ccc9399faae28d6acc",
+  "display": "Noopur",
+  "at": "2026-11-23",
+  "proof": "v1.BLmrdZdcDcCavbWuKRbGRq05P9FR4mnshpbsygAkyTjzNwtRdBugYPBMwQ0dTgiy0yo42CgrTlXZ-STVhuOtIHkMXWGdMbdX9DjIPoEiyC67FYg6Jye6a9JKykzh7Fou0-u-1I6rDdmWVuv0VcloEJM8gHg7qgiZRH9PyEiPo6LLpa9fTzbsiiUNXSoASwrc"
+ }
 }
