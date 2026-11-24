@@ -3,10 +3,8 @@
  "name": "Ankit",
  "wrote": [],
  "from": "named by the author",
- "pending": {
-  "lock": "b9325c49661968659f81f7b680eaf82050c1f0fe9fc60508a68fc9e2b53deab2",
-  "display": "Ankit",
-  "at": "2026-11-24",
-  "proof": "v1.BGfhnFLoFTvgVJkmAQ5V_nLFppo4WDabb39pK97WcfJCLnFpIAVXdeK_vloG6U7tn6KgoXhQvGbHqg5ux_YGK7UKzHSGTmJUl8JPXbABOrr30fj9x71UtDjK5e7K2WsM4BFz1twBJ6IHrBep2Q"
- }
+ "claimed": true,
+ "since": "2026-11-24",
+ "lock": "b9325c49661968659f81f7b680eaf82050c1f0fe9fc60508a68fc9e2b53deab2",
+ "display": "Ankit"
 }
