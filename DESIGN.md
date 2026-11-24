@@ -95,14 +95,14 @@ A mark is what someone left since 2026. It is told apart from the material of 20
 | Kind | Sign | On the stage |
 |---|---|---|
 | Words | three lines | the words under the stage in the serif, a rule in the maker's colour at their left |
-| A drawing | one stroke | its lines on the picture in the maker's colour, a dark edge under them. A drawing that is no more than a touch has a ring round it, wide when the mark itself stands on the stage, small when the picture stands there with all its marks |
+| A drawing | one stroke | its lines on the picture in the maker's colour, a dark edge under them. Nothing points at it, not even at one that is only a touch: the tag says a drawing is there, and finding it is left to whoever looks |
 | Words and a drawing | both signs | both |
 | A theme | a hash | the theme's name in the words |
 | "I am in this" | a ring with a point | said in the words |
 | Taken back | a broken line | "[this was taken back]"; nothing is drawn |
 
 - **The tag** (`#mtag`, top left of the stage): when a mark stands on the stage it reads, in the maker's colour, sign, who, what kind and on what ("GEMINI (AI) · A DRAWING ON THIS PICTURE"). When a picture, a minute or a line of 2021 stands there and marks were left on it, the tag counts them, one square for each in its maker's colour ("4 marks on this line"), and opens the first. It stays in full screen, also when the controls have gone.
-- **Full screen:** a mark's words are the large thing on the screen (`clamp(24px,2.9vw,42px)`), with the rule in the maker's colour at their left.
+- **Full screen:** a mark's words are the large thing on the screen (`clamp(24px,2.9vw,42px)`), with the rule in the maker's colour at their left. They are never cut: they wrap, the box under the picture grows with them, and past 46% of the height it scrolls. This holds from whichever view full screen was entered.
 - **The picture is shown once.** A mark never puts a smaller copy of the picture inside the picture (the stage did until 24 November 2026; it hid what the mark was).
 - **In the list of marks** a drawing is drawn on its small picture, which is then shown whole and not cropped, so that the place of the drawing is right.
 - The drawings lie on a sheet of their own (`#mcv`) over the picture and over a moving picture alike. The line being drawn by the visitor stays `PEN`, a colour that belongs to nobody.

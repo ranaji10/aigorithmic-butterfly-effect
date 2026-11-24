@@ -120,7 +120,8 @@ body.full #mtag{left:16px;top:38px;font-size:var(--t-note);padding:8px 14px 8px 
 body.full.onmark #cap{padding:18px 24px 16px 30px;max-height:46vh;overflow:auto}
 body.full.onmark #cap::before{left:12px;top:18px;bottom:16px;width:4px}
 body.full.onmark #who{font-size:var(--t-note)}
-body.full.onmark #line{font-size:clamp(24px,2.9vw,42px);line-height:1.22;max-height:none;margin-top:6px}
+body.full #line{white-space:normal!important;text-overflow:clip!important;font-size:var(--t-line);max-height:3.9em} /* full screen from any view: the caption wraps, as on the stage view */
+body.full.onmark #line{font-size:clamp(24px,2.9vw,42px);line-height:1.22;max-height:none;margin-top:6px} /* a mark's words are never cut: the box under the picture grows, and scrolls past 46% of the height */
 body.full.onmark #line.sm{font-size:clamp(20px,2.2vw,30px)}
 body.exhibit #mtag{font-size:var(--t-note)}
 .thread li.lm{border-left-color:var(--mby)}.thread li.lm .meta{color:var(--mby)}.thread li.lm:hover,.thread li.lm.cur{border-left-width:3px;padding-left:11px;border-color:var(--mby)}
@@ -1140,16 +1141,11 @@ function paint(){
 /* A line of a drawing: a dark edge under it, so that it shows on a white page as well as on a black one. */
 function inkLine(c,pts,col,lw){c.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?c.lineTo(X,Y):c.moveTo(X,Y)});c.lineJoin=c.lineCap='round';c.strokeStyle='rgba(0,0,0,.62)';c.lineWidth=(lw+2.6)*dpr;c.stroke();c.strokeStyle=col;c.lineWidth=lw*dpr;c.stroke()}
 /* The drawings left on what stands on the stage, on a sheet of their own (#mcv) that lies over the picture and over the moving
-   picture alike. A drawing is in its maker's colour. One that is no more than a touch would be lost in a picture, so a ring
-   stands round it: wide where the mark itself is on the stage, small where the stage shows the picture and all its marks. */
+   picture alike. A drawing is in its maker's colour, a little heavier where the mark itself is on the stage. Nothing points at it:
+   the tag says that a drawing is there, and finding it is left to whoever looks. */
 function paintMarks(W,H){const mc=$('#mcv');if(mc.width!=W||mc.height!=H){mc.width=W;mc.height=H}const c=mc.getContext('2d');c.clearRect(0,0,W,H);
   if(!stageSrc||document.body.classList.contains('drawing'))return;
-  for(const m of stageMarks)for(const s of m.strokes){inkLine(c,s,m.col,m.focus?3.6:2.5);
-    const xs=s.map(p=>R.x+p[0]/999*R.w),ys=s.map(p=>R.y+p[1]/999*R.h),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-    if(Math.hypot(x1-x0,y1-y0)>16*dpr)continue;
-    const r=(m.focus?17:9)*dpr,X=clamp((x0+x1)/2,r+3*dpr,W-r-3*dpr),Y=clamp((y0+y1)/2,r+3*dpr,H-r-3*dpr);
-    c.beginPath();c.arc(X,Y,r,0,7);c.strokeStyle='rgba(0,0,0,.62)';c.lineWidth=(m.focus?5.2:4)*dpr;c.stroke();c.strokeStyle=m.col;c.lineWidth=(m.focus?2.6:1.6)*dpr;c.stroke();
-    c.beginPath();c.arc(X,Y,(m.focus?4:3)*dpr,0,7);c.fillStyle=m.col;c.fill();c.strokeStyle='rgba(0,0,0,.62)';c.lineWidth=1.3*dpr;c.stroke()}}
+  for(const m of stageMarks)for(const s of m.strokes)inkLine(c,s,m.col,m.focus?3.6:2.5)}
 /* The sound of a phone call or a voice memo, drawn on the stage: how loud it is from its start to its end (r/<id>/wave.json,
    1,200 steps), as bars about a middle line. What has been played is yellow (--wall: where you are), the rest is --dim, and a
    line of --ink stands where the sound is now. It is drawn from numbers that say how loud and nothing else, so it stands the
