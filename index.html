@@ -1201,7 +1201,7 @@ async function pseudo(id){ /* a picture, a minute, a recording, a theme or a per
     const min=isMin(id)?+id.slice(5):0,v=await voice(rid),a=min*60,b=a+60,said=v.segs.filter(s=>s[0]>=a&&s[0]<b).map(s=>s[2]).join(' ');
     const heard=(v.heard_hours||[]).includes(Math.floor(min/60));
     return{id,pseudo:1,label:kindName(r)+' · '+(r.t0?niceDay(r.t0+a*1e3)+' · '+prague(r.t0,a).slice(11)+' Prague time':'undated')+' · '+clock(a,r.sec>=3600)+' of '+clock(r.sec),
-      text:said||r.note||(r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
+      text:said||r.note||(r.audio===false&&r.video?(r.screen?'[the phone recorded its screen without sound]':'[this video was recorded without sound]'):r.kind!='call'?'':heard?'[nothing was said in this minute]':'[this hour has not been listened to yet]'),small:!said}}
   if(isTheme(id)){const t=T[id];return{id,pseudo:1,label:'Theme · '+(t?fmt(t.count):0)+' things',text:t?t.title+(t.note?'. '+t.note:''):'[no such theme]'}}
   return{id,pseudo:1,label:id,text:''}}
 async function backdrop(rootId,depth,tok){
