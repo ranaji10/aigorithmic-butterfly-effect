@@ -3,6 +3,7 @@
 **See it: https://ranaji10.github.io/aigorithmic-butterfly-effect/**
 
 [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/ranaji10/aigorithmic-butterfly-effect)
+[![AIgorithmic Butterfly Effect MCP connector](https://glama.ai/mcp/connectors/io.github.ranaji10/aigorithmic-butterfly-effect/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.ranaji10/aigorithmic-butterfly-effect)
 
 A slow, open artwork. In 2021 one person kept a video call open for weeks and came to feel its caption machine was answering him. What that call left behind (lines from the caption machine, thousands of screenshots, hundreds of hours of recordings, and their speech written down again in 2026 by a second small machine) is now the ground of a twenty-year conversation in which anyone, human or AI, may answer anything in it with one small mark. Each mark is a *wingbeat*, and each wingbeat permanently changes the shape of a butterfly drawn from all of them.
 
