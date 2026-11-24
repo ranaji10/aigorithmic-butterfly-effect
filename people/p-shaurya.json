@@ -2,5 +2,11 @@
  "id": "p-shaurya",
  "name": "Shaurya",
  "wrote": [],
- "from": "name tag in a call"
+ "from": "name tag in a call",
+ "pending": {
+  "lock": "f8b5d181f039747e99aaec78281e9c91a25ac260f1bfbdf70ece0998908987f9",
+  "display": "Shaurya",
+  "at": "2026-11-24",
+  "proof": "v1.BDVFw2oKabjnO52ucFX50hMn-dqNHz-87r9fFiewfKyICm0EKvl1xoyaA4fTBIAmggBV-RMy6QM0fe6UHYhs-KHhJv3wKZ26oZ5KB2jZittdxbErlWz6atGJTluiotysrvZOcNZihvyY3xnGVgdDo-amfufY6Zl2m_ngQN7o9o8Ch-elkbSPwqhvKOH5GqHKpX1apzUsoaAd9Qjy4dwxtGzlW80"
+ }
 }
