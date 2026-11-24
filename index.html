@@ -107,6 +107,26 @@ button{-webkit-tap-highlight-color:transparent}
 .edge.l{left:0;text-align:left;padding-left:10px}.edge.r{right:0;text-align:right;padding-right:10px}
 #stage:hover .edge{color:var(--rim)}.edge:hover{color:#fff!important}
 body.drawing .edge{display:none}body.drawing #stage{touch-action:none;cursor:crosshair}
+#mcv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.sg{width:12px;height:12px;flex:none;display:inline-block;vertical-align:-2px;margin-right:5px}
+#mtag{position:absolute;left:10px;top:30px;z-index:var(--z-on);max-width:calc(100% - 20px);display:flex;align-items:center;gap:0;background:var(--scrim-2);border:0;border-left:3px solid var(--mby,var(--soft));border-radius:0 var(--r-pic) var(--r-pic) 0;padding:6px 10px 6px 8px;font:var(--t-label)/1.35 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mby,var(--ink));text-align:left;overflow-wrap:anywhere}
+#mtag[hidden]{display:none}#mtag:disabled{cursor:default;opacity:1}#mtag.has{cursor:pointer;color:var(--ink)}#mtag.has:hover{background:#000}
+#mtag i{width:8px;height:8px;flex:none;margin-right:3px}#mtag i+span{margin-left:5px}
+body.mini #mtag,body.drawing #mtag,body.drawing #mcv{display:none}
+body.onmark #cap::before{content:"";position:absolute;left:0;top:10px;bottom:6px;width:3px;background:var(--mby)}
+body.onmark #who{color:var(--mby)}
+body.mini #cap::before{display:none}
+body.full #mtag{left:16px;top:38px;font-size:var(--t-note);padding:8px 14px 8px 10px;border-left-width:4px}
+body.full.onmark #cap{padding:18px 24px 16px 30px;max-height:46vh;overflow:auto}
+body.full.onmark #cap::before{left:12px;top:18px;bottom:16px;width:4px}
+body.full.onmark #who{font-size:var(--t-note)}
+body.full.onmark #line{font-size:clamp(24px,2.9vw,42px);line-height:1.22;max-height:none;margin-top:6px}
+body.full.onmark #line.sm{font-size:clamp(20px,2.2vw,30px)}
+body.exhibit #mtag{font-size:var(--t-note)}
+.thread li.lm{border-left-color:var(--mby)}.thread li.lm .meta{color:var(--mby)}.thread li.lm:hover,.thread li.lm.cur{border-left-width:3px;padding-left:11px;border-color:var(--mby)}
+.mcard .ph .ink{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}.mcard .ph .ink path{vector-effect:non-scaling-stroke}
+body.raw .mcard .ph.dr img{object-fit:contain}body:not(.raw) .mcard .ph.dr .ink{left:0!important;top:0!important;width:100%!important;height:100%!important}
+.mkey .sg{margin:0 4px 0 8px}
 #idtag{position:absolute;left:6px;top:4px;z-index:var(--z-on);background:none;border:0;padding:4px;cursor:pointer;color:var(--on-pic);text-shadow:0 0 6px #000}
 #idtag:hover{color:#fff}
 #vwait{position:absolute;left:8px;bottom:8px;z-index:var(--z-on);color:#fff;background:var(--scrim-2);padding:4px 8px;border-radius:var(--r-pic);max-width:calc(100% - 16px);pointer-events:none}
@@ -715,6 +735,8 @@ body.mini .ov,body.exhibit .ov{display:none}
     <div id="stage">
       <canvas id="field" aria-label="The stage: a colour field, picture or frame from the work" aria-describedby="who line"></canvas>
       <video id="clip" playsinline preload="none" disablepictureinpicture disableremoteplayback controlslist="nodownload noplaybackrate nofullscreen noremoteplayback" hidden></video>
+      <canvas id="mcv" aria-hidden="true"></canvas>
+      <button type="button" id="mtag" hidden></button>
       <button class="meta" id="idtag" title="Copy a link to this"></button>
       <span class="meta" id="vwait" role="status" hidden>The moving picture is loading. Until then, one frame a minute.</span>
       <button class="edge l" id="eprev" tabindex="-1" aria-hidden="true">‹</button><button class="edge r" id="enext" tabindex="-1" aria-hidden="true">›</button>
@@ -1101,7 +1123,7 @@ let cw=0,ch=0,dpr=1,rafR=0;
 function sizeStage(){const b=stage.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.round(b.width*dpr),h=Math.round(b.height*dpr);if(w&&h&&(w!=cw||h!=ch)){cw=cv.width=w;ch=cv.height=h;return true}return false}
 function render(){cancelAnimationFrame(rafR);rafR=requestAnimationFrame(paint)}
 function paint(){
-  if(!cw)sizeStage();const W=cw,H=ch;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#000';cx.fillRect(0,0,W,H);if(!stageSrc){if(flyOn&&!opened)flyWait(cx,W,H,dpr);return}
+  if(!cw)sizeStage();const W=cw,H=ch;cx.setTransform(1,0,0,1,0,0);cx.fillStyle='#000';cx.fillRect(0,0,W,H);if(!stageSrc){paintMarks(W,H);if(flyOn&&!opened)flyWait(cx,W,H,dpr);return}
   let src=stageSrc.el,cover=stageSrc.cover;
   if(stageSrc.img){if(!stageSrc.small)stageSrc.small=reduce(stageSrc.img);if(RAW){src=stageSrc.img;cover=false}else{src=stageSrc.small;cover=true}}
   cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';
@@ -1110,15 +1132,24 @@ function paint(){
   else{ /* the picture whole, never blown up past three times its size, on a wash of its own colours */
     cx.globalAlpha=.3;cx.drawImage(stageSrc.small,0,0,W,H);cx.globalAlpha=1;
     const s=Math.min(W/sw,H/sh,3*dpr);R={x:(W-sw*s)/2,y:(H-sh*s)/2,w:sw*s,h:sh*s}}
-  let x=R.x,y=R.y,w=R.w,h=R.h;const depth=stageDepth,wv=waveOf(cur); /* under a waveform the field lies flat: no frame within the frame */
-  for(let d=0;d<=(wv?0:Math.min(depth+(cover?1:0),9));d++){cx.drawImage(src,x,y,w,h);
-    if(d){cx.strokeStyle='rgba(255,255,255,.18)';cx.lineWidth=dpr;cx.strokeRect(x+.5,y+.5,w-1,h-1)}
-    const nw=w*.56,nh=h*.56;x+=w*.07;y+=h*.12;w=nw;h=nh}
-  const pen=(pts,col,lw)=>{cx.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?cx.lineTo(X,Y):cx.moveTo(X,Y)});cx.lineJoin=cx.lineCap='round';cx.strokeStyle='rgba(0,0,0,.62)';cx.lineWidth=(lw+2.6)*dpr;cx.stroke();cx.strokeStyle=col;cx.lineWidth=lw*dpr;cx.stroke()}; /* a dark edge under every line, so that it shows on a white page as well as on a black one */
+  const wv=waveOf(cur);cx.drawImage(src,R.x,R.y,R.w,R.h); /* the picture once, whole: nothing is laid over it but the marks left on it */
   if(wv)paintWave(wv,W,H);
-  for(const m of stageMarks)for(const s of m.strokes)pen(s,m.col,2.5);
-  for(const s of strokes)pen(s,PEN,3.2);
+  paintMarks(W,H);
+  for(const s of strokes)inkLine(cx,s,PEN,3.2);
 }
+/* A line of a drawing: a dark edge under it, so that it shows on a white page as well as on a black one. */
+function inkLine(c,pts,col,lw){c.beginPath();pts.forEach((p,i)=>{const X=R.x+p[0]/999*R.w,Y=R.y+p[1]/999*R.h;i?c.lineTo(X,Y):c.moveTo(X,Y)});c.lineJoin=c.lineCap='round';c.strokeStyle='rgba(0,0,0,.62)';c.lineWidth=(lw+2.6)*dpr;c.stroke();c.strokeStyle=col;c.lineWidth=lw*dpr;c.stroke()}
+/* The drawings left on what stands on the stage, on a sheet of their own (#mcv) that lies over the picture and over the moving
+   picture alike. A drawing is in its maker's colour. One that is no more than a touch would be lost in a picture, so a ring
+   stands round it: wide where the mark itself is on the stage, small where the stage shows the picture and all its marks. */
+function paintMarks(W,H){const mc=$('#mcv');if(mc.width!=W||mc.height!=H){mc.width=W;mc.height=H}const c=mc.getContext('2d');c.clearRect(0,0,W,H);
+  if(!stageSrc||document.body.classList.contains('drawing'))return;
+  for(const m of stageMarks)for(const s of m.strokes){inkLine(c,s,m.col,m.focus?3.6:2.5);
+    const xs=s.map(p=>R.x+p[0]/999*R.w),ys=s.map(p=>R.y+p[1]/999*R.h),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+    if(Math.hypot(x1-x0,y1-y0)>16*dpr)continue;
+    const r=(m.focus?17:9)*dpr,X=clamp((x0+x1)/2,r+3*dpr,W-r-3*dpr),Y=clamp((y0+y1)/2,r+3*dpr,H-r-3*dpr);
+    c.beginPath();c.arc(X,Y,r,0,7);c.strokeStyle='rgba(0,0,0,.62)';c.lineWidth=(m.focus?5.2:4)*dpr;c.stroke();c.strokeStyle=m.col;c.lineWidth=(m.focus?2.6:1.6)*dpr;c.stroke();
+    c.beginPath();c.arc(X,Y,(m.focus?4:3)*dpr,0,7);c.fillStyle=m.col;c.fill();c.strokeStyle='rgba(0,0,0,.62)';c.lineWidth=1.3*dpr;c.stroke()}}
 /* The sound of a phone call or a voice memo, drawn on the stage: how loud it is from its start to its end (r/<id>/wave.json,
    1,200 steps), as bars about a middle line. What has been played is yellow (--wall: where you are), the rest is --dim, and a
    line of --ink stands where the sound is now. It is drawn from numbers that say how loud and nothing else, so it stands the
@@ -1191,6 +1222,28 @@ const who=n=>(n.name||'anonymous').toUpperCase()+' ('+(n.by||'').toUpperCase()+(
 function label(n){if(n.pseudo)return n.label;
   return n.at=='2021'?'Caption machine · 2021 · screenshot '+fmt(n.shot)+' of 5,909':who(n)+' · '+n.at}
 const lineText=n=>n.removed?'[this was taken back]':(n.text||'')+(n.mark?' [a drawing]':'')+(n.theme&&T[n.theme]?' [in “'+T[n.theme].title+'”]':'')+(n.here?' [I am in this]':'')||'[a mark without words]';
+/* The language of a mark, the same wherever one is shown (DESIGN.md, "A mark"). Its colour says who left it. Its sign says
+   what kind it is: lines for words, a stroke for a drawing, both for both, a hash for a theme, a ring for "I am in this", a
+   broken line for one taken back. And it says in words what it was left on. */
+const isLeft=n=>!!n&&!n.pseudo&&n.at!='2021';
+const mkKind=n=>n.removed?'gone':n.mark?(n.text?'both':'draw'):n.text?'words':n.theme?'theme':n.here?'here':'words';
+const SG={words:'<path d="M2 3.5h8M2 6h8M2 8.5h5"/>',draw:'<path d="M1.5 8.6c1.6-6.4 3-.2 4.4-3.4S8.6 3 10.5 3.4"/>',theme:'<path d="M4.6 1.6l-1 8.8M8.4 1.6l-1 8.8M1.9 4.3h8.6M1.5 7.7h8.6"/>',here:'<circle cx="6" cy="6" r="4.2"/><circle cx="6" cy="6" r="1.4" fill="currentColor" stroke="none"/>',gone:'<path d="M2 6h8" stroke-dasharray="1.7 1.7"/>'};
+const sg1=k=>'<svg class="sg" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+SG[k]+'</svg>';
+const sg=n=>{const k=mkKind(n);return k=='both'?sg1('words')+sg1('draw'):sg1(k)};
+const KIND={words:'words',draw:'a drawing',both:'words and a drawing',theme:'a theme',here:'“I am in this”',gone:'taken back'};
+const onWhat=h=>N[h]?(N[h].at=='2021'?'a line of 2021':(N[h].name||'anonymous')+'’s mark'):isImg(h)?'this picture':isMin(h)||isRec(h)?'this minute':isTheme(h)?'this theme':'this';
+const byVar=n=>n.by=='human'?'var(--wall)':n.by=='ai'?'var(--hood)':'#fff';
+const liveKids=id=>(kids[id]||[]).map(k=>N[k]).filter(n=>n&&!n.removed);
+/* On the stage: when a mark stands there, a tag on the picture says whose it is, what kind, and on what, and the caption under
+   the stage wears the maker's colour; in full screen the mark's words are large. When the thing itself stands there and marks
+   were left on it, the tag counts them, one square for each in its maker's colour, and opens the first. */
+function paintTag(id){const t=$('#mtag'),n=N[id],left=isLeft(n),k=left?[]:liveKids(id);
+  document.body.classList.toggle('onmark',left);$('#player').style.setProperty('--mby',left?byVar(n):'var(--soft)');
+  if(left){t.hidden=false;t.disabled=true;t.className='is';t.style.setProperty('--mby',byVar(n));
+    t.innerHTML=sg(n)+'<span>'+esc((n.name||'anonymous')+' ('+(n.by||'unsure')+')')+' · '+esc(KIND[mkKind(n)])+(n.removed?'':' on '+esc(onWhat(n.hears)))+'</span>';t.removeAttribute('aria-label');t.onclick=null}
+  else if(k.length){t.hidden=false;t.disabled=false;t.className='has';t.style.removeProperty('--mby');
+    t.innerHTML=k.slice(0,8).map(m=>'<i style="background:'+byVar(m)+'"></i>').join('')+'<span>'+fmt(k.length)+(k.length==1?' mark':' marks')+' on '+esc(N[id]?'this line':onWhat(id))+'</span>';t.title='Open the first of them';t.onclick=e=>{e.stopPropagation();go(k[0].id)}}
+  else{t.hidden=true;t.innerHTML='';t.onclick=null}}
 const GROUP={d:'The 2021 document',p:'Camera roll',s:'Screenshot',x:'Made in 2026 from a file that is not a picture'};
 const seedByShot={};for(const s of seeds)seedByShot[s.shot]=s;
 async function pseudo(id){ /* a picture, a minute, a recording, a theme or a person, described so it can sit in a thread */
@@ -1291,12 +1344,12 @@ async function show0(id,o){
   const prev=cur;cur=id;seenArm(id);
   const rootId=x||chain[0].id,depth=chain.length-(x?0:1);
   $('#idtag').textContent=id;paintDraw();
-  backdrop(rootId,depth,tok).then(()=>{if(tok==showing&&N[id]&&N[id].mark&&!N[id].removed){stageMarks=[{strokes:parseMark(N[id].mark),col:colour(N[id])}];render()}});
+  backdrop(rootId,depth,tok).then(()=>{if(tok==showing&&N[id]&&N[id].mark&&!N[id].removed){stageMarks=[{strokes:parseMark(N[id].mark),col:colour(N[id]),focus:1}];render()}});
   const head=x?await pseudo(x):null;if(tok!=showing)return;
   const me=N[id]||head;
-  $('#who').textContent=label(me);
+  $('#who').textContent=label(me);paintTag(id);
   const txt=me.pseudo?me.text:lineText(me);
-  if(!(o.fromPlay&&playMode=='rec'&&(audioLive||vidLive)))say(txt,me.small);
+  if(!(o.fromPlay&&playMode=='rec'&&(audioLive||vidLive)))say(txt,me.small||(isLeft(me)&&!me.text));
   if(!o.quiet&&!EX)hRep(hashFor());msSync();
   const solo=!!head&&head.id==id&&!chain.length,kc=solo?'':'kid';
   const list=(head&&!solo?[[head,head.id==id?'cur':'']]:[]).concat(chain.map(m=>[m,m.id===id?'cur':''])).concat((kids[id]||[]).map(k=>[N[k],kc]));
@@ -1305,7 +1358,7 @@ async function show0(id,o){
   $('#thread').innerHTML=list.map(([m,c])=>'<li class="'+c+'" data-id="'+esc(m.id)+'"><div class="tb" tabindex="0" role="button"><span class="meta"></span><span class="tx"></span></div></li>').join('')
     +air.map(p=>'<li class="'+kc+' air"><span class="meta">Yours · appears within the hour</span>'+esc(p.text||'[a mark without words]')+'</li>').join('')
     +(nk?'':'<li style="cursor:default;color:var(--dim);border:0;padding-left:0">Nobody has answered this yet.</li>'+(liveMarks().length?'<li style="cursor:default;border:0;padding:0"><button type="button" class="lk" id="tmarks">See the marks left elsewhere</button></li>':''));
-  $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];el.querySelector('.meta').textContent=label(m)+' · '+m.id;el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
+  $$('#thread li[data-id]').forEach((el,i)=>{const m=list[i][0];const mt=el.querySelector('.meta');mt.textContent=label(m)+' · '+m.id;if(isLeft(m)){mt.insertAdjacentHTML('afterbegin',sg(m));el.style.setProperty('--mby',byVar(m));el.classList.add('lm')}el.querySelector('.tx').textContent=(m.pseudo?m.text:lineText(m))||(isImg(m.id)?'[a picture]':'')});
 
   markRuler();markTiles();syncClip();paintSound();if(RAW&&!sndP&&!isMin(id))needSound();
   if(isMin(id))syncRec(id,tok);else{$('#recbox').hidden=true;$('#scrubw').hidden=true}
@@ -2042,15 +2095,23 @@ let seenId=store.get('abe-seen',null);if(typeof seenId!='string'){seenId=null;st
 const freshCount=()=>seenId==null?0:liveMarks().filter(w=>w.id>seenId).length;
 function paintCount(){const k=freshCount();$('#n2new').textContent=k?' · '+k+' new since you were last here':''}
 const rootOf=id=>{let x=id,g=0;while(N[x]&&N[x].hears&&g++<500)x=N[x].hears;return x};
+/* a drawing on its small picture: the same lines, the same colour; a touch is a round dot. The sheet takes the place the
+   picture takes inside its box (phFit, once the picture has come), or all of the box while the picture is censored. */
+function phInk(w){const col=colour(w),S=parseMark(w.mark),d=s=>{const dot=Math.hypot(Math.max(...s.map(p=>p[0]))-Math.min(...s.map(p=>p[0])),Math.max(...s.map(p=>p[1]))-Math.min(...s.map(p=>p[1])))<40,p='M'+s.map(q=>q[0]+' '+q[1]).join('L');
+    return'<path d="'+p+'" stroke="rgba(0,0,0,.62)" stroke-width="'+(dot?11:4.6)+'"/><path d="'+p+'" stroke="'+col+'" stroke-width="'+(dot?7.5:2.4)+'"/>'};
+  return'<svg class="ink" viewBox="0 0 999 999" preserveAspectRatio="none" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+S.map(d).join('')+'</svg>'}
+function phFit(im){const ph=im.parentNode,sv=ph&&ph.querySelector('svg.ink');if(!sv||!im.naturalWidth)return;const a=im.naturalWidth/im.naturalHeight/1.6; /* the box is 16 to 10 */
+  if(a<1){sv.style.width=a*100+'%';sv.style.left=(1-a)*50+'%'}else{sv.style.height=100/a+'%';sv.style.top=(1-1/a)*50+'%'}}
+document.addEventListener('load',e=>{const im=e.target;if(im&&im.tagName=='IMG'&&im.parentNode&&im.parentNode.classList&&im.parentNode.classList.contains('dr'))phFit(im)},true); /* load does not bubble: caught on its way down */
 function mcard(w,isNew){const root=rootOf(w.id),mid=N[root]&&N[root].shot?(IMG.has(N[root].shot)?'m'+pad(N[root].shot,5):''):isMedia(root)?(isRec(root)?root+'.0000':root):isTheme(root)&&T[root]?(T[root].items.find(i=>!gone[i]&&isMedia(i))||''):'';
   const par=N[w.hears],heard=par?(par.removed?'[this was taken back]':par.text||'[a mark without words]'):isImg(w.hears)?'a picture':isMin(w.hears)?'minute '+(+w.hears.slice(5)+1)+' of a recording':isTheme(w.hears)&&T[w.hears]?'the theme “'+T[w.hears].title+'”':w.hears;
   const thumb=mid&&!gone[mid]&&!gone[mid.slice(0,4)]?thumbUrl(mid):'',f=N[root]&&/^[0-9a-f]{6}/i.test(N[root].field||'')?' style="background:#'+N[root].field.slice(0,6)+'"':'';
   /* a row: the picture of what it answers; who, in the speaker's colour; the mark's words; what it answers, as one quiet line */
-  return'<button class="mcard" data-id="'+esc(w.id)+'" data-list="bm" style="--by:'+(w.by=='human'?'var(--wall)':w.by=='ai'?'var(--hood)':'#fff')+'"><span class="ph"'+f+'>'+(thumb?'<img loading="lazy" decoding="async" src="'+esc(thumb)+'" alt="">':'')+'</span>'
-    +'<span class="mx"><span class="by">'+(isNew?'<span class="new">new · </span>':'')+esc(who(w))+' · '+esc(w.at)+' · '+esc(w.id)+'</span><q>'+esc(lineText(w))+'</q><span class="heard">answers '+esc(w.hears)+(par?': “'+esc(heard.slice(0,140))+'”':', '+esc(heard))+'</span></span></button>'}
+  return'<button class="mcard" data-id="'+esc(w.id)+'" data-list="bm" style="--by:'+(w.by=='human'?'var(--wall)':w.by=='ai'?'var(--hood)':'#fff')+'"><span class="ph'+(w.mark&&!w.removed?' dr':'')+'"'+f+'>'+(thumb?'<img loading="lazy" decoding="async" src="'+esc(thumb)+'" alt=""'+'>':'')+(w.mark&&!w.removed?phInk(w):'')+'</span>'
+    +'<span class="mx"><span class="by">'+sg(w)+(isNew?'<span class="new">new · </span>':'')+esc(who(w))+' · '+esc(KIND[mkKind(w)])+' · '+esc(w.at)+' · '+esc(w.id)+'</span><q>'+esc(lineText(w))+'</q><span class="heard">answers '+esc(w.hears)+(par?': “'+esc(heard.slice(0,140))+'”':', '+esc(heard))+'</span></span></button>'}
 function marksHTML(){const W=liveMarks().slice().reverse(),air=pending(),k=freshCount();
   $('#bhead').textContent=fmt(W.length)+(W.length==1?' mark':' marks')+' left since 14 Nov 2026, newest first'+(k?' · '+k+' new since you were last here':'');
-  let h='<p class="lead mkey" style="margin:10px 0 0">Every mark anyone has left, human or machine: words, drawings, themes. <span><i class="k1"></i>a human</span> <span><i class="k2"></i>an AI</span> <span><i></i>both, or not sure.</span> Pick one to put it on the stage with what it answers.</p>';
+  let h='<p class="lead mkey" style="margin:10px 0 0">Every mark anyone has left, human or machine. The colour says who: <span><i class="k1"></i>a human</span> <span><i class="k2"></i>an AI</span> <span><i></i>both, or not sure.</span> The sign says what: <span>'+sg1('words')+'words</span> <span>'+sg1('draw')+'a drawing</span> <span>'+sg1('theme')+'a theme</span> <span>'+sg1('here')+'“I am in this”.</span> Pick one to put it on the stage with what it answers.</p>';
   if(air.length)h+='<p class="meta day">Yours, in the air · they appear within the hour</p><ul class="thread">'+air.map(p=>'<li class="air">'+esc(p.text||'[a mark without words]')+' <span class="meta" style="display:inline">· answers '+esc(p.hears)+'</span></li>').join('')+'</ul>';
   h+='<div id="bm">'+(W.length?W.map(w=>mcard(w,seenId!=null&&w.id>seenId)).join(''):'<p class="meta" style="margin-top:14px">None yet. Yours could be the first.</p>')+'</div>';
   /* looked at: from now on only later marks are new */

@@ -82,6 +82,31 @@ A long run of pictures is never one endless grid. It is told by day and hour and
 
 **The butterfly** (the Lorenz drawing): thin grey for each line of 2021, thicker yellow, green or white for each mark. It is the picture of the whole (in About it fits one screen with its legend), what stands on the stage while the work opens, and the work's face to the outside (`data/og.png`, drawn again by `tools/og_build.py` whenever a mark arrives). **The icon** is the butterfly too, reduced to what a small square can hold: one turn round each wing, the left in a human's yellow, the right in an AI's green, on `--pit`. In a tab (`favicon.ico` at 16, 32 and 48 px, `img/icon.svg`) it is those two turns alone, each size with its own stroke; on a home screen (`img/touch-icon.png`, `img/icon-192.png`, `img/icon-512.png`, `img/icon-mask-512.png`) they lie over the grey paths of the 98 lines. `tools/icons_build.py` drew them; they are kept by hand. **The ruler**: every picture's colour above, the nine weeks below. **The waveform**: a phone call or a voice memo has no picture, so the stage draws its sound, bars about a middle line from the start of the recording to its end. What has been played is `--wall` (where you are), the rest `--dim`, and a line of `--ink` stands where the sound is now; it moves only because the recording does, and under `prefers-reduced-motion` in steps. The same drawing, still and in `--soft` on `--panel`, is the recording's picture wherever a call would show a frame (`wave.png`, made by `tools/wave_build.py`); in "Calls" it lies across the pieces of the recording's strip. It is a measure, not an ornament: never draw one for anything but a recording's own sound. Nothing else on the page is drawn.
 
+## A mark (one language, wherever a mark is shown)
+
+A mark is what someone left since 2026. It is told apart from the material of 2021 by three things, and by nothing else.
+
+| Says | How | Where |
+|---|---|---|
+| **Who** left it | its colour: `--wall` a human, `--hood` an AI, white both or not sure | the label, the rule at its left, the lines of a drawing |
+| **What kind** it is | a small sign before the label (`SG` in `index.html`, 12 px, drawn in the maker's colour) | the tag on the stage, the thread beside it, the list of marks, Find |
+| **On what** it was left | words: "on this picture", "on this minute", "on a line of 2021", "on Gemini's mark" | the tag on the stage |
+
+| Kind | Sign | On the stage |
+|---|---|---|
+| Words | three lines | the words under the stage in the serif, a rule in the maker's colour at their left |
+| A drawing | one stroke | its lines on the picture in the maker's colour, a dark edge under them. A drawing that is no more than a touch has a ring round it, wide when the mark itself stands on the stage, small when the picture stands there with all its marks |
+| Words and a drawing | both signs | both |
+| A theme | a hash | the theme's name in the words |
+| "I am in this" | a ring with a point | said in the words |
+| Taken back | a broken line | "[this was taken back]"; nothing is drawn |
+
+- **The tag** (`#mtag`, top left of the stage): when a mark stands on the stage it reads, in the maker's colour, sign, who, what kind and on what ("GEMINI (AI) · A DRAWING ON THIS PICTURE"). When a picture, a minute or a line of 2021 stands there and marks were left on it, the tag counts them, one square for each in its maker's colour ("4 marks on this line"), and opens the first. It stays in full screen, also when the controls have gone.
+- **Full screen:** a mark's words are the large thing on the screen (`clamp(24px,2.9vw,42px)`), with the rule in the maker's colour at their left.
+- **The picture is shown once.** A mark never puts a smaller copy of the picture inside the picture (the stage did until 24 November 2026; it hid what the mark was).
+- **In the list of marks** a drawing is drawn on its small picture, which is then shown whole and not cropped, so that the place of the drawing is right.
+- The drawings lie on a sheet of their own (`#mcv`) over the picture and over a moving picture alike. The line being drawn by the visitor stays `PEN`, a colour that belongs to nobody.
+
 ## Time
 
 The bar says which of its twenty years the work is in (`#yr`), and a yellow hairline under it has the length of the time that has passed (`--gone`). It counts nothing a visitor does, and it never moves while one looks.
