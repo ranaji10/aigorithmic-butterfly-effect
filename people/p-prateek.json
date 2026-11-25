@@ -2,5 +2,11 @@
  "id": "p-prateek",
  "name": "Prateek",
  "wrote": [],
- "from": "name tag in a call"
+ "from": "name tag in a call",
+ "pending": {
+  "lock": "aadfd9da0bcb7d48c6798df5e5e7538f2b76728daec6f2aeb732b9f1edec6cc4",
+  "display": "Prateek",
+  "at": "2026-11-25",
+  "proof": "v1.BF_odaSweMteBmBBaEN5JnOKm1oH9VyAcaKxaAmfHKxOYIK_ik0AftXYI3dL_gsyK7cqXWK3VojIkREShtf4VhJn0uk2sV75jTbTfG1_GBMZ6Qg3jfdv_af8AOBRpIv0u3Cs8GPNLHLecWLsDL3LOQ"
+ }
 }
