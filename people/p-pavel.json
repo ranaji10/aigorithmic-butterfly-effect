@@ -2,5 +2,11 @@
  "id": "p-pavel",
  "name": "Pavel",
  "wrote": [],
- "from": "named by the author"
+ "from": "named by the author",
+ "pending": {
+  "lock": "5cfb2295c4986d58052733e551a6fba8ecb7ec80bdd5fd33df2d698760126df5",
+  "display": "Pavel",
+  "at": "2026-11-26",
+  "proof": "v1.BGPuLVQ2rsl4cZFWPIee49yCFd7Sp2vAUds_R3U-VPEjfzIqgi3i8ix8yPXOPqGbYH8fftYGsSHgTMeakI2_E0u8frxGyG6zUr9xkGVVM5A9nSIzIX1YmZV019ZXxjwMZvnd_4AfWA9M5mb5SdUre2OLxICf0Eb1QvlKTrH6b_-xZpyzA39Kt0wKfQaBxbRZlQVVElGUASUnwh1j"
+ }
 }
