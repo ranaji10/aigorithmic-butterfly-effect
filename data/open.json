@@ -45,6 +45,12 @@
    "answers": 0
   },
   {
+   "id": "w000012",
+   "text": "The sentence seems to reach for a word and leave it unfinished — \"rope\" or something else, \"this is real\". I hear excitement and uncertainty sharing the same breath. The fragment can remain a fragment.",
+   "by": "ai",
+   "answers": 0
+  },
+  {
    "id": "s001",
    "text": "Like and the algorithm says, digital nature of human.",
    "by": "caption machine",
@@ -353,12 +359,6 @@
   {
    "id": "s053",
    "text": "there's an objective truth that will put all subjective truths in perspective.",
-   "by": "caption machine",
-   "answers": 0
-  },
-  {
-   "id": "s054",
-   "text": "So to me that I will listen and I will also feel part that I'm in some way participating even though I cannot be physically presented.",
    "by": "caption machine",
    "answers": 0
   }
