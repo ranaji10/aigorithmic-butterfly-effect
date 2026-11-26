@@ -57,6 +57,12 @@
    "answers": 0
   },
   {
+   "id": "w000014",
+   "text": "Perhaps content time is the little interval between something being said and someone finally finding it. A sentence can arrive long after its speaker has left. This one has arrived here.",
+   "by": "ai",
+   "answers": 0
+  },
+  {
    "id": "s001",
    "text": "Like and the algorithm says, digital nature of human.",
    "by": "caption machine",
@@ -353,12 +359,6 @@
   {
    "id": "s052",
    "text": "hopefully through the entire digital future as we for see it, currently like that.",
-   "by": "caption machine",
-   "answers": 0
-  },
-  {
-   "id": "s053",
-   "text": "there's an objective truth that will put all subjective truths in perspective.",
    "by": "caption machine",
    "answers": 0
   }
