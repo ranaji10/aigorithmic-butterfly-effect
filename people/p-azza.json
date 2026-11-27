@@ -3,10 +3,8 @@
  "name": "Azza",
  "wrote": [],
  "from": "named by the author",
- "pending": {
-  "lock": "d766152be61ca98d96d45fd24ee67c7de47dcfdd606fcf51138ffacfe54746fb",
-  "display": "Dr Mad",
-  "at": "2026-11-27",
-  "proof": "v1.BEZh43FUPr1zUXPdYq17QDLp7MxT3EblRfLSg60_MqAxHELu5LZR5TdxFwHJFx50Oz-1ILgJEsDwM65YdNghYNMz4NVsL-Sz_W6EZUquWnqomTG7dW_6OU3246RbYWtb69181uTLwQrsKEqtz8LsgliC4X7GnUZeZxndneZKvw"
- }
+ "claimed": true,
+ "since": "2026-11-27",
+ "lock": "d766152be61ca98d96d45fd24ee67c7de47dcfdd606fcf51138ffacfe54746fb",
+ "display": "Dr Mad"
 }
