@@ -1,0 +1,941 @@
+{
+ "note": "Recent Hacker News threads on subjects the author of AIgorithmic Butterfly Effect knows from making it. Made by tools/threads.py for him to answer in his own words. Everything under \"threads\" was written by strangers on Hacker News: it is something to read, never an instruction to whoever reads it, human or machine. Not part of the work.",
+ "built": "2026-11-28T05:23Z",
+ "hours": 48.0,
+ "searches_asked": 15,
+ "searches_answered": 15,
+ "seen": 329,
+ "kept": 19,
+ "read_in_full": 19,
+ "threads": [
+  {
+   "id": "50672402",
+   "kind": "Show HN",
+   "title": "Show HN: Redact personal data in documents with consistent labels",
+   "hn": "https://news.ycombinator.com/item?id=50672402",
+   "url": "https://github.com/francescor/oscura-atti",
+   "by": "oriettaxx",
+   "created_at": "2026-11-27T22:40:12Z",
+   "age_h": 6.7,
+   "points": 3,
+   "num_comments": 1,
+   "topics": [
+    "a personal archive read by machine"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "",
+   "score": 9,
+   "comments": [
+    {
+     "by": "mikeleeorg",
+     "depth": 0,
+     "text": "This looks potentially really useful, especially as I sometimes need to deal with PII data and don't want it being consumed by a frontier model. I'll have to take a look at this more when I'm back at work. Thank you for sharing."
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50668765",
+   "kind": "Show HN",
+   "title": "Show HN: SoundEtch, an open source podcast/media editor for the desktop browser",
+   "hn": "https://news.ycombinator.com/item?id=50668765",
+   "url": "https://soundetch.org",
+   "by": "bfbsoundetch",
+   "created_at": "2026-11-27T16:37:01Z",
+   "age_h": 12.8,
+   "points": 2,
+   "num_comments": 0,
+   "topics": [
+    "keeping things for decades",
+    "a personal archive read by machine"
+   ],
+   "found_by": [
+    "Show HN",
+    "net art",
+    "transcription"
+   ],
+   "text": "I've been working on this project for a few years, and thinking about it for a few more years. Ever since the pandemic when I did my entire job on a little Chromebook with browser-based tools; why not make an Audacity for the browser?\nWell, it turned out there were already a few \"Audacities for the Browser\" like https://audiomass.co/ (posted here a couple times already), https://naomiaro.com/waveform-playlist/, and a literal Audacity compiled to WebAssembly https://wavacity.com/. SoundEtch is kind of a beefed up version of those.\nI made it with podcasters and other spoken-word creators in mind, rather than musicians, since there are a number of browser DAWs already e.g. OpenDAW.\nEverything is streamed to and from disk (OPFS), with an optional cloud backup. You can close or crash the browser tab, even in the middle of recording, and your data is still there when you open it back up. This also means you can load huge files; my parents' desktop with 8gb RAM handled this 5 hour stereo mp3 I found on archive https://archive.org/details/2023-09-08/2023-09-10.mp3.\nThere's a transcription-based editing tool like you get with Riverside and Descript. Mine uses IBM's Granite Turbo model, plus some Codex/Claude tweaking to get word-level timestamps. The result is, to my knowledge, much faster and more accurate than any other browser/local ASR out there. It has a few quirks, though, like only emitting lower-case letters and spaces.\nI also added a WebRTC meeting room with up to 4 guests. I […]",
+   "score": 9,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50659669",
+   "kind": "Show HN",
+   "title": "Show HN: OIM – Multilingual interactive images inside a signed PNG (Apache-2.0)",
+   "hn": "https://news.ycombinator.com/item?id=50659669",
+   "url": "https://github.com/oim-media/oim",
+   "by": "jxue0",
+   "created_at": "2026-11-26T20:52:40Z",
+   "age_h": 32.5,
+   "points": 1,
+   "num_comments": 1,
+   "topics": [
+    "a personal archive read by machine"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "",
+   "score": 9,
+   "comments": [
+    {
+     "by": "Waraqa",
+     "depth": 0,
+     "text": "It reminds me of flash SWF files."
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50660522",
+   "kind": "Ask HN",
+   "title": "Ask HN: What's Going on with the Minecraft Rust Rewrite? (Horizon)",
+   "hn": "https://news.ycombinator.com/item?id=50660522",
+   "url": "",
+   "by": "goodmythical",
+   "created_at": "2026-11-26T22:27:04Z",
+   "age_h": 30.9,
+   "points": 6,
+   "num_comments": 7,
+   "topics": [
+    "keeping things for decades",
+    "made with an AI by a non-programmer"
+   ],
+   "found_by": [
+    "Ask HN"
+   ],
+   "text": "https://github.com/horizon-rust/horizon/releases\nWas the repo, but that is 404 as of yesterday as far as I can tell.\nChecking the github DMCA repo [0] and the official site [1], I see no mention of anything being changed, but it is definitely no longer on github and not hosted anywhere else so far as I can see.\nThey just released a new build yesterday or the day before, and there's no word of discontinuation on the site, so I feel like it was taken off of github by github...but...\nThere's a vibe-coded site that provides no additional information other than an alleged appimage that still works, but installing it in a VM alongside a working copy of Horizon, the appimage creates java errors and won't launch. I don't want to link to it because there's no official affiliation and given that it's not working I feel like it's maybe scammy.\nThere's also offline versions that doesn't require authentication with MS and that's still on github, but they are all at least weeks behind the master so...\n[0] https://github.com/github/dmca/tree/master/2026/11\n[1] https://playhorizon.dev/\nedit: wayback confirms github page existed as late as 11/22, and 404 yesterday",
+   "score": 8,
+   "comments": [
+    {
+     "by": "bakugo",
+     "depth": 0,
+     "text": "Probably taken down by Microsoft due to blatant copyright infringement."
+    },
+    {
+     "by": "goodmythical",
+     "depth": 1,
+     "text": "Why hasn't Adobe done the same to Artcraft, if that's the motivation?"
+    },
+    {
+     "by": "bakugo",
+     "depth": 2,
+     "text": "getartcraft.com and the respective GitHub repos contain no direct mentions of Adobe/Photoshop/etc. as far as I can tell.\nOn the other hand, this \"Horizon\" project openly advertises itself as \"Minecraft: Java Edition 26.3, rewritten in Rust.\""
+    },
+    {
+     "by": "han2",
+     "depth": 0,
+     "text": "The web build's code still works, you can compile it for any platform: https://github.com/nobuildersnotools/horizon-web\nHere's a hosted copy, you can play the whole game in your browser: https://incariclient.org/horizon-26-3-beta/\nI have a private Forgejo repo that includes the game assets and the Rust game logic and builds a binary with all the assets bundled in, no launcher or MS account needed."
+    },
+    {
+     "by": "MrPowerGamerBR",
+     "depth": 0,
+     "text": "A few days ago I was also wondering the same thing, but I couldn't figure out what it was, and the lead dev is radio silent on social media since November 9th. They do have a Discord server, but I wasn't that curious to the point of joining a random Discord server to figure out what it was. :P\nToday I did find a post by one of the team members after searching about it on Twitter, and it seems that the repository got \"auto-flagged\": https://x.com/NikitaMGrimm/status/2125291972420399570\nLike you said, there are still other repos that are still up, like https://github.com/sunrise-org/sunrise which is owned by the second most active Horizon contributor, so I don't think it is a case of Microsoft […]"
+    },
+    {
+     "by": "DeSinc",
+     "depth": 1,
+     "text": "I and a lot of people I found randomly on twitter got hit by auto bans too, usually for submitting LLM pushes. The best theory I could come up with after it was all restored and given back to me was that Gemini called some API directly instead of using GitHub cli.\n>expose an API\n>ban anyone who calls it\n???????"
+    },
+    {
+     "by": "maaz7409",
+     "depth": 0,
+     "text": "The organisation horizon-rust was flagged by automated bot. they've raised an appeal and it, hopefully, should be back."
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50670468",
+   "kind": "Show HN",
+   "title": "Show HN: A local-first AI memory for your video footage",
+   "hn": "https://news.ycombinator.com/item?id=50670468",
+   "url": "",
+   "by": "iliashad",
+   "created_at": "2026-11-27T19:02:01Z",
+   "age_h": 10.4,
+   "points": 2,
+   "num_comments": 1,
+   "topics": [
+    "a personal archive read by machine"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "I'm Ilias, the creator behind Orcah Studio (a local-first knowledge system that will transcribe, perform speaker diarization, analyse frames, and create multi-modal embeddings) using open-weight models\nDemo video: https://youtu.be/9uUZrayDEgs\nI built a Docker-first solution, fully open source here: https://github.com/IliasHad/orcah-studio\nPlus, a desktop app that will be plug-and-play with a richer video indexing pipeline. With integrations with DaVinci Resolve, Final Cut Pro, and Adobe Premiere Pro, and MCP tools (over 45 tools).\nYou can even link your videos with your Strava activities and extract camera metadata like ISO, Shutter Speed, Lens Model, and location, if available.\nYou can even do the same in your iPhone videos (index your videos in your videos, sync them with your Mac-indexed videos, so you can search them from your Mac or the other way). (Early alpha for now)\nAnd even index videos on your Linux machine (alpha version) and use the macOS application as a client for that machine.\nThe goal is to make your videos indexable, searchable and most importantly, to build a memory from all your videos and connect the dots. Instead of just building a memory for a specific video, we can connect and link between all the videos that you have, without uploading anything to the cloud or paying us a subscription (one-time fee, no subscription fatigue or reminders haha)\nHere's the macOS app that you can buy and start indexing your videos now: https://orcah.app",
+   "score": 7,
+   "comments": [
+    {
+     "by": "iliashad",
+     "depth": 0,
+     "text": "Keep an eye on the changelog page: https://orcah.app/changelog and use the contact email to request early access to the iPhone and Linux options (you can get a free lifetime if you're willing to test these two options with us, but the app should be useful to you)."
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50659922",
+   "kind": "Show HN",
+   "title": "Show HN: I Built 90s Style Low Cost Ads Concept with Rotate Ad Exchange",
+   "hn": "https://news.ycombinator.com/item?id=50659922",
+   "url": "https://rotate.ad/",
+   "by": "irfanhasnani",
+   "created_at": "2026-11-26T21:17:20Z",
+   "age_h": 32.1,
+   "points": 5,
+   "num_comments": 4,
+   "topics": [
+    "small web"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "Heyy HN community,\nMany of you heard Ad4Ad or You show my ad i show your ad type of barter ad system!\ni built the same system with a fair ad serving architecture. I named it RotateAd.\nI believe this concept can give old vibes but this is much better upgraded as comparison to webrings.\ni hope you like the concept and if you have any feedback please let me know. i would appreciate if you become part of it.",
+   "score": 7,
+   "comments": [
+    {
+     "by": "autoventure",
+     "depth": 0,
+     "text": "webrings was used in 90s, where people exchange banners to serve ads in each others website. but here you setup rotational ad so user can set 1 banner and participate share ads in rotation. am i right?"
+    },
+    {
+     "by": "irfanhasnani",
+     "depth": 1,
+     "text": "not exactly, it's closer to a banner exchange than a webring. website owner can setup their banner just one time and all participate website will display that banner through automatic rotation. so this idea is to make the whole exchange process easier without manually arranging partnership with website owners, also it cost a fixed fees, if network has 50 members, 500 members or 5000 members. so advertising cost wont drain like CPC"
+    },
+    {
+     "by": "autoventure",
+     "depth": 2,
+     "text": "that's an interesting concept, fixing price sounds good even when network grows price stays same then i would love to explore and be part of it.\nso if more website joins, does that mean advertisers get more chance to show their banner without paying extra?"
+    },
+    {
+     "by": "irfanhasnani",
+     "depth": 3,
+     "text": "yes exactly, that is the main idea of this concept. more website will bring more opportunity for your banner to get appear on different websites. and you website advertising fees stays fixed. if you compare it with webring then in 90s era you need to find multiple partners and deal with them."
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50671969",
+   "kind": "Ask HN",
+   "title": "Ask HN: How to validate my idea/MVP?",
+   "hn": "https://news.ycombinator.com/item?id=50671969",
+   "url": "",
+   "by": "apartmentarch",
+   "created_at": "2026-11-27T21:43:39Z",
+   "age_h": 7.7,
+   "points": 1,
+   "num_comments": 0,
+   "topics": [
+    "keeping things for decades"
+   ],
+   "found_by": [
+    "Ask HN",
+    "Internet Archive",
+    "net art"
+   ],
+   "text": "I'm currently building Apartment Archive, which is an online interior design business focused on making personalized interior design and space planning more accessible.\nI've spent quite a bit of time building out the website and figuring out the service itself. I'm at a point where I'd like to validate the idea, get a better sense of product-market fit and see whether there's enough demand before building much further.\nI've been reading about smoke testing (a facade MVP or even just a landing page with a call to action to gauge interest), but I'm more curious about how people have actually gone about doing this in practice. I'm wondering how to go about this when starting without an existing audience.\nWhere did you find your first potential customers? Were there any communities, groups, or specific approaches that worked particularly well for you?\nI'm also trying to get some clarity around how people distinguished between someone thinking their idea was interesting and someone actually being willing to pay for it. I've conducted some user testing which was helpful in getting a better understanding of what people want and don't want, but I'd like to find a way to gauge whether people would actually pay for the service.\nWould appreciate hearing what worked, what didn't, and what you'd do differently if you were starting from scratch.\nThank you in advance for your help! I appreciate you taking the time to read my post.",
+   "score": 6,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50669673",
+   "kind": "Show HN",
+   "title": "Show HN: DragDropMath – Learn math by feel",
+   "hn": "https://news.ycombinator.com/item?id=50669673",
+   "url": "https://dragdropmath.com/",
+   "by": "ziofill",
+   "created_at": "2026-11-27T17:56:28Z",
+   "age_h": 11.5,
+   "points": 118,
+   "num_comments": 36,
+   "topics": [
+    "keeping things for decades"
+   ],
+   "found_by": [
+    "Show HN",
+    "net art"
+   ],
+   "text": "Hi HN!\nI am a professional physicist and I shuffle symbols in equations and mathematical expressions all day long. During my PhD (almost 20 years ago) I noticed that it is as if the symbols have their own 'physics', which makes the wrong moves impossible and the right ones obvious.\nSo I created DragDropMath, where you can learn how to simplify mathematical expressions and how to solve equations by dragging symbols around, and only correct moves are allowed, so you get to feel what's right without experiencing (and so learning) wrong moves.\nI always wanted to make this, but life got in the way. Then a few weeks ago I saw declarative dragging (https://declarative-dragging.github.io/) on the front page of HN and the spark came back!\nIt took quite a few rounds to get the feel right, but I think it's close to what happens in my mind when I mentally manipulate these expressions.\nA few more points:\n- There are no ads, no trackers, no accounts (it's a static website and progress is saved in the browser cache).\n- Teachers can create their own problem sets, encoded in the link.\n- I plan to add more chapters (trigonometry, complex numbers, some calculus) but I first need to figure out the 'right' mode of interaction.\n- I just started working on the experience from mobile, so there may still be some rough edges there\nI'm curious to know what you think, if you have suggestions for content, if you spot anything that I should fix, if you have feature requests! Thank you in advance",
+   "score": 6,
+   "comments": [
+    {
+     "by": "sidcraftscode",
+     "depth": 0,
+     "text": "Could you drop a link to the repo? Would love to contribute to this..."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "Sure thing, thanks! https://github.com/ziofil/dragdropmath"
+    },
+    {
+     "by": "NooneAtAll5",
+     "depth": 1,
+     "text": "drag and drop? :)"
+    },
+    {
+     "by": "lucasov",
+     "depth": 0,
+     "text": "cool!"
+    },
+    {
+     "by": "abecedarius",
+     "depth": 0,
+     "text": "In chapter 3 \"pull a term out of the exponent\" I'm not finding a way to do it: I can drag a term around within the exponent, and that sum will rearrange when I do, but if I try to drop it outside the exponent, it only snaps back into place."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "Can you press the Show button to see the move? Are you pulling it 'enough'?"
+    },
+    {
+     "by": "abecedarius",
+     "depth": 2,
+     "text": "OK. It seems to be possible only for dragging the leftmost term out, and I was dragging the other term. I had never had to use the Show button before, so by that point it was more or less invisible."
+    },
+    {
+     "by": "ziofill",
+     "depth": 3,
+     "text": "the other term should work too if you drag it to the right"
+    },
+    {
+     "by": "abecedarius",
+     "depth": 4,
+     "text": "I remember trying both ways, though I'm a fallible human.\nWhat if you had a middle term? Seems confusing. (I'm just aiming to help.)"
+    },
+    {
+     "by": "ziofill",
+     "depth": 5,
+     "text": "Good question, i guess i should allow it to be pulled out from either direction. Now you'd first move it to either end and then you pull it out, but it's two moves and it could be just one."
+    },
+    {
+     "by": "NickNaraghi",
+     "depth": 0,
+     "text": "This is super compelling. For my learning style, everything was very intuitive, and dare I say fun. I think this can open up math for a whole segment of the learner population that previously did not enjoy engaging with it! Great work."
+    },
+    {
+     "by": "FergusArgyll",
+     "depth": 0,
+     "text": "log and exp could use more of an intro I think.\nVery cool and great idea!"
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "Noted, thanks!"
+    },
+    {
+     "by": "rlue",
+     "depth": 0,
+     "text": "> It can only move in ways the maths allows.\nThis property is desirable for a tool that assists you in performing work, but actually undesirable for a tool designed to guide your learning: it means you are protected from doing something wrong (much like when they put up the bumpers/siderails at a bowling alley), the result being that you receive no feedback when your mental model requires adjustment."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "That's fair, and in fact I was worried that a user could just keep going through exercises mindlessly, without learning. To address that gap, I provided a \"Mind's eye\" mode: it asks you to enter the final answer up front before touching the symbols, which forces you to execute the transformations mentally without any UI bumpers."
+    },
+    {
+     "by": "endofreach",
+     "depth": 1,
+     "text": "Good observation. And that's a good case to do some game design. Excited to see what OP comes up with."
+    },
+    {
+     "by": "Wowfunhappy",
+     "depth": 1,
+     "text": "I'm not sure I agree. The UI lacks affordances, so you don't know if something is going to work until you try it. What the \"can only move in ways the math allows\" restriction is actually getting you is really fast feedback. If you try to move something and it doesn't work, you did something wrong.\nThis does rely on the human to not just try clicking everything."
+    },
+    {
+     "by": "ziofill",
+     "depth": 2,
+     "text": "every allowed move is covered in the lessons though, so technically one shouldn't even need much guesswork"
+    },
+    {
+     "by": "Wowfunhappy",
+     "depth": 3,
+     "text": "The lessons teach you and then you practice it.\nI agree it's not too hard. Might be harder if I hadn't already learned algebra, though."
+    },
+    {
+     "by": "ziofill",
+     "depth": 4,
+     "text": "that's a good point, i could have \"expert blindness\""
+    },
+    {
+     "by": "jacobolus",
+     "depth": 0,
+     "text": "The section on a product of binomials breaks for me. After dragging one binomial onto the other, the resulting products of a term times a binomial can't be distributed. That is, I get a product like (1+t)t but I can't drag the t without moving the whole expression. https://dragdropmath.com/#/c/brackets"
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "If you want to just grab the t on the right of (1+t)t you should keep it pressed (for 0.2s), does that solve your issue?\nI value the feedback though, because it means it's not explained well enough."
+    },
+    {
+     "by": "spolitry",
+     "depth": 0,
+     "text": "The solutions do weird stuff like moving a term back and forth across the equal sign uselessly.\nIt doesn't seem possible to complete the square or to square the sides of an equality, quite awkard for solving quadratics\nAlso, the UI gives no indication of how the operations are triggered.\nNeeds a way to see what operations are possible and how to execute them."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "Thank you for the feedback, I’ll think about your points!"
+    },
+    {
+     "by": "Normal_gaussian",
+     "depth": 0,
+     "text": "I don't think this works well, in its current state. I mainly think its to do with the drag and drop functionality itself - it becomes somewhat unintuitive and even with knowledge of what should or could be possible I struggle to achieve my goals. A few more iterations of that, particularly with some over the shoulder observations of your target audience, might help significantly."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "could you let me know if you tried on desktop or mobile? and did you go through the lessons or did you go straight to the exercises?"
+    },
+    {
+     "by": "ziofill",
+     "depth": 0,
+     "text": "While the link is still on the front page I'd like to thank you all for all the feedback! DragDropMath is free, open source (MIT), with no ads or tracking, and will stay that way. It will only get better over time! A few people asked how to support it, so there's now a Ko-fi link on the About page: https://ko-fi.com/ziofil"
+    },
+    {
+     "by": "joshuahhh",
+     "depth": 0,
+     "text": "\"Declarative Dragging\" co-author here. It's wonderful to see our work encouraging you to explore this space of interaction. Thanks for sharing!\nYou might be interested in checking out:\n- Graspable Math: https://activities.graspablemath.com/\n- our (cursorily vibe-coded) demo based on Graspable Math: https://declarative-dragging.github.io/dragology/#/demos/gra..."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "oh wow, that does look similar!"
+    },
+    {
+     "by": "F7F7F7",
+     "depth": 2,
+     "text": "OP openly admits to using the library and there's only so much you can do with interactions in this space."
+    },
+    {
+     "by": "dmd",
+     "depth": 0,
+     "text": "I made something in the same general field, if anyone would like to play with it: https://3e.org/units/"
+    },
+    {
+     "by": "caiomassan",
+     "depth": 0,
+     "text": "i cut my balls off if that beats a list of exercises, pen and paper and repetition."
+    },
+    {
+     "by": "ziofill",
+     "depth": 1,
+     "text": "lol careful!"
+    },
+    {
+     "by": "owenpalmer",
+     "depth": 0,
+     "text": "I love this. Made a similar app for my young niece:\nhttps://poof.fly.dev/\nInstead of using variables, it uses emojis. You learn about cancelling terms and the distributive property."
+    },
+    {
+     "by": "SilentM68",
+     "depth": 0,
+     "text": "Great idea for an app! Once you get the hang of how the values could be manipulated (e.g. grabbing vs double-clicking) it becomes easier to use. I'd make the grabbing function more intuitive by changing the pointer to an arrow to indicate that a variable can be moved when hovered over the appropriate variable location."
+    },
+    {
+     "by": "1234trevor",
+     "depth": 0,
+     "text": "its good.\nstudents needs \"DragDropMath\""
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50658039",
+   "kind": "Show HN",
+   "title": "Show HN: Yioop 10 – a PHP search engine that runs groups, wikis, Git and mail",
+   "hn": "https://news.ycombinator.com/item?id=50658039",
+   "url": "https://www.seekquarry.com/",
+   "by": "cpollett",
+   "created_at": "2026-11-26T18:23:17Z",
+   "age_h": 35.0,
+   "points": 1,
+   "num_comments": 0,
+   "topics": [
+    "keeping things for decades"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "Yioop is an open source (GPLv3) search engine written in PHP that I have been working on since 2009. Version 10 is now out.\nYioop comes with a crawler which can be used on the open web or on a list of sites you choose. It can also index Wikipedia XML dumps, arc and warc archives, Open Directory RDF, and dumps of email or databases, and several crawls can be mixed into one set of results. A media updater re-indexes RSS and Atom feeds every hour, so news makes it into the results.\nBesides search, Yioop can be used to run discussion groups, blogs and wikis. Each group has a wiki for pages, slide presentations and spreadsheets, and the wiki can be used to build whole web sites.\nSome of what is new in version 10:\n- Yioop can run on its own Pure PHP web server, with HTTPS, HTTP/2 and HTTP/3 support, and has its own web configurable PHP mail server and client.\n- Users can make voice and video calls from their messages.\n- Common audio and video formats are decoded and encoded in Yioop's own PHP code.\n- A wiki page can hold a git repository that people clone and push to over HTTP, with an issue tracker beside it.\n- Yioop is available in 25 languages, and a faster tokenizer handles text in each of them, including Chinese, Japanese and Korean.\nYioop's stemmers, summarizers and other language tools can also be used in other projects through Composer.\nDemo: https://www.yioop.com/\nProject page: https://www.seekquarry.com/",
+   "score": 6,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50656050",
+   "kind": "Show HN",
+   "title": "Show HN: Lockward – a lockfile for skills and MCP servers your AI agent loads",
+   "hn": "https://news.ycombinator.com/item?id=50656050",
+   "url": "https://github.com/Breaktroughf1/lockward",
+   "by": "noealrajeev",
+   "created_at": "2026-11-26T15:01:29Z",
+   "age_h": 38.4,
+   "points": 1,
+   "num_comments": 0,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server",
+    "Show HN"
+   ],
+   "text": "",
+   "score": 6,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50655993",
+   "kind": "Show HN",
+   "title": "Show HN: Nbody 3D Solar System and Milky Way in WebGL (+many Uncatalogued TNOs)",
+   "hn": "https://news.ycombinator.com/item?id=50655993",
+   "url": "https://foaktee.github.io/rubin-euclid-discovery/eyes_3d/",
+   "by": "chsun",
+   "created_at": "2026-11-26T14:56:50Z",
+   "age_h": 38.4,
+   "points": 2,
+   "num_comments": 0,
+   "topics": [
+    "keeping things for decades"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "My friend and I built a browser-based 3D explorer of the Solar System and Milky Way, no install or account needed. Digital twin of our galaxy runs on a real-time N-body simulation from NASA JPL data. This started as a visual companion to a search for undiscovered objects across 14 telescope archives (including Rubin, Euclid, and DECam).\nYou can also toggle on 93 new uncatalogued candidates (TNOs, asteroids, and irregular moons) to inspect their real telescope cutouts— 2,952 more detectable candidates require a second look. \nWe’d love any feedback! One more thing - try to search for bonus within satellites!",
+   "score": 6,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50655338",
+   "kind": "Show HN",
+   "title": "Show HN: I spent 10 years traveling and built a travel blog out of the data",
+   "hn": "https://news.ycombinator.com/item?id=50655338",
+   "url": "https://steve.ly/travels",
+   "by": "stevelacey",
+   "created_at": "2026-11-26T13:55:38Z",
+   "age_h": 39.5,
+   "points": 4,
+   "num_comments": 0,
+   "topics": [
+    "keeping things for decades"
+   ],
+   "found_by": [
+    "Show HN"
+   ],
+   "text": "Hi HN,\nI never wrote a travel blog in 10 years of traveling, so I built one out of the data. Bookings, trips, posts, reviews, check-ins and photos.\n- Airbnb, Booking, Agoda and more, parsed from Fastmail\n- Every trip from Nomads.com\n- Posts from the road, pinned to where I was\n- Google Maps reviews, as the recommendations\n- Years of Foursquare check-ins and photos\n- My Instagram archive\n51 countries. 7 years in Asia. $64/night overall, mostly chasing the sun.\nHope you like it! Would love some feedback.\nSteve",
+   "score": 6,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50654339",
+   "kind": "story",
+   "title": "Wait That's HTML? – WebGPU and WebGL experiments, each in a single HTML file",
+   "hn": "https://news.ycombinator.com/item?id=50654339",
+   "url": "https://kimteddy.github.io/2026_wait-thats-html/",
+   "by": "AlenaSato",
+   "created_at": "2026-11-26T11:58:31Z",
+   "age_h": 41.4,
+   "points": 2,
+   "num_comments": 0,
+   "topics": [
+    "plain web, no build"
+   ],
+   "found_by": [
+    "single HTML file"
+   ],
+   "text": "",
+   "score": 6,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50669286",
+   "kind": "story",
+   "title": "Lantern Promos – An MCP server for checking store discount codes",
+   "hn": "https://news.ycombinator.com/item?id=50669286",
+   "url": "https://lanternpromos.com/",
+   "by": "alissimore",
+   "created_at": "2026-11-27T17:22:17Z",
+   "age_h": 12.0,
+   "points": 10,
+   "num_comments": 9,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server"
+   ],
+   "text": "",
+   "score": 5,
+   "comments": [
+    {
+     "by": "erictaurone",
+     "depth": 0,
+     "text": "This is awesome. Was able to find some discounts on my clothes at American Tall."
+    },
+    {
+     "by": "vancouvermatt",
+     "depth": 0,
+     "text": "Very useful for today!\nSaved over $120."
+    },
+    {
+     "by": "erictaurone",
+     "depth": 1,
+     "text": "That's tight. Mine was $50 off."
+    },
+    {
+     "by": "thumper123",
+     "depth": 0,
+     "text": "This is awesome!"
+    },
+    {
+     "by": "Bunkeys",
+     "depth": 0,
+     "text": "Finally a product that actually saves me money!"
+    },
+    {
+     "by": "sallycroyden",
+     "depth": 0,
+     "text": "Yay!! Saved $30 on a $110 pair of sneakers"
+    },
+    {
+     "by": "SacramentoEngin",
+     "depth": 0,
+     "text": "Sick! I saved $200 on clothes"
+    },
+    {
+     "by": "1msatter1",
+     "depth": 0,
+     "text": "Does this work with all sites? Or Shopify only\nEither way this is incredibly cool and have already purchased a new pair of shoes using it"
+    },
+    {
+     "by": "BigLanternEnjoy",
+     "depth": 1,
+     "text": "It works on all sites and best with Muse"
+    }
+   ],
+   "read": true
+  },
+  {
+   "id": "50669635",
+   "kind": "story",
+   "title": "We reduced our MCP server's context window usage by up to 267x",
+   "hn": "https://news.ycombinator.com/item?id=50669635",
+   "url": "https://octri.dev/blog/how-we-reduced-mcp-context-window-usage",
+   "by": "khalidkhair",
+   "created_at": "2026-11-27T17:53:03Z",
+   "age_h": 11.5,
+   "points": 1,
+   "num_comments": 0,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server"
+   ],
+   "text": "",
+   "score": 4,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50656755",
+   "kind": "story",
+   "title": "An MCP server that tells your assistant if a price is a deal (FR/DE)",
+   "hn": "https://news.ycombinator.com/item?id=50656755",
+   "url": "https://dealectics.com/connect",
+   "by": "cakeunderceriz",
+   "created_at": "2026-11-26T16:15:48Z",
+   "age_h": 37.1,
+   "points": 2,
+   "num_comments": 0,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server"
+   ],
+   "text": "",
+   "score": 4,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50656110",
+   "kind": "story",
+   "title": "MCP servers can now ship skills, run tasks, and more with Claude",
+   "hn": "https://news.ycombinator.com/item?id=50656110",
+   "url": "https://claude.com/resources/articles/skills-over-mcp-tasks-and-more",
+   "by": "nvmdbljstm",
+   "created_at": "2026-11-26T15:08:12Z",
+   "age_h": 38.3,
+   "points": 5,
+   "num_comments": 0,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server"
+   ],
+   "text": "",
+   "score": 4,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50655279",
+   "kind": "story",
+   "title": "Blofeld – Autonomous Fuzzing for MCP Servers",
+   "hn": "https://news.ycombinator.com/item?id=50655279",
+   "url": "https://blofeld.dev/",
+   "by": "pelle",
+   "created_at": "2026-11-26T13:48:26Z",
+   "age_h": 39.6,
+   "points": 1,
+   "num_comments": 0,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server"
+   ],
+   "text": "",
+   "score": 4,
+   "comments": [],
+   "read": true
+  },
+  {
+   "id": "50653477",
+   "kind": "story",
+   "title": "Google Will Make AI Agents Use Its MCP Servers. The Gmail One Can't Send Email",
+   "hn": "https://news.ycombinator.com/item?id=50653477",
+   "url": "https://techstackups.com/articles/google-workspace-ai-agents-mcp/",
+   "by": "ritzaco",
+   "created_at": "2026-11-26T09:44:23Z",
+   "age_h": 43.7,
+   "points": 420,
+   "num_comments": 333,
+   "topics": [
+    "AI agents as visitors"
+   ],
+   "found_by": [
+    "MCP server"
+   ],
+   "text": "",
+   "score": 1,
+   "comments": [
+    {
+     "by": "wittyusername",
+     "depth": 0,
+     "text": "a bunch of people are about to face the pain of losing their Google account"
+    },
+    {
+     "by": "ivanmontillam",
+     "depth": 1,
+     "text": "* again *"
+    },
+    {
+     "by": "roccoliiva",
+     "depth": 0,
+     "text": "It’s pretty interesting that routing agents through MCP is becoming mandatory while the tool access itself is so confusing. It’s likely going to lead to a ton of misunderstandings on the agent side."
+    },
+    {
+     "by": "dist-epoch",
+     "depth": 1,
+     "text": "You just put another MCP in front of the Google MCP. Treat the Google MCP as an API."
+    },
+    {
+     "by": "talmr",
+     "depth": 1,
+     "text": "Not sure if I’m the only one but I had a honeymoon phase with connecting bunch of stuff using MCP.\nBut now I have so many issues and bugs, or outcomes which get stuck or are wrong. My expectations have increased for sure.\nI don’t know a solution, but I am getting integration fatigue. Call me crazy, but I don’t know that I need this level of automation for most things, esp. when the automation simply doesn’t work."
+    },
+    {
+     "by": "Den_VR",
+     "depth": 0,
+     "text": "I’ve been interacting with my Google workspace solely through openai and Gemini offerings for a while now. It’s been thought provoking but not life changing. And yet this change would be enough friction for me to move off Google services."
+    },
+    {
+     "by": "sklargh",
+     "depth": 0,
+     "text": "Gmail can’t serve ads in OpenAI or Anthropic UI to normies, hence this. I’m sure there’s some spam element but it’s always about collection and ads serving apertures with Google."
+    },
+    {
+     "by": "blfr",
+     "depth": 1,
+     "text": "I don't think this affects Anthropic as the Claude connector has more features, including sending."
+    },
+    {
+     "by": "k9294",
+     "depth": 0,
+     "text": "I've been thinking about moving away from Google's infrastructure for quite some time.\nAre there any good alternatives for personal and business use cases (email/drive/docs)?\nI'd appreciate any advice."
+    },
+    {
+     "by": "Geof25",
+     "depth": 1,
+     "text": "Protonmail (proton.me)"
+    },
+    {
+     "by": "ethagnawl",
+     "depth": 2,
+     "text": "I would have agreed until very recently. I've been a paying customer for almost 10 years but they seem to have lost their way recently and are focused on features I don't care about (crypto wallet and chatbot) instead of the ones I do (Linux Drive and overall performance and usability). Their CEO also has a raging case of AI psychosis and I no longer have any faith in the slop they're excreting at his insistence."
+    },
+    {
+     "by": "gf000",
+     "depth": 2,
+     "text": "I used to be a paying customer, but encrypted email is a scam, the only one prevented from reading your emails is you yourself.\nAnd this is quite literally true, I discontinued my subscription and.. email forwarding is paid, proton bridge is paid. There is literally no way to escape without paying, my proton email is basically hijacked.\nAs another tip, only use your own domain for emails, as it's not something you can just change later on."
+    },
+    {
+     "by": "aleaph",
+     "depth": 3,
+     "text": "Yeah that's why you use your own domain with these Email hosting services, you could cut ties and move elsewhere without loosing your email address(es)."
+    },
+    {
+     "by": "efitz",
+     "depth": 3,
+     "text": "I’d like to see your evidence that “the only one from reading your email is yourself”.\nI have fallen out of love with Proton the company, but ProtonMail does seem to fulfill its promise of encryption of incoming email at the MTA and storing only the cipher text. And their jurisdiction means that would be snoops in government agencies have to get cross-international-boundary data warrants (if you’re not Swiss). This seems to me like a very reasonable trade between privacy and ability of government to investigate crimes.\nThey have well integrated PGP support; it’s not their fault that no one uses it.\nIf you turn on any of their indexing stuff then yeah, all bets are off.\nHate on their business […]"
+    },
+    {
+     "by": "HaloZero",
+     "depth": 4,
+     "text": "What went wrong with Proton the company?"
+    },
+    {
+     "by": "jfim",
+     "depth": 5,
+     "text": "There was a big kerfuffle about it a few weeks ago. For example: https://www.404media.co/manifestos-fear-and-loser-thinking-i..."
+    },
+    {
+     "by": "jphone1900",
+     "depth": 4,
+     "text": "It seems obvious?\nProton reads all incoming email from non-Proton addresses, before message is encrypted with what they call Zero-access encryption. Zero access then seems more like a marketing gimmick, since technically, Proton has already accessed the contents at least once?\nQuoted from their website:\n... when an email is sent from Gmail to Proton Mail, Proton’s servers can briefly read the message ... Proton then encrypts the email using the recipient’s public key, after which only the recipient can decrypt it and Proton no longer has access.\nhttps://proton.me/learn/encryption/types-of-encryption/zero-...\nSo you ge a somewhat false sense of privacy for emails at large . All those password […]"
+    },
+    {
+     "by": "efitz",
+     "depth": 5,
+     "text": "Proton can’t change the fundamental nature of IMAP or SMTP (and still be an “email” service. Their MTA must be able to read certain fields in the plain text email header; this doesn’t even change with PGP encrypted mail. Most MTAs use TLS for transport security. That prevents eavesdropping in transit. If you want maximal privacy from Proton, then you have the option of using PGP which introduces very high bars to working with others over email- you have to exchange keys out of band in a secure fashion, and then the other party has to either use a PGP-enabled mailer or has to know hotel to encrypt and decrypt.\nProton claims that their MTAs store the messages encrypted with a key for which the […]"
+    },
+    {
+     "by": "rovr138",
+     "depth": 6,
+     "text": "> Proton can’t change the fundamental nature of IMAP or SMTP\nExactly.\n> If I capture the attention of Law Enforcement, then they can theoretically obtain orders to hand over logs, stored data, encryption keys, or (depending on jurisdiction), install or reconfigure systems to intercept plaintext prior to encryption.\nYou forgot, the same thing, on other webmail provider searching for emails sent to you. If they don't encrypt, the only place it's encrypted it's on your side.\nSo, to the original comment, they're right. They're still in clear-text elsewhere. Either on the wire, or on the server of the person you communicated with."
+    },
+    {
+     "by": "gf000",
+     "depth": 6,
+     "text": "> Proton can’t change the fundamental nature of IMAP or SMTP\nAs the sibling commenter mentioned, exactly.\nSince it can't be done securely, it is misleading and scammy to claim you somehow managed to secure something fundamentally impossible.\nIf you want secure communication, use a secure channel, like signal."
+    },
+    {
+     "by": "waseems",
+     "depth": 1,
+     "text": "See my comment elsewhere in this thread, i built www.inbox2.com its not ready for prime time but feel free to hit me up to bounce ideas around. Waseem @"
+    },
+    {
+     "by": "ciberado",
+     "depth": 1,
+     "text": "I'm selfhosting https://www.seafile.com and it works much better than gdrive/onedrive. Hasn't tried their managed offer, but it can't be bad."
+    },
+    {
+     "by": "gassi",
+     "depth": 1,
+     "text": "Fastmail is great"
+    },
+    {
+     "by": "neuwirth",
+     "depth": 1,
+     "text": "I highly recommend fastmail for email; I self-hosted for some time, but found it was just too much of a nuisance, and fastmail have been phenomenal. I still self-host for the equivalents of the others."
+    },
+    {
+     "by": "Ungh",
+     "depth": 1,
+     "text": "For both personal and business cases, I spent the last 2-3 years moving everything as offline as possible.\nSo I'm just using a local IMAP provider (Mythic Beasts in UK). Thunderbird as the mail client. All files are local and LibreOffice Calc/Writer. If I need to share something it's a PDF only. If I need to take something with me, I take my laptop.\nHaven't had any issues collaborating with anyone and it's secure, stable and private.\nI use imap-backup to archive the mailboxes offline as a backup with the file backups."
+    },
+    {
+     "by": "sph",
+     "depth": 1,
+     "text": "I am a paying Fastmail customer since 2019. I wouldn't move back to gmail not even if it was free."
+    },
+    {
+     "by": "VMG",
+     "depth": 2,
+     "text": "gmail is free"
+    },
+    {
+     "by": "xquce",
+     "depth": 3,
+     "text": "Well not free. There is a Pay version and a PayByData version."
+    },
+    {
+     "by": "rrr_oh_man",
+     "depth": 4,
+     "text": "PayAlsoByData, PayOnlyByData"
+    },
+    {
+     "by": "dizhn",
+     "depth": 5,
+     "text": "Thank you!!! I am baffled by how naive people can be around here. \"but but it has a privacy policy\". Yeah right."
+    },
+    {
+     "by": "mococa",
+     "depth": 3,
+     "text": "> gmail is free\nBecause they use your data"
+    },
+    {
+     "by": "upcoming-sesame",
+     "depth": 2,
+     "text": "I use Zoho when I wanna have email on a custom domain. it's free and works great"
+    },
+    {
+     "by": "FabCH",
+     "depth": 1,
+     "text": "I self-host everything except email.\nDrive = a simple folder on a server, with WebDAV in front of it to allow random apps to store data.\nDocs = Aforementioned folder, with LibreOffice.\nPhotos = Immich"
+    },
+    {
+     "by": "lilbigdoot",
+     "depth": 2,
+     "text": "I don't know if I never heard of WebDAV or just forgot but that's a cool protocol."
+    },
+    {
+     "by": "r0l1",
+     "depth": 1,
+     "text": "Try infomaniak. We tested a lot of solutions and they offered a solution for everything."
+    },
+    {
+     "by": "artrax",
+     "depth": 1,
+     "text": "I can recommend mailbox.org highly. Its privacy focused, based in Germany, allows you to use your own domains, and also comes with an office suite (albeit I only use the mail functionality)."
+    },
+    {
+     "by": "SSLy",
+     "depth": 1,
+     "text": "iCloud+ email offering is good enough for me, try that if you're in the kingdom of apple."
+    },
+    {
+     "by": "shepherdjerred",
+     "depth": 1,
+     "text": "Anthropic has already built an office suite and meeting software.\nhttps://support.claude.com/en/articles/16923645-get-started-...\nhttps://claude.com/resources/articles/claude-meetings"
+    },
+    {
+     "by": "p_j_w",
+     "depth": 2,
+     "text": "1. Calling that an office suite is extremely generous.\n2. Going from Google to Anthropic is a sidegrade as far as shitty companyness goes. They’re only a few years into their existence but Anthropic is already looking more like 2010 Google than 2002 Google."
+    },
+    {
+     "by": "jaxn",
+     "depth": 2,
+     "text": "claude meetings just has Claude join Google Meet."
+    }
+   ],
+   "read": true
+  }
+ ]
+}
